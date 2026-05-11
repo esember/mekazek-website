@@ -1,0 +1,234 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-top: 0.5rem;
+}
+
+/* ── Progress ── */
+.topBar { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.progressTrack {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width 0.3s ease;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ── Exercise ── */
+.exercise {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.75rem;
+}
+
+.prompt {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+}
+
+.sentence {
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  color: var(--text);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.blank {
+  display: inline-block;
+  min-width: 80px;
+  border-bottom: 2px solid var(--accent-dim);
+  color: var(--accent);
+  font-weight: 500;
+  padding: 0 0.25rem;
+  text-align: center;
+  transition: border-color 0.2s;
+  font-style: italic;
+}
+
+.blankCorrect {
+  border-color: #4caf7a;
+  color: #4caf7a;
+}
+
+.blankWrong {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.meaningHint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 1.25rem;
+}
+
+.meaningHint em { color: var(--text); font-style: italic; }
+
+/* ── Input row ── */
+.inputRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus { border-color: var(--accent-dim); }
+.input::placeholder { color: var(--muted); }
+
+.checkBtn {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #0a0a0a;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.75rem 1.4rem;
+  transition: background 0.2s, opacity 0.2s;
+  white-space: nowrap;
+}
+
+.checkBtn:hover:not(:disabled) { background: var(--accent-dim); }
+.checkBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Feedback ── */
+.feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.feedbackCorrect {
+  font-size: 0.9rem;
+  color: #4caf7a;
+  font-weight: 500;
+}
+
+.feedbackWrong {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.feedbackWrong strong { color: var(--text); }
+
+.yourAnswer {
+  font-size: 0.8rem;
+  color: var(--error);
+}
+
+.nextBtn {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #0a0a0a;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.6rem 1.4rem;
+  transition: background 0.2s;
+  margin-left: auto;
+}
+
+.nextBtn:hover { background: var(--accent-dim); }
+
+/* ── Result ── */
+.result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 3rem;
+  text-align: center;
+}
+
+.resultLabel {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.resultScore {
+  font-size: 4rem;
+  font-weight: 200;
+  color: var(--text);
+  line-height: 1;
+  margin: 0.5rem 0;
+}
+
+.resultTotal { font-size: 2rem; color: var(--muted); }
+.resultPct   { font-size: 1.1rem; color: var(--accent); }
+
+.resultMsg {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.restartBtn {
+  margin-top: 1.5rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #0a0a0a;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.65rem 1.6rem;
+  transition: background 0.2s;
+}
+
+.restartBtn:hover { background: var(--accent-dim); }
+
+/* ── Empty ── */
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin-top: 4rem;
+}
+
+.empty strong { color: var(--text); }
+
+@media (max-width: 480px) {
+  .inputRow  { flex-direction: column; }
+  .checkBtn  { width: 100%; }
+  .feedback  { flex-direction: column; align-items: flex-start; }
+  .nextBtn   { width: 100%; text-align: center; }
+}

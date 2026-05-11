@@ -1,0 +1,158 @@
+/* ── Add form ── */
+.form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.formTitle {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.input:focus { border-color: var(--accent-dim); }
+.input::placeholder { color: var(--muted); }
+
+.inputWide {
+  grid-column: 1 / -1;
+}
+
+.error {
+  font-size: 0.8rem;
+  color: var(--error);
+  margin-bottom: 0.75rem;
+}
+
+.addBtn {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #0a0a0a;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  padding: 0.6rem 1.4rem;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.addBtn:hover:not(:disabled) { background: var(--accent-dim); }
+.addBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Empty state ── */
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  margin-top: 3rem;
+}
+
+/* ── Table ── */
+.tableWrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.table tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: 0.85rem 1rem;
+  vertical-align: top;
+  color: var(--text);
+}
+
+.table tr:hover td {
+  background: var(--surface);
+}
+
+.wordCell {
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--accent) !important;
+  width: 130px;
+}
+
+.meaningCell { width: 160px; }
+
+.exampleCell {
+  color: var(--muted) !important;
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+.none { color: var(--border) !important; font-style: normal; }
+
+.actionCell {
+  width: 40px;
+  text-align: center;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  color: var(--error);
+  background: rgba(224, 85, 85, 0.1);
+}
+
+@media (max-width: 600px) {
+  .fields { grid-template-columns: 1fr; }
+  .inputWide { grid-column: 1; }
+}

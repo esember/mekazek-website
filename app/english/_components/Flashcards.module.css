@@ -1,0 +1,173 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 1rem;
+}
+
+.counter {
+  font-size: 0.85rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.sep { margin: 0 0.25rem; }
+
+/* ── 3-D card ── */
+.scene {
+  width: 100%;
+  max-width: 480px;
+  height: 240px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 14px;
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: var(--surface);
+  user-select: none;
+}
+
+.back {
+  transform: rotateY(180deg);
+  background: #131310;
+  border-color: var(--accent-dim);
+}
+
+.sideLabel {
+  position: absolute;
+  top: 1rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mainText {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.back .mainText {
+  color: var(--accent);
+}
+
+.example {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+/* ── Controls ── */
+.hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-top: -0.5rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.navBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.55rem 1.1rem;
+  transition: border-color 0.2s, color 0.2s;
+  min-width: 80px;
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--accent-dim);
+  color: var(--accent);
+}
+
+.navBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.shuffleBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  padding: 0.55rem 1rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.shuffleBtn:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+/* ── Dots ── */
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  max-width: 480px;
+}
+
+.dotPip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: var(--accent);
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 4rem;
+}
