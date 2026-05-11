@@ -1,0 +1,135 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: border-left-color 0.3s ease;
+}
+
+/* Left border changes with status */
+.card.in_progress { border-left-color: var(--accent); }
+.card.completed   { border-left-color: #4caf7a; }
+
+/* ── Header ── */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.topicName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  letter-spacing: 0.01em;
+}
+
+.savingBadge {
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.savingVisible { opacity: 1; }
+
+/* ── Status buttons ── */
+.statusRow {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.statusBtn {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 0.4rem 0.5rem;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-align: center;
+}
+
+.statusBtn:hover:not(.statusActive) {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+.checkmark {
+  font-size: 0.65rem;
+}
+
+/* Active states per status */
+.btn_not_started.statusActive {
+  background: rgba(85, 85, 85, 0.15);
+  border-color: #555;
+  color: #999;
+}
+
+.btn_in_progress.statusActive {
+  background: rgba(200, 169, 110, 0.12);
+  border-color: var(--accent-dim);
+  color: var(--accent);
+}
+
+.btn_completed.statusActive {
+  background: rgba(76, 175, 122, 0.12);
+  border-color: #4caf7a;
+  color: #4caf7a;
+}
+
+/* ── Notes ── */
+.notesWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.notesLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.notes {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 0.65rem 0.85rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.notes:focus { border-color: var(--accent-dim); }
+.notes::placeholder { color: var(--muted); font-style: italic; }
+
+@media (max-width: 480px) {
+  .statusBtn { font-size: 0.68rem; padding: 0.35rem 0.4rem; }
+}
