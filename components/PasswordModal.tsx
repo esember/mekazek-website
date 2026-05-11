@@ -4,7 +4,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from './PasswordModal.module.css'
 
-const PASSWORD = 'mekazek2024'
+const PASSWORD = '0001'
 
 interface Props {
   onClose: () => void
