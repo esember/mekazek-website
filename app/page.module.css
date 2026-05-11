@@ -13,11 +13,18 @@
   font-weight: 300;
   letter-spacing: -0.02em;
   color: var(--text);
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
   line-height: 1;
 }
 
-.portfolioBtn {
+.nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.navLink {
   background: none;
   border: none;
   color: var(--muted);
@@ -29,9 +36,10 @@
   padding: 0.6rem 0;
   position: relative;
   transition: color 0.2s ease;
+  display: inline-block;
 }
 
-.portfolioBtn::after {
+.navLink::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -42,10 +50,10 @@
   transition: width 0.3s ease;
 }
 
-.portfolioBtn:hover {
+.navLink:hover {
   color: var(--accent);
 }
 
-.portfolioBtn:hover::after {
+.navLink:hover::after {
   width: 100%;
 }

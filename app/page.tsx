@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import PasswordModal from '@/components/PasswordModal'
 import styles from './page.module.css'
 
@@ -10,9 +11,19 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <h1 className={styles.heading}>Welcome</h1>
-      <button className={styles.portfolioBtn} onClick={() => setModalOpen(true)}>
-        Portfolio &rarr;
-      </button>
+
+      <nav className={styles.nav}>
+        <Link href="/english" className={styles.navLink}>
+          English App
+        </Link>
+        <Link href="/powerplatform" className={styles.navLink}>
+          Power Platform
+        </Link>
+        <button className={styles.navLink} onClick={() => setModalOpen(true)}>
+          Portfolio
+        </button>
+      </nav>
+
       {modalOpen && <PasswordModal onClose={() => setModalOpen(false)} />}
     </main>
   )
