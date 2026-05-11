@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Kelime Öğrenici</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .detail-section {
+            background-color: #f3f4f6; /* Gray-100 */
+            border-radius: 0.5rem;
+            padding: 0.75rem; 
+            margin-bottom: 0.75rem; 
+            text-align: left;
+            min-height: 40px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .detail-section p {
+            flex-grow: 1;
+            margin-right: 0.5rem; 
+            font-size: 0.9rem; 
+        }
+        
+        /* Ana Kelime Alanı Stilleri */
+        #ana-kelime-bolumu { 
+            display: flex;
+            align-items: baseline; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+        }
+        #gosterilen-kelime-ana { 
+            font-size: 1.875rem; /* text-3xl */
+            line-height: 2.25rem;
+            font-weight: bold;
+            color: #dc2626; /* Tailwind red-600 */
+            margin-right: 0.5rem; 
+        }
+        .kelime-ek-bilgi { 
+            font-size: 1rem; 
+            color: #4b5563; /* Tailwind gray-600 */
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) { 
+            #gosterilen-kelime-ana {
+                font-size: 2.25rem; /* text-4xl */
+                line-height: 2.5rem;
+            }
+            .kelime-ek-bilgi {
+                 font-size: 1.125rem; /* text-lg */
+            }
+        }
+
+        .play-icon-btn {
+            background-color: #10b981; 
+            color: white;
+            padding: 0.4rem; 
+            border-radius: 9999px; 
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+            line-height: 0; 
+        }
+        .play-icon-btn:hover {
+            background-color: #059669; 
+        }
+        .play-icon-btn:disabled {
+            background-color: #9ca3af; 
+            cursor: not-allowed;
+        }
+        .play-icon-btn svg {
+            width: 1rem; 
+            height: 1rem; 
+        }
+
+        #ornek-cumleler ul { list-style-type: disc; list-style-position: inside; text-align: left; margin-top: 0.25rem; }
+        #ornek-cumleler li { 
+            margin-bottom: 0.25rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 0.85rem; 
+        }
+        #ornek-cumleler li span { flex-grow: 1; margin-right: 0.5rem;}
+
+
+        .button-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        #kelime-listesi-alani { max-height: 180px; overflow-y: auto; border: 1px solid #e5e7eb; background-color: #f9fafb; }
+        #kelime-listesi li { cursor: pointer; padding: 0.4rem 0.8rem; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem;}
+        #kelime-listesi li .kelime-listesi-ek-bilgi { 
+            font-size: 0.75rem; 
+            color: #6b7280; 
+            margin-left: 0.25rem;
+        }
+        #kelime-listesi li:hover { background-color: #e5e7eb; }
+        #kelime-listesi li:last-child { border-bottom: none; }
+        
+        .filter-container {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #e0e7ff; 
+            border-radius: 0.5rem;
+        }
+        .filter-container h3 {
+            font-size: 0.875rem; 
+            font-weight: 600; 
+            color: #4338ca; 
+            margin-bottom: 0.5rem;
+        }
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .filter-buttons button {
+            background-color: #ffffff;
+            color: #4f46e5; 
+            border: 1px solid #c7d2fe; 
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem; 
+            font-weight: 600;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .filter-buttons button:hover, .filter-buttons button.active {
+            background-color: #4f46e5; 
+            color: #ffffff;
+        }
+         .filter-buttons button.disabled {
+            background-color: #f3f4f6; 
+            color: #9ca3af; 
+            cursor: not-allowed;
+            border-color: #e5e7eb; 
+        }
+        
+        #zamanlayici-bar-container { width: 100%; background-color: #e5e7eb; border-radius: 0.25rem; height: 6px; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        #zamanlayici-bar { height: 100%; background-color: #6366f1; border-radius: 0.25rem; width: 100%; transition: width 0.2s linear; }
+        
+        .timer-setting-container { margin-top: 0.75rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #374151; }
+        .timer-setting-container input[type="range"] { width: 120px; }
+        .timer-setting-container span { font-size: 0.8rem; }
+
+        #alfabe-index { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 0.3rem; 
+            margin-bottom: 0.75rem; 
+            padding: 0.4rem; 
+            background-color: #e0e7ff; 
+            border-radius: 0.5rem; 
+        }
+        #alfabe-index button { 
+            background-color: #ffffff; 
+            color: #4f46e5; 
+            border: 1px solid #c7d2fe; 
+            padding: 0.2rem 0.5rem; 
+            border-radius: 0.25rem; 
+            font-size: 0.75rem; 
+            font-weight: 500; 
+            transition: background-color 0.2s, color 0.2s;
+            min-width: 28px; 
+            text-align: center;
+        }
+        #alfabe-index button:hover, #alfabe-index button.active { 
+            background-color: #4f46e5; 
+            color: #ffffff; 
+        }
+        #alfabe-index button.disabled { 
+            background-color: #f3f4f6; 
+            color: #9ca3af; 
+            cursor: not-allowed; 
+            border-color: #e5e7eb; 
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex flex-col justify-center items-center min-h-screen p-4 py-6">
+
+    <div class="bg-white rounded-xl shadow-lg p-4 md:p-8 text-center max-w-xl w-full"> 
+        <h1 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Kelime Öğrenme Aracı</h1>
+
+        <div class="detail-section bg-gray-100">
+            <div id="ana-kelime-bolumu">
+                <span id="gosterilen-kelime-ana"></span>
+                <span id="gosterilen-kelime-detay" class="kelime-ek-bilgi"></span>
+            </div>
+            <button id="ana-sesi-cal-btn" class="play-icon-btn" title="Kelimeyi Seslendir" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+            </button>
+        </div>
+
+        <div class="detail-section bg-blue-50">
+            <p class="text-sm text-blue-800"><strong class="font-semibold">Türkçe Anlamı:</strong> <span id="turkce-anlam"></span></p>
+            <button id="turkce-sesi-cal-btn" class="play-icon-btn" title="Türkçe Anlamı Seslendir" disabled>
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+            </button>
+        </div>
+
+        <div class="detail-section bg-green-50">
+            <p class="text-sm text-green-800"><strong class="font-semibold">English Definition:</strong> <span id="ingilizce-tanim"></span></p>
+            <button id="ingilizce-sesi-cal-btn" class="play-icon-btn" title="İngilizce Tanımı Seslendir" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+            </button>
+        </div>
+
+        <div class="bg-purple-50 rounded-lg p-3 mb-3 text-left min-h-[70px]"> 
+             <p class="text-sm text-purple-800 mb-1"><strong class="font-semibold">Örnek Cümleler:</strong></p>
+             <div id="ornek-cumleler" class="text-purple-700 text-xs"></div> 
+        </div>
+        
+        <div class="timer-setting-container">
+            <label for="zamanlayici-suresi-slider" class="font-semibold text-xs">Zamanlayıcı Süresi:</label>
+            <input type="range" id="zamanlayici-suresi-slider" min="5" max="60" value="15" class="cursor-pointer">
+            <span id="secili-sure-gosterge" class="text-xs font-semibold w-10 text-left">15 sn</span>
+        </div>
+
+        <div id="zamanlayici-bar-container">
+            <div id="zamanlayici-bar"></div>
+        </div>
+
+        <div class="button-container">
+             <button id="onceki-kelime-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs"> &lt; Önceki </button>
+             <button id="rastgele-kelime-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-4 rounded-lg shadow-md text-xs"> Rastgele Kelime </button>
+             <button id="sonraki-kelime-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs"> Sonraki &gt; </button>
+        </div>
+        <div class="button-container mt-1">
+            <button id="pause-resume-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs">Zamanlayıcıyı Durdur</button>
+            <button id="otomatik-ses-modu-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs">Oku: Kelime+Anlam</button>
+        </div>
+
+        <div id="alfabe-index" class="mt-3"></div>
+        
+        <div class="filter-container mt-3">
+            <h3>Seviyeye Göre Filtrele</h3>
+            <div id="seviye-filtre-btn-container" class="filter-buttons">
+                </div>
+        </div>
+
+        <div class="mt-3 text-left">
+            <h2 class="text-md font-semibold text-gray-700 mb-1">Kelime Listesi (<span id="secili-harf-ve-seviye">Tümü</span>)</h2>
+            <div id="kelime-listesi-alani" class="rounded-lg"> <ul id="kelime-listesi"></ul> </div>
+            <button id="filtreleri-temizle-btn" class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-2 rounded-lg text-xs"> Filtreleri Temizle </button>
+        </div>
+    </div>
+
+    <script>
+        const kelimeListesi = [
+             { word: "abolish", level: "C1", type: "v.", turkish: "Kaldırmak, feshetmek", definition: "To formally put an end to a system, practice, or institution.", examples: ["Many people campaigned to abolish slavery.", "The government decided to abolish the unpopular tax."] },
+             { word: "absorb", level: "B2", type: "v.", turkish: "Emmek, soğurmak; anlamak", definition: "To take in or soak up (energy, liquid, etc.); understand facts or information fully.", examples: ["Plants absorb carbon dioxide.", "It took him a while to absorb all the new information."] },
+             { word: "accessible", level: "C1", type: "adj.", turkish: "Erişilebilir, ulaşılabilir", definition: "Able to be reached or entered; easily understood or appreciated.", examples: ["The museum is easily accessible by public transport.", "He made complex theories accessible to everyone."] },
+             { word: "advocate", level: "C1", type: "n., v.", turkish: "Savunmak; savunucu", definition: "To publicly recommend or support; a person who publicly supports a cause.", examples: ["Doctors advocate regular exercise.", "She is a strong advocate for women's rights."] },
+             { word: "bias", level: "B2", type: "n.", turkish: "Ön yargı, eğilim", definition: "Prejudice in favor of or against one thing, person, or group compared with another, usually unfairly.", examples: ["The news channel was accused of political bias.", "It's important to avoid bias in research."] },
+             { word: "banana", level: "A1", type: "n.", turkish: "Muz", definition: "A long curved fruit which grows in clusters and has soft pulpy flesh and yellow skin when ripe.", examples: ["Monkeys love bananas.", "Add a banana to your smoothie."] },
+             { word: "book", level: "A1", type: "n.", turkish: "Kitap", definition: "A written or printed work consisting of pages glued or sewn together along one side and bound in covers.", examples: ["I am reading a good book.", "Please return the library book."] },
+             { word: "develop", level: "B1", type: "v.", turkish: "Geliştirmek, gelişmek", definition: "Grow or cause to grow and become more mature, advanced, or elaborate.", examples: ["The company plans to develop new software.", "Children develop at different rates."]},
+             { word: "quick", level: "A2", type: "adj.", turkish: "Hızlı, çabuk", definition: "Moving fast or doing something in a short time.", examples: ["She gave a quick reply.", "We need a quick solution."]},
+             { word: "slowly", level: "A2", type: "adv.", turkish: "Yavaşça", definition: "At a slow speed; not quickly.", examples: ["He walked slowly down the road.", "Please speak more slowly."]}
+        ];
+
+        // DOM Elementleri
+        const gosterilenKelimeAna = document.getElementById('gosterilen-kelime-ana'); 
+        const gosterilenKelimeDetay = document.getElementById('gosterilen-kelime-detay'); 
+        const turkceAnlamSpan = document.getElementById('turkce-anlam');
+        const ingilizceTanimSpan = document.getElementById('ingilizce-tanim');
+        const ornekCumlelerDiv = document.getElementById('ornek-cumleler');
+        const kelimeListesiUl = document.getElementById('kelime-listesi');
+        const alfabeIndexDiv = document.getElementById('alfabe-index');
+        const seciliHarfVeSeviyeSpan = document.getElementById('secili-harf-ve-seviye'); 
+        const rastgeleKelimeBtn = document.getElementById('rastgele-kelime-btn');
+        const oncekiKelimeBtn = document.getElementById('onceki-kelime-btn');
+        const sonrakiKelimeBtn = document.getElementById('sonraki-kelime-btn');
+        const filtreleriTemizleBtn = document.getElementById('filtreleri-temizle-btn'); 
+        const anaSesiCalBtn = document.getElementById('ana-sesi-cal-btn');
+        const turkceSesiCalBtn = document.getElementById('turkce-sesi-cal-btn');
+        const ingilizceSesiCalBtn = document.getElementById('ingilizce-sesi-cal-btn');
+        const zamanlayiciBar = document.getElementById('zamanlayici-bar');
+        const pauseResumeBtn = document.getElementById('pause-resume-btn');
+        const otomatikSesModuBtn = document.getElementById('otomatik-ses-modu-btn');
+        const zamanlayiciSuresiSlider = document.getElementById('zamanlayici-suresi-slider');
+        const seciliSureGosterge = document.getElementById('secili-sure-gosterge');
+        const seviyeFiltreBtnContainer = document.getElementById('seviye-filtre-btn-container');
+
+        // Global Değişkenler
+        let gecerliIndex = -1;
+        let aktifHarf = null;
+        let aktifSeviye = null;
+        let otomatikKelimeZamanlayiciId = null;
+        let ZAMANLAYICI_SURESI = 15000; 
+        let zamanlayiciBaslangicZamani;
+        let zamanlayiciAnimasyonId;
+        let zamanlayiciDuraklatildi = false;
+        let zamanlayiciKalanSure = ZAMANLAYICI_SURESI;
+        let otomatikSesModu = 0; 
+        const sesModuMetinleri = ["Oku: Kelime+Anlam", "Oku: Tanım", "Sessiz Mod", "Oku: Hepsi Sırayla"];
+
+        // --- SESLENDİRME FONKSİYONLARI ---
+        function metniSeslendir(text, lang, callback) {
+            if (!text || text.trim() === "") {
+                if (callback) callback();
+                return;
+            }
+            if ('speechSynthesis' in window) {
+                if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+                    window.speechSynthesis.cancel(); 
+                    setTimeout(() => metniSeslendir(text, lang, callback), 300); // Gecikme artırıldı
+                    return;
+                }
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.onend = () => {
+                    if (callback) setTimeout(callback, 200); // Gecikme artırıldı
+                };
+                utterance.onerror = (event) => {
+                    // Hata durumunda daha fazla bilgi logla
+                    console.error("SpeechSynthesisUtterance.onerror:", 
+                                  "Error Code:", event.error, 
+                                  "Text:", text.substring(0, 50) + "...", // Metnin ilk 50 karakteri
+                                  "Lang:", lang,
+                                  "Event Object:", event);
+                    if (callback) setTimeout(callback, 200); 
+                };
+                // Ekstra: Konuşma başladığında loglama
+                utterance.onstart = () => {
+                    // console.log("Speech started for:", text.substring(0,30)+"...", "Lang:", lang);
+                };
+                window.speechSynthesis.speak(utterance);
+            } else {
+                // console.warn("Speech synthesis not supported."); // Uyarıyı konsola yazdır
+                if (callback) callback();
+            }
+        }
+        
+        function otomatikSeslendir(kelimeObj) {
+            if (zamanlayiciDuraklatildi || !kelimeObj) return;
+            window.speechSynthesis.cancel(); 
+
+            if (otomatikSesModu === 0) { 
+                metniSeslendir(kelimeObj.word, 'en-US', () => {
+                    metniSeslendir(kelimeObj.turkish, 'tr-TR');
+                });
+            } else if (otomatikSesModu === 1) { 
+                metniSeslendir(kelimeObj.definition, 'en-US');
+            } else if (otomatikSesModu === 3) { 
+                metniSeslendir(kelimeObj.word, 'en-US', () => {
+                    metniSeslendir(kelimeObj.turkish, 'tr-TR', () => {
+                        metniSeslendir(kelimeObj.definition, 'en-US', () => {
+                            if (kelimeObj.examples && kelimeObj.examples.length > 0) {
+                                let ornekIndex = 0;
+                                function sonrakiOrnegiOku() {
+                                    if (ornekIndex < kelimeObj.examples.length) {
+                                        metniSeslendir(kelimeObj.examples[ornekIndex], 'en-US', () => {
+                                            ornekIndex++;
+                                            sonrakiOrnegiOku(); 
+                                        });
+                                    }
+                                }
+                                sonrakiOrnegiOku();
+                            }
+                        });
+                    });
+                });
+            }
+        }
+
+        // --- KELİME GÖSTERME VE NAVİGASYON ---
+        function kelimeBilgileriniGoster(index) {
+            gecerliIndex = index;
+            if (!zamanlayiciDuraklatildi) {
+                zamanlayiciyiBaslat(ZAMANLAYICI_SURESI);
+            }
+
+            document.querySelectorAll('#alfabe-index button, #seviye-filtre-btn-container button').forEach(btn => btn.classList.remove('active'));
+            if (aktifHarf) document.getElementById(`harf-${aktifHarf}`)?.classList.add('active');
+            if (aktifSeviye) document.getElementById(`seviye-${aktifSeviye}`)?.classList.add('active');
+
+            const tumSesCalBtnleri = [anaSesiCalBtn, turkceSesiCalBtn, ingilizceSesiCalBtn];
+
+            if (index < 0 || index >= kelimeListesi.length) {
+                gosterilenKelimeAna.textContent = "Başlamak için bir düğmeye basın veya listeden seçin!";
+                gosterilenKelimeDetay.textContent = "";
+                turkceAnlamSpan.textContent = "";
+                ingilizceTanimSpan.textContent = "";
+                ornekCumlelerDiv.innerHTML = "";
+                tumSesCalBtnleri.forEach(btn => btn.disabled = true);
+                return;
+            }
+
+            const secilenKelimeObj = kelimeListesi[index];
+            gosterilenKelimeAna.textContent = secilenKelimeObj.word; 
+            gosterilenKelimeDetay.textContent = (secilenKelimeObj.level ? `(${secilenKelimeObj.level})` : '') + 
+                                              (secilenKelimeObj.type ? ` [${secilenKelimeObj.type}]` : '');
+            turkceAnlamSpan.textContent = secilenKelimeObj.turkish;
+            ingilizceTanimSpan.textContent = secilenKelimeObj.definition;
+            tumSesCalBtnleri.forEach(btn => btn.disabled = false);
+
+            otomatikSeslendir(secilenKelimeObj);
+
+            ornekCumlelerDiv.innerHTML = '';
+            if (secilenKelimeObj.examples && secilenKelimeObj.examples.length > 0) {
+                const ul = document.createElement('ul');
+                secilenKelimeObj.examples.forEach((ornek, i) => {
+                    const li = document.createElement('li');
+                    const ornekSpan = document.createElement('span');
+                    ornekSpan.textContent = ornek;
+                    li.appendChild(ornekSpan);
+
+                    const ornekSesiCalBtn = document.createElement('button');
+                    ornekSesiCalBtn.classList.add('play-icon-btn', 'ml-2'); 
+                    ornekSesiCalBtn.title = `Örnek ${i+1} seslendir`;
+                    ornekSesiCalBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>`;
+                    ornekSesiCalBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        metniSeslendir(ornek, 'en-US');
+                        kullaniciEtkilesimi();
+                    });
+                    li.appendChild(ornekSesiCalBtn);
+                    ul.appendChild(li);
+                });
+                ornekCumlelerDiv.appendChild(ul);
+            } else {
+                ornekCumlelerDiv.textContent = "Örnek cümle bulunamadı.";
+            }
+        }
+
+        function kullaniciEtkilesimi() {
+            if (!zamanlayiciDuraklatildi) {
+                zamanlayiciyiBaslat(ZAMANLAYICI_SURESI);
+            }
+        }
+
+        function rastgeleKelimeGoster() {
+            const filtrelenmisListe = filtreUygula();
+            if (filtrelenmisListe.length === 0) {
+                kelimeBilgileriniGoster(-1); 
+                seciliHarfVeSeviyeSpan.textContent = `(${aktifHarf || 'Tümü'}, ${aktifSeviye || 'Tümü'}) - Bulunamadı`;
+                return;
+            }
+            const rastgeleIndexInFiltered = Math.floor(Math.random() * filtrelenmisListe.length);
+            const secilenKelimeObj = filtrelenmisListe[rastgeleIndexInFiltered];
+            const orijinalIndex = kelimeListesi.findIndex(item => item.word === secilenKelimeObj.word);
+            seciliHarfVeSeviyeSpan.textContent = `Rastgele (${aktifSeviye || 'Tümü'})`;
+            kelimeBilgileriniGoster(orijinalIndex);
+        }
+
+        function sonrakiKelimeGoster() {
+            const filtrelenmisListe = filtreUygula();
+            if (filtrelenmisListe.length === 0) return;
+            let filtrelenmisMevcutIndex = filtrelenmisListe.findIndex(item => item.word === kelimeListesi[gecerliIndex]?.word);
+            let sonrakiFiltrelenmisIndex = (filtrelenmisMevcutIndex === -1 || gecerliIndex === -1) ? 0 : filtrelenmisMevcutIndex + 1;
+            if (sonrakiFiltrelenmisIndex >= filtrelenmisListe.length) {
+                 sonrakiFiltrelenmisIndex = 0;
+            }
+            const secilenKelimeObj = filtrelenmisListe[sonrakiFiltrelenmisIndex];
+            const orijinalIndex = kelimeListesi.findIndex(item => item.word === secilenKelimeObj.word);
+            seciliHarfVeSeviyeSpan.textContent = `Sıralı (${aktifHarf || 'Tümü'}, ${aktifSeviye || 'Tümü'})`;
+            kelimeBilgileriniGoster(orijinalIndex);
+        }
+
+        function oncekiKelimeGoster() {
+            const filtrelenmisListe = filtreUygula();
+            if (filtrelenmisListe.length === 0) return;
+            let filtrelenmisMevcutIndex = filtrelenmisListe.findIndex(item => item.word === kelimeListesi[gecerliIndex]?.word);
+            let oncekiFiltrelenmisIndex = (filtrelenmisMevcutIndex === -1 || gecerliIndex === -1) ? filtrelenmisListe.length - 1 : filtrelenmisMevcutIndex - 1;
+            if (oncekiFiltrelenmisIndex < 0) {
+                oncekiFiltrelenmisIndex = filtrelenmisListe.length - 1;
+            }
+            const secilenKelimeObj = filtrelenmisListe[oncekiFiltrelenmisIndex];
+            const orijinalIndex = kelimeListesi.findIndex(item => item.word === secilenKelimeObj.word);
+            seciliHarfVeSeviyeSpan.textContent = `Sıralı (${aktifHarf || 'Tümü'}, ${aktifSeviye || 'Tümü'})`;
+            kelimeBilgileriniGoster(orijinalIndex);
+        }
+        
+        function filtreUygula() {
+            let sonuc = kelimeListesi;
+            if (aktifHarf) {
+                sonuc = sonuc.filter(k => k.word.toLowerCase().startsWith(aktifHarf.toLowerCase()));
+            }
+            if (aktifSeviye && aktifSeviye !== "Tüm Seviyeler") { 
+                sonuc = sonuc.filter(k => k.level === aktifSeviye);
+            }
+            return sonuc;
+        }
+
+        function listeyiGoster() {
+            kelimeListesiUl.innerHTML = '';
+            const filtrelenmisListe = filtreUygula();
+            
+            seciliHarfVeSeviyeSpan.textContent = `${aktifHarf || 'Tümü'} | ${aktifSeviye || 'Tüm Seviyeler'}`;
+
+            document.querySelectorAll('#alfabe-index button, #seviye-filtre-btn-container button').forEach(btn => btn.classList.remove('active'));
+            if (aktifHarf) document.getElementById(`harf-${aktifHarf}`)?.classList.add('active');
+            if (aktifSeviye) document.getElementById(`seviye-${aktifSeviye}`)?.classList.add('active');
+
+            if (filtrelenmisListe.length === 0) {
+                 const li = document.createElement('li');
+                 li.textContent = `Filtreye uygun kelime bulunamadı.`;
+                 li.classList.add('text-gray-500', 'italic');
+                 kelimeListesiUl.appendChild(li);
+                 kelimeBilgileriniGoster(-1); 
+                 return;
+            }
+
+            filtrelenmisListe.forEach((kelimeObj) => {
+                const index = kelimeListesi.findIndex(item => item.word === kelimeObj.word);
+                const li = document.createElement('li');
+                
+                const kelimeSpan = document.createElement('span');
+                kelimeSpan.textContent = kelimeObj.word;
+                li.appendChild(kelimeSpan);
+
+                const ekBilgiSpan = document.createElement('span');
+                ekBilgiSpan.classList.add('kelime-listesi-ek-bilgi');
+                ekBilgiSpan.textContent = (kelimeObj.level ? `(${kelimeObj.level})` : '') + 
+                                          (kelimeObj.type ? ` [${kelimeObj.type}]` : '');
+                li.appendChild(ekBilgiSpan);
+                                 
+                li.addEventListener('click', () => {
+                    kelimeBilgileriniGoster(index);
+                    kullaniciEtkilesimi(); 
+                });
+                kelimeListesiUl.appendChild(li);
+            });
+            if (filtrelenmisListe.length > 0 && gecerliIndex === -1) { 
+                 const ilkKelimeIndex = kelimeListesi.findIndex(item => item.word === filtrelenmisListe[0].word);
+                 kelimeBilgileriniGoster(ilkKelimeIndex);
+            } else if (filtrelenmisListe.length > 0 && !filtrelenmisListe.find(k => k.word === kelimeListesi[gecerliIndex]?.word)) {
+                const ilkKelimeIndex = kelimeListesi.findIndex(item => item.word === filtrelenmisListe[0].word);
+                kelimeBilgileriniGoster(ilkKelimeIndex);
+            }
+        }
+
+        function alfabeIndexOlustur() {
+            alfabeIndexDiv.innerHTML = '';
+            const mevcutHarfler = new Set(kelimeListesi.map(k => k.word[0].toUpperCase()).sort());
+            const alfabe = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+            alfabe.forEach(harf => {
+                const btn = document.createElement('button');
+                btn.textContent = harf;
+                btn.id = `harf-${harf}`;
+                if (mevcutHarfler.has(harf)) {
+                    btn.addEventListener('click', () => {
+                        aktifHarf = aktifHarf === harf ? null : harf; 
+                        listeyiGoster();
+                        kullaniciEtkilesimi(); 
+                    });
+                } else {
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                }
+                alfabeIndexDiv.appendChild(btn);
+            });
+        }
+
+        function seviyeFiltreOlustur() {
+            seviyeFiltreBtnContainer.innerHTML = '';
+            const seviyeler = ["Tüm Seviyeler", "B2", "C1"];
+
+            seviyeler.forEach(seviye => {
+                const btn = document.createElement('button');
+                btn.textContent = seviye;
+                btn.id = `seviye-${seviye}`; 
+                btn.addEventListener('click', () => {
+                    aktifSeviye = (aktifSeviye === seviye || seviye === "Tüm Seviyeler") ? null : seviye;
+                    listeyiGoster();
+                    kullaniciEtkilesimi();
+                });
+                seviyeFiltreBtnContainer.appendChild(btn);
+            });
+        }
+        
+        function zamanlayiciBarGuncelle() {
+            if (zamanlayiciDuraklatildi) return; 
+            const gecenSure = Date.now() - zamanlayiciBaslangicZamani;
+            const kalanYuzde = Math.max(0, 100 - (gecenSure / zamanlayiciKalanSure) * 100);
+            zamanlayiciBar.style.width = `${kalanYuzde}%`;
+
+            if (kalanYuzde > 0 && gecerliIndex !== -1) { 
+                zamanlayiciAnimasyonId = requestAnimationFrame(zamanlayiciBarGuncelle);
+            }
+        }
+
+        function zamanlayiciyiBaslat(sure) {
+            clearTimeout(otomatikKelimeZamanlayiciId);
+            cancelAnimationFrame(zamanlayiciAnimasyonId);
+
+            if (gecerliIndex === -1 || kelimeListesi.length === 0 || zamanlayiciDuraklatildi) {
+                zamanlayiciBar.style.width = zamanlayiciDuraklatildi ? zamanlayiciBar.style.width : '100%'; 
+                return;
+            }
+            
+            zamanlayiciBaslangicZamani = Date.now();
+            zamanlayiciKalanSure = sure; 
+            zamanlayiciBar.style.width = '100%';
+            zamanlayiciAnimasyonId = requestAnimationFrame(zamanlayiciBarGuncelle);
+
+            otomatikKelimeZamanlayiciId = setTimeout(() => {
+                if (!zamanlayiciDuraklatildi) { 
+                    rastgeleKelimeGoster(); 
+                }
+            }, zamanlayiciKalanSure);
+        }
+
+        pauseResumeBtn.addEventListener('click', () => {
+            zamanlayiciDuraklatildi = !zamanlayiciDuraklatildi;
+            if (zamanlayiciDuraklatildi) {
+                clearTimeout(otomatikKelimeZamanlayiciId);
+                cancelAnimationFrame(zamanlayiciAnimasyonId);
+                if(zamanlayiciBaslangicZamani) {
+                    zamanlayiciKalanSure -= (Date.now() - zamanlayiciBaslangicZamani);
+                }
+                pauseResumeBtn.textContent = "Zamanlayıcıyı Başlat";
+                pauseResumeBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                pauseResumeBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            } else {
+                pauseResumeBtn.textContent = "Zamanlayıcıyı Durdur";
+                pauseResumeBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                pauseResumeBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+                if (gecerliIndex !== -1) { 
+                     zamanlayiciyiBaslat(zamanlayiciKalanSure > 0 ? zamanlayiciKalanSure : ZAMANLAYICI_SURESI);
+                }
+            }
+        });
+
+        filtreleriTemizleBtn.addEventListener('click', () => {
+            aktifHarf = null;
+            aktifSeviye = null;
+            listeyiGoster();
+            kullaniciEtkilesimi();
+        });
+
+        rastgeleKelimeBtn.addEventListener('click', () => { rastgeleKelimeGoster(); kullaniciEtkilesimi(); });
+        oncekiKelimeBtn.addEventListener('click', () => { oncekiKelimeGoster(); kullaniciEtkilesimi(); });
+        sonrakiKelimeBtn.addEventListener('click', () => { sonrakiKelimeGoster(); kullaniciEtkilesimi(); });
+        
+        anaSesiCalBtn.addEventListener('click', () => {
+            if (gecerliIndex !== -1) metniSeslendir(kelimeListesi[gecerliIndex].word, 'en-US');
+            kullaniciEtkilesimi();
+        });
+        turkceSesiCalBtn.addEventListener('click', () => {
+            if (gecerliIndex !== -1) metniSeslendir(kelimeListesi[gecerliIndex].turkish, 'tr-TR');
+            kullaniciEtkilesimi();
+        });
+        ingilizceSesiCalBtn.addEventListener('click', () => {
+            if (gecerliIndex !== -1) metniSeslendir(kelimeListesi[gecerliIndex].definition, 'en-US');
+            kullaniciEtkilesimi();
+        });
+
+        otomatikSesModuBtn.addEventListener('click', () => {
+            otomatikSesModu = (otomatikSesModu + 1) % 4; 
+            otomatikSesModuBtn.textContent = sesModuMetinleri[otomatikSesModu];
+            kullaniciEtkilesimi(); 
+            if (gecerliIndex !== -1 && kelimeListesi[gecerliIndex]) {
+                 otomatikSeslendir(kelimeListesi[gecerliIndex]);
+            }
+        });
+
+        zamanlayiciSuresiSlider.addEventListener('input', (event) => {
+            ZAMANLAYICI_SURESI = parseInt(event.target.value) * 1000; 
+            seciliSureGosterge.textContent = `${event.target.value} sn`;
+            kullaniciEtkilesimi(); 
+        });
+
+        kelimeBilgileriniGoster(-1);
+        alfabeIndexOlustur();
+        seviyeFiltreOlustur();
+        listeyiGoster(null); 
+        anaSesiCalBtn.disabled = true; 
+        turkceSesiCalBtn.disabled = true;
+        ingilizceSesiCalBtn.disabled = true;
+        otomatikSesModuBtn.textContent = sesModuMetinleri[otomatikSesModu];
+        seciliSureGosterge.textContent = `${zamanlayiciSuresiSlider.value} sn`; 
+        ZAMANLAYICI_SURESI = parseInt(zamanlayiciSuresiSlider.value) * 1000; 
+    </script>
+</body>
+</html>
