@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform Mülakat Hazırlık Rehberi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0e0e;--surface:#151515;--surface2:#1c1c1c;--border:#252525;
+  --text:#e2e2e2;--muted:#666;--accent:#c8a96e;--accent-dim:#9a7d4e;
+  --green:#4caf7a;--blue:#5b9bd5;--red:#e05555;--purple:#9b72cf;
+  --code-bg:#1a1a1a;--sidebar:260px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.7}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Layout ── */
+.layout{display:flex;min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);position:sticky;top:0;height:100vh;
+  overflow-y:auto;padding:1.5rem 0;
+}
+.sidebar-title{padding:0 1.2rem 1rem;font-size:0.7rem;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--accent);font-weight:600;border-bottom:1px solid var(--border);margin-bottom:0.8rem}
+.toc-item{display:block;padding:0.45rem 1.2rem;font-size:0.82rem;color:var(--muted);
+  border-left:2px solid transparent;transition:all 0.15s;cursor:pointer}
+.toc-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(200,169,110,0.06)}
+
+/* ── Main ── */
+.main{flex:1;min-width:0;padding:3rem 4rem;max-width:900px}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:2rem 0 3.5rem;border-bottom:1px solid var(--border);margin-bottom:3rem}
+.hero h1{font-size:2.2rem;font-weight:300;letter-spacing:-0.02em;color:var(--text);margin-bottom:0.5rem}
+.hero .subtitle{color:var(--accent);font-size:0.95rem;letter-spacing:0.04em;margin-bottom:1rem}
+.hero .tags{display:flex;flex-wrap:wrap;justify-content:center;gap:0.4rem;margin-top:1rem}
+.tag{background:var(--surface2);border:1px solid var(--border);border-radius:20px;
+  padding:0.25rem 0.75rem;font-size:0.72rem;color:var(--muted);letter-spacing:0.04em}
+.hero .ilke{margin-top:1.5rem;color:var(--muted);font-style:italic;font-size:0.9rem}
+.hero .ilke strong{color:var(--accent)}
+
+/* ── Section ── */
+.section{margin-bottom:4rem;scroll-margin-top:2rem}
+.section-title{font-size:1.5rem;font-weight:300;color:var(--text);margin-bottom:0.4rem;
+  letter-spacing:-0.01em;padding-bottom:0.8rem;border-bottom:1px solid var(--border)}
+.section-intro{color:var(--muted);font-size:0.9rem;margin-bottom:2rem;margin-top:0.5rem}
+
+/* ── Q&A subsection ── */
+.qa{margin-bottom:2.5rem}
+.qa-title{font-size:1.05rem;font-weight:500;color:var(--text);margin-bottom:1rem;
+  padding:0.6rem 0.9rem;background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 6px 6px 0}
+.qa-title .num{font-size:0.75rem;color:var(--accent-dim);margin-right:0.4rem}
+
+/* ── Boxes ── */
+.analoji{background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);
+  border-radius:8px;padding:0.9rem 1.1rem;margin-bottom:1rem}
+.analoji .label{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin-bottom:0.4rem}
+.analoji p{font-size:0.88rem;color:var(--text);font-style:italic}
+
+.note{background:rgba(76,175,122,0.07);border:1px solid rgba(76,175,122,0.2);
+  border-radius:8px;padding:0.8rem 1.1rem;margin:1rem 0}
+.note .label{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--green);font-weight:700;margin-bottom:0.4rem}
+
+.warn{background:rgba(224,85,85,0.07);border:1px solid rgba(224,85,85,0.2);
+  border-radius:8px;padding:0.8rem 1.1rem;margin:1rem 0}
+.warn .label{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--red);font-weight:700;margin-bottom:0.4rem}
+
+.tip{background:rgba(91,155,213,0.07);border:1px solid rgba(91,155,213,0.2);
+  border-radius:8px;padding:0.8rem 1.1rem;margin:1rem 0}
+.tip .label{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--blue);font-weight:700;margin-bottom:0.4rem}
+
+/* ── Lists ── */
+ul.items{list-style:none;padding:0;margin:0.5rem 0 1rem}
+ul.items li{padding:0.3rem 0 0.3rem 1.3rem;position:relative;font-size:0.88rem;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.03)}
+ul.items li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700}
+ul.items li:last-child{border-bottom:none}
+
+/* ── Code ── */
+pre,code{font-family:'Fira Code','Cascadia Code',Consolas,monospace}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
+  padding:1.2rem;overflow-x:auto;font-size:0.78rem;line-height:1.7;margin:1rem 0;color:#c9d1d9}
+code{background:var(--code-bg);padding:0.15em 0.4em;border-radius:4px;font-size:0.85em;color:var(--accent)}
+
+/* ── Tables ── */
+.tbl-wrap{overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:0.83rem}
+th{background:var(--surface2);color:var(--accent);font-weight:600;text-align:left;
+  padding:0.6rem 0.9rem;border-bottom:2px solid var(--border)}
+td{padding:0.55rem 0.9rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.yes{color:var(--green);font-weight:600}
+.no{color:var(--red);font-weight:600}
+
+/* ── Sub-headings ── */
+h3{font-size:0.9rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;
+  text-transform:uppercase;margin:1.4rem 0 0.6rem;padding-bottom:0.3rem;border-bottom:1px solid var(--border)}
+
+/* ── Flow diagram ── */
+.flow{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
+  padding:1.1rem 1.3rem;font-size:0.8rem;line-height:2;color:#c9d1d9;font-family:monospace;margin:1rem 0;white-space:pre}
+
+/* ── Architecture box ── */
+.arch{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
+  padding:1.1rem 1.3rem;font-size:0.78rem;line-height:1.8;color:#c9d1d9;font-family:monospace;margin:1rem 0;overflow-x:auto;white-space:pre}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{padding:2rem 1.5rem}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-title">İçindekiler</div>
+  <a class="toc-item" href="#b1">1 · Temel Kavramlar</a>
+  <a class="toc-item" href="#b2">2 · Gerçek Proje Deneyimi</a>
+  <a class="toc-item" href="#b3">3 · Senior Senaryolar</a>
+  <a class="toc-item" href="#b4">4 · Düşünce Yapısı</a>
+  <a class="toc-item" href="#b5">5 · Teknik Detaylar</a>
+  <a class="toc-item" href="#b6">6 · Mimari</a>
+  <a class="toc-item" href="#b7">7 · AI Agents & Copilot</a>
+  <a class="toc-item" href="#b8">8 · Custom Connectors</a>
+  <a class="toc-item" href="#b9">9 · C# Plugins</a>
+  <a class="toc-item" href="#b10">10 · Power Automate</a>
+  <a class="toc-item" href="#b11">11 · Dataverse</a>
+  <a class="toc-item" href="#b12">12 · Güvenlik</a>
+  <a class="toc-item" href="#b13">13 · Power BI</a>
+  <a class="toc-item" href="#b14">14 · Best Practices</a>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <div class="hero">
+    <h1>Power Platform</h1>
+    <div class="subtitle">Mülakat Hazırlık Rehberi · Analoji Tabanlı Soru-Cevap Kitapçığı</div>
+    <div class="tags">
+      <span class="tag">Canvas Apps</span><span class="tag">Model-driven Apps</span>
+      <span class="tag">Dataverse</span><span class="tag">Power Automate</span>
+      <span class="tag">Power FX</span><span class="tag">ALM</span>
+      <span class="tag">Copilot Studio</span><span class="tag">AI Builder</span>
+      <span class="tag">Custom Connectors</span><span class="tag">C# Plugins</span>
+    </div>
+    <p class="ilke">İlke: <strong>"Ezberleme değil — anla, anlat, analoji ile köprü kur."</strong></p>
+  </div>
+
+  <!-- ════════════════ BÖLÜM 1 ════════════════ -->
+  <section class="section" id="b1">
+    <h2 class="section-title">Bölüm 1 — Temel Kavramlar</h2>
+    <p class="section-intro">Power Platform'un yapı taşları. Mülakatın ilk 5 dakikasında bu sorulardan en az biri sorulur.</p>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">1.1</span>Canvas App vs Model-driven App — ne zaman hangisini kullanırsın?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Canvas App boş bir tuval gibidir — her pikselini sen çizersin, özgürsün ama her şeyi sen yaparsın. Model-driven App ise hazır bir bina planı gibidir — duvarlar zaten var, sen sadece odaları döşersin.</p></div>
+      <h3>Canvas App ne zaman?</h3>
+      <ul class="items">
+        <li>Mobil-öncelikli, görsel olarak özelleştirilmiş UI gerektiğinde</li>
+        <li>Birden fazla farklı veri kaynağına bağlanılacaksa (SharePoint + SQL + Excel)</li>
+        <li>Saha ekipleri için form tabanlı, hızlı veri girişi gerektiğinde</li>
+        <li>Tasarım özgürlüğü ve marka kimliği önemliyse</li>
+      </ul>
+      <h3>Model-driven App ne zaman?</h3>
+      <ul class="items">
+        <li>Veriler Dataverse'te tutuluyorsa ve karmaşık ilişkisel modele sahipse</li>
+        <li>Standart CRUD + iş süreci akışı (Business Process Flow) gerekiyorsa</li>
+        <li>Hızlı geliştirme öncelikliyse, görsel özgürlükten ödün verilebiliyorsa</li>
+        <li>Role-based security önemliyse — Dataverse rolleri otomatik uygulanır</li>
+      </ul>
+      <div class="note"><div class="label">✅ Karar Rehberi</div>
+        <p>'Sayfa nasıl görünmeli' diye düşünüyorsan → <strong>Canvas</strong><br>
+        'Veri modeli nasıl olmalı' diye düşünüyorsan → <strong>Model-driven</strong></p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">1.2</span>Patch vs SubmitForm — gerçek kullanım senaryoları</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>SubmitForm hazır bir kargo formu gibidir — formu doldurursun, tek tuşla gönderirsin. Patch ise mektubu elle yazan biri gibidir — tam ne yazacağını, nereye göndereceğini, hangi alanı değiştireceğini sen belirlersin.</p></div>
+      <h3>SubmitForm — Form Kontrolü ile</h3>
+      <ul class="items">
+        <li>Tek bir Form kontrolüne bağlı, basit CRUD senaryoları</li>
+        <li>Otomatik validation (Required field check) ile</li>
+        <li>OnSuccess / OnFailure event'leri ile geri bildirim</li>
+      </ul>
+<pre>SubmitForm(EditForm1);
+// OnSuccess: Navigate(SuccessScreen);
+// OnFailure: Notify("Hata oluştu", NotificationType.Error)</pre>
+      <h3>Patch — Programatik Kontrol</h3>
+      <ul class="items">
+        <li>Form kontrolü olmadan, kod ile direkt yazma</li>
+        <li>Birden fazla tabloya aynı anda yazma</li>
+        <li>Conditional updates / Bulk operations</li>
+      </ul>
+<pre>// Yeni kayıt
+Patch(Talepler, Defaults(Talepler), {
+    Baslik: txtBaslik.Text,
+    Tutar: Value(txtTutar.Text),
+    Durum: "Beklemede"
+});
+
+// Var olan kaydı güncelle
+Patch(Talepler, LookUp(Talepler, ID = varSeciliID), {Durum: "Onaylandı"});
+
+// Bulk update
+ForAll(SeciliKayitlar As item,
+    Patch(Talepler, LookUp(Talepler, ID = item.ID), {Durum: "Kapatildi"})
+);</pre>
+      <div class="tip"><div class="label">💡 Gerçek Senaryo</div><p>Bir 'Sipariş Onay' uygulamasında: Form alanlarını SubmitForm ile gönder, ama onay tarihçesini ayrı bir tabloya Patch ile aynı anda yaz.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">1.3</span>Dataverse vs SharePoint — karar senaryoları</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Dataverse bir banka kasası gibidir — güvenli, ilişkisel, kurumsal. SharePoint ise ofis dolabıdır — kolay erişilir, basit ihtiyaçlar için yeterli ama büyük kritik veriyi oraya koymazsın.</p></div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Kriter</th><th>Dataverse</th><th>SharePoint</th></tr>
+        <tr><td>Veri Modeli</td><td>İlişkisel (1:N, N:N)</td><td>Liste tabanlı, sınırlı ilişki</td></tr>
+        <tr><td>Max Kayıt</td><td>Sınırsız (kapasite ile)</td><td>30M ama 5K sonrası yavaşlar</td></tr>
+        <tr><td>Delegation</td><td>Tüm fonksiyonlar</td><td>Kısıtlı (StartsWith, =)</td></tr>
+        <tr><td>Güvenlik</td><td>Field/record level</td><td>List/item level</td></tr>
+        <tr><td>Lisans</td><td>Premium gerektirir</td><td>M365 ile gelir</td></tr>
+        <tr><td>Audit</td><td>Yerleşik, detaylı</td><td>Sınırlı</td></tr>
+      </table></div>
+      <div class="note"><div class="label">⚖️ Karar Çerçevesi — Şunlardan biri Evet ise → Dataverse</div>
+        <p>50.000+ kayıt · Karmaşık ilişkisel sorgular · Field-level security · Audit/compliance · Plugin/business logic</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 2 ════════════════ -->
+  <section class="section" id="b2">
+    <h2 class="section-title">Bölüm 2 — Gerçek Proje Deneyimi</h2>
+    <p class="section-intro">Mülakatçılar burada teknik bilgi değil, gerçek deneyim arar. STAR yapısını kullanın.</p>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">2.1</span>Projenizi baştan sona anlatın</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Bina inşa etmek gibi: Zemin etüdü (iş analizi) → Mimari plan (data model) → İnşaat (uygulama) → Tesisat (entegrasyon) → İskelet testi (UAT) → Anahtar teslim (deployment).</p></div>
+      <h3>STAR Çerçevesi</h3>
+      <ul class="items">
+        <li><strong>Situation</strong> — İş ihtiyacı neydi? (Ör: 200 kişilik İK ekibi izin taleplerini Excel'de takip ediyordu)</li>
+        <li><strong>Task</strong> — Sorumluluğunuz neydi? (Ör: Uçtan uca otomatik izin yönetim çözümü)</li>
+        <li><strong>Action</strong> — Nasıl çözdünüz? (Ör: Dataverse + Canvas App + Power Automate + Power BI)</li>
+        <li><strong>Result</strong> — Ölçülebilir sonuç? (Ör: Onay süresi 5 günden 4 saate düştü)</li>
+      </ul>
+      <div class="tip"><div class="label">🎤 Sunum Tüyosu</div><p>Mülakatçıya 'Bir mimari diyagram çizebilir miyim?' diye sor. 4 kutu çiz: <strong>Veri | Mantık | UI | Entegrasyon</strong>. Bu, senin 'sistem düşündüğünü' kanıtlar.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">2.2</span>Karşılaştığın zorluklar ve çözümlerin</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Zorluk</th><th>Çözüm</th></tr>
+        <tr><td>Delegation limiti</td><td>Server-side filtreleme + Collection cache + Dataverse'e geçiş</td></tr>
+        <tr><td>Flow timeout</td><td>Async pattern + Do Until + child flow ile parçalama</td></tr>
+        <tr><td>Eş zamanlı güncelleme</td><td>RowVersion + IsBlank kontrolü</td></tr>
+        <tr><td>Offline çalışma</td><td>SaveData / LoadData + Connection.Connected</td></tr>
+        <tr><td>UAT vs PROD farkı</td><td>Solution + Environment Variables + Connection References</td></tr>
+        <tr><td>Yavaş açılış (15+ sn)</td><td>OnStart yerine OnVisible / Concurrent()</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">2.3</span>Teknik olarak en zor kısım neydi?</div>
+      <ul class="items">
+        <li>Çoklu tablo Patch işleminde transaction yönetimi (rollback mantığı)</li>
+        <li>Çok seviyeli onay sürecinde dinamik approval matrix kurma</li>
+        <li>Custom Connector OAuth2 flow'unda token refresh stratejisi</li>
+        <li>Plugin'de Pre-image / Post-image karşılaştırması</li>
+        <li>Büyük dataset'te delegation problemini çözerken UX kaybetmemek</li>
+      </ul>
+      <div class="note"><div class="label">🎯 Altın Kural</div><p>'En zor kısım' sorusuna teknik bir detay ver, sonra 'nasıl öğrendim ve dokümante ettim' kısmına geç. Mülakatçı zorluğa değil, <strong>çözüm yöntemine</strong> değer verir.</p></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 3 ════════════════ -->
+  <section class="section" id="b3">
+    <h2 class="section-title">Bölüm 3 — Senior Seviye Senaryolar</h2>
+    <p class="section-intro">Bu sorular düşünce yapını ve mimari yaklaşımını ölçer. Trade-off'lardan bahset.</p>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.1</span>Çok seviyeli onay sistemi nasıl tasarlarsın?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Mahkeme sistemi gibi — ilk hâkim reddederse dava üst mahkemeye çıkar. Her seviyede farklı yetkili, süre dolunca otomatik escalation.</p></div>
+      <div class="flow">Trigger: Yeni talep oluşturuldu
+  ↓
+Get Approval Matrix (level=1, amount range)
+  ↓
+Send Approval Request (Approvals connector)
+  ↓
+Wait (timeout: 48 saat)
+  ↓
+[Onaylandı?]
+  ├─ Evet → Bir sonraki seviyeye geç → Tekrar et
+  ├─ Hayır → Kullanıcıya geri bildirim, talep kapat
+  └─ Timeout → Manager'ın manager'ına escalate
+  ↓
+Final Level → Status = "Onaylandı"</div>
+      <div class="warn"><div class="label">🛡️ Fallback Stratejisi</div>
+        <p>1. Timeout → 1 üst seviyeye otomatik escalate<br>
+        2. Approver yoksa → Out-of-office delegate'e<br>
+        3. Tüm seviyeler timeout → Sistem yöneticisine bildirim</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.2</span>Büyük veride performans düşerse ne yaparsın?</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Sorun</th><th>Çözüm</th></tr>
+        <tr><td>OnStart çok yavaş</td><td>Concurrent() + sadece zorunlu veri, gerisi OnVisible</td></tr>
+        <tr><td>Gallery scroll donuyor</td><td>Top N + lazy loading + delegation-friendly filter</td></tr>
+        <tr><td>Delegation warning</td><td>StartsWith yerine Filter, server-side index</td></tr>
+        <tr><td>Çok fazla LookUp</td><td>ClearCollect ile preload + collection üzerinden işle</td></tr>
+        <tr><td>Aynı veriyi tekrar çekiyor</td><td>Collection cache + Set() global değişken</td></tr>
+        <tr><td>Image render yavaş</td><td>AzureBlob + thumbnail URL</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.3</span>Delegation limitlerini nasıl yönetirsin?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Olta ile balık avlamak gibi — tüm gölü ağla taramak yerine doğru noktaya olta atarsın.</p></div>
+      <ul class="items">
+        <li>Power Apps varsayılan delegation limiti: 500 (max 2000)</li>
+        <li>Non-delegable fonksiyonlar client'ta sadece ilk 500-2000'i alır → eksik veri</li>
+      </ul>
+      <div class="tbl-wrap"><table>
+        <tr><th>Delegable ✅</th><th>Non-delegable ❌</th></tr>
+        <tr><td>Filter, Search, LookUp</td><td>Sort by formula</td></tr>
+        <tr><td>StartsWith, EndsWith, In</td><td>Distinct (kısmen)</td></tr>
+        <tr><td>Sum, Average, Min, Max</td><td>Concat, Concatenate</td></tr>
+        <tr><td>= != &lt; &gt; &lt;= &gt;=</td><td>Mid, Left, Right</td></tr>
+      </table></div>
+      <div class="warn"><div class="label">⚠️ Kaçınma Stratejisi</div>
+        <p>1. Sarı delegation uyarısını ASLA görmezden gelme<br>
+        2. Limit'i 2000'e çıkarmak çözüm değil, ertelemedir<br>
+        3. Filtreyi sunucuya sok — Dataverse'e veya SQL view'a taşı<br>
+        4. Pagination / infinite scroll uygula</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.4</span>Role-based access nasıl tasarlarsın?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Otel kartı sistemi gibi — resepsiyonist lobiye girer, misafir kendi odasına, müdür her yere.</p></div>
+      <ul class="items">
+        <li><strong>Environment seviyesi:</strong> Maker / User / System Admin rolleri</li>
+        <li><strong>App seviyesi:</strong> Co-owner / User olarak paylaşma</li>
+        <li><strong>Data seviyesi (Dataverse):</strong> Security Role → Privilege + Access Level</li>
+        <li><strong>Record seviyesi:</strong> Owner-based veya Sharing ile (Hierarchical Security)</li>
+        <li><strong>Field seviyesi:</strong> Field Security Profile ile hassas alanları gizle</li>
+        <li><strong>UI seviyesi:</strong> User().Email + If() ile butonları gizle (kozmetik!)</li>
+      </ul>
+      <div class="warn"><div class="label">🔒 Altın Kural</div><p>UI üzerinde gizleme = sadece kozmetiktir. Gerçek güvenlik HER ZAMAN data layer'da (Dataverse roles) yapılmalı. Aksi halde 'Inspect Element' veya Web API çağrısıyla data sızar.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.5</span>ALM (DEV → UAT → PROD) süreci nasıl yönetilir?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Restoran mutfağı gibi — tarifi DEV'de geliştirirsin, müşteri grubuna UAT'da tattırırsın, beğenilince PROD menüsüne alırsın.</p></div>
+      <ul class="items">
+        <li><strong>Unmanaged Solution:</strong> DEV ortamında — düzenlenebilir</li>
+        <li><strong>Managed Solution:</strong> UAT ve PROD'da — kilitli</li>
+        <li><strong>Pipelines:</strong> GUI tabanlı, Microsoft önerisi</li>
+        <li><strong>Azure DevOps + Build Tools:</strong> Klasik, esnek</li>
+        <li><strong>GitHub Actions:</strong> PAC CLI ile otomatik export → import</li>
+      </ul>
+      <div class="warn"><div class="label">🚨 ALM Yapma Hataları</div>
+        <p>❌ PROD'da doğrudan değişiklik · ❌ Unmanaged solution'ı PROD'a taşımak · ❌ Connection'ları manuel kurmak · ❌ Environment Variable yerine hardcoded URL · ❌ Versiyon kontrol olmadan deploy</p>
+      </div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.6</span>Başarısız flow'lar ve retry mekanizması</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Ulaşmayan mektup gibi — posta sistemi 3 kez kapıya gider, yine yoksa depoya bırakır.</p></div>
+      <ul class="items">
+        <li><strong>Retry Policy:</strong> Default (4 retry, exponential backoff), Fixed, None</li>
+        <li><strong>Try-Catch-Finally Pattern:</strong> Üç Scope kullan</li>
+        <li><strong>Configure Run After:</strong> Catch → Try'in 'has failed / timed out / skipped'</li>
+        <li><strong>Dead-letter table:</strong> Başarısız payload'ları Dataverse'e kaydet</li>
+      </ul>
+<pre>[Try Scope]
+   - Get items → Apply to each → HTTP call → Update record
+
+[Catch Scope]  ← Run after Try: Has Failed
+   - Compose: error details
+   - Insert error to dlq_FailedRequests table
+   - Send Teams alert
+   - Terminate (Status: Failed)
+
+[Finally Scope]  ← Always
+   - Log execution metrics</pre>
+      <div class="tip"><div class="label">🔁 Retry Stratejisi</div><p>Idempotent işlemler → Retry açık &nbsp;|&nbsp; Non-idempotent (kart çekme, mail gönderme) → Retry KAPALI veya idempotency key ile</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">3.7</span>Harici API entegrasyonunu güvenli nasıl yaparsın?</div>
+      <ul class="items">
+        <li>Credentials → Azure Key Vault, asla connector'a hardcoded yazma</li>
+        <li>Auth: OAuth 2.0 &gt; API Key &gt; Basic (sırayla tercih)</li>
+        <li>Custom Connector kullan (HTTP action yerine — denetim, DLP)</li>
+        <li>On-prem Data Gateway → Şirket içi API'ler için</li>
+        <li>Service Principal → kullanıcı bağımsız erişim</li>
+      </ul>
+<pre>Power App → Custom Connector → Azure API Management → Backend API
+                    ↑
+              Azure Key Vault (secrets)
+                    ↑
+           Azure AD App Registration (OAuth2)</pre>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 4 ════════════════ -->
+  <section class="section" id="b4">
+    <h2 class="section-title">Bölüm 4 — Düşünce Yapısı &amp; Sahiplenme</h2>
+    <p class="section-intro">Bu sorular kişiliğini ve kariyer motivasyonunu ölçer. Samimi ol, ezbere kaçınma.</p>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">4.1</span>Bu rol seni neden heyecanlandırıyor?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Elektrikçi olmak gibi — duvarların arkasındaki kabloları sen döşersin, sabah ofise gelen herkes ışıkları açar ve fark bile etmez. Görünmez ama hayati.</p></div>
+      <ul class="items">
+        <li><strong>Etki:</strong> Kullanıcının saatlerce süren işini dakikalara indirmek</li>
+        <li><strong>Çeşitlilik:</strong> Aynı platformda hem UI, hem mantık, hem entegrasyon</li>
+        <li><strong>Hız:</strong> Pro-code'a kıyasla aynı çıktıyı 10x hızda verebilmek</li>
+        <li><strong>Demokratikleşme:</strong> Citizen developer'a güç vermek, IT'nin yükünü azaltmak</li>
+        <li><strong>Öğrenme:</strong> AI Builder, Copilot Studio gibi en yeni teknolojilere erken erişim</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">4.2</span>Hangi tür projelerde çalışmaktan keyif alıyorsun?</div>
+      <ul class="items">
+        <li>Manuel süreçleri otomatize eden, ölçülebilir ROI'si olan projeler</li>
+        <li>Çoklu sistem entegrasyonu içeren mimari zorluklar</li>
+        <li>Son kullanıcı ile direkt etkileşim — feedback'in hızlı geldiği projeler</li>
+        <li>AI ile zenginleştirilmiş workflow'lar (Copilot, Form Processing)</li>
+        <li>End-to-end sahiplenebilen, design'dan deployment'a giden projeler</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 5 ════════════════ -->
+  <section class="section" id="b5">
+    <h2 class="section-title">Bölüm 5 — Teknik Detaylar</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">5.1</span>Offline capability — internetsiz çalışma</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Uçakta rehber kitap taşımak gibi — uçmadan önce ihtiyacın olan sayfaları indirirsin, internetsiz okursun, yere inince notlarını buluta senkronize edersin.</p></div>
+<pre>// OnStart - veriyi cihazdan yükle
+If(Connection.Connected,
+    ClearCollect(colTalepler, Talepler);
+    SaveData(colTalepler, "TaleplerCache"),
+    LoadData(colTalepler, "TaleplerCache", true)
+);
+
+// Yeni kayıt — offline ise queue'ya ekle
+If(Connection.Connected,
+    Patch(Talepler, Defaults(Talepler), formData),
+    Collect(colPendingSync, formData);
+    SaveData(colPendingSync, "PendingSync")
+);
+
+// Bağlantı geri gelince sync
+If(Connection.Connected &amp;&amp; CountRows(colPendingSync) > 0,
+    ForAll(colPendingSync As item,
+        Patch(Talepler, Defaults(Talepler), item)
+    );
+    Clear(colPendingSync); SaveData(colPendingSync, "PendingSync")
+);</pre>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">5.2</span>Custom Connector vs Standart Connector</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Kriter</th><th>Standart</th><th>Custom</th></tr>
+        <tr><td>Geliştirici</td><td>Microsoft / Partner</td><td>Sen / Ekibin</td></tr>
+        <tr><td>Kapsam</td><td>1000+ hazır servis</td><td>Şirket içi API'ler</td></tr>
+        <tr><td>Lisans</td><td>Plan'a göre</td><td>Premium</td></tr>
+        <tr><td>Auth</td><td>Yapılmış</td><td>Senin tanımın</td></tr>
+      </table></div>
+      <div class="tip"><div class="label">🔧 Ne Zaman Custom?</div><p>Standart connector listesini ARA → yoksa custom yap. Bazen REST/HTTP action ile başla, sonra refactor et.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">5.3</span>Component Library</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>LEGO fabrikası gibi — bir kere üret, her yerde kullan. Renk değiştirmek istersen fabrikadan çık, kalıbı değiştir → tüm uygulamalar otomatik güncellenir.</p></div>
+      <ul class="items">
+        <li><strong>Canvas Component</strong> — drag-drop UI parçası (header, footer, custom dropdown)</li>
+        <li><strong>PCF</strong> — TypeScript ile yazılan ileri seviye component</li>
+        <li><strong>Component Library</strong> — organizasyon-wide paylaşım</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">5.4</span>Power FX formülü nasıl optimize edersin?</div>
+<pre>// ❌ YAVAŞ
+ForAll(Talepler, Patch(Log, Defaults(Log), {Tutar: ThisRecord.Tutar}))
+
+// ✅ HIZLI
+Patch(Log, ForAll(Talepler As t, {Tutar: t.Tutar}))
+
+// ❌ YAVAŞ — her seferinde yeniden çekiyor
+LookUp(Talepler, ID = varID).Baslik
+
+// ✅ HIZLI — With ile cache
+With({rec: LookUp(Talepler, ID = varID)}, rec.Baslik)</pre>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 6 ════════════════ -->
+  <section class="section" id="b6">
+    <h2 class="section-title">Bölüm 6 — Mimari (Senior Seviye)</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">6.1</span>Solution Segmentation — çözümleri nasıl bölersin?</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Solution</th><th>İçerik</th><th>Bağımlılık</th></tr>
+        <tr><td>Core (Foundation)</td><td>Ortak entity, choice, security roles</td><td>Hiçbir şeye bağlı değil</td></tr>
+        <tr><td>Shared Components</td><td>Component library, theme, custom connectors</td><td>Core</td></tr>
+        <tr><td>App-A</td><td>App-A'ya özgü flow + canvas + PCF</td><td>Core, Shared</td></tr>
+        <tr><td>App-B</td><td>App-B'ye özgü flow + canvas</td><td>Core, Shared</td></tr>
+        <tr><td>Integrations</td><td>Custom connector, environment vars</td><td>Core</td></tr>
+      </table></div>
+      <div class="warn"><div class="label">📦 Anti-Pattern</div><p>Tek bir devasa solution = monolith. Bir component'i değiştirmek için tüm solution'ı yeniden deploy etmek zorundasın.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">6.2</span>Power Platform Governance</div>
+      <ul class="items">
+        <li><strong>DLP Policies:</strong> Connector'ları Business / Non-Business / Blocked grupla</li>
+        <li><strong>Environment Strategy:</strong> Default ≠ üretim. Ayrı DEV, UAT, PROD</li>
+        <li><strong>CoE Starter Kit:</strong> Admin dashboard, app inventory, maker analytics</li>
+        <li><strong>Maker Onboarding:</strong> Eğitim + sandbox + branding rehberi</li>
+        <li><strong>Audit &amp; Compliance:</strong> Audit logs, Purview entegrasyonu</li>
+      </ul>
+      <div class="tbl-wrap"><table>
+        <tr><th>Environment Tipi</th><th>Amaç</th></tr>
+        <tr><td>Default</td><td>Tüm makers'ın ortak alanı — production için ÖNERİLMEZ</td></tr>
+        <tr><td>Production</td><td>Canlı uygulamalar</td></tr>
+        <tr><td>Sandbox</td><td>UAT, DEV — sıfırlanabilir, copy edilebilir</td></tr>
+        <tr><td>Developer</td><td>Bireysel maker için ücretsiz, full feature</td></tr>
+        <tr><td>Teams</td><td>Microsoft Teams için ücretsiz, sınırlı Dataverse</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 7 ════════════════ -->
+  <section class="section" id="b7">
+    <h2 class="section-title">Bölüm 7 — AI Agents &amp; Copilot Studio</h2>
+    <p class="section-intro">AI ajan tasarımı modern Power Platform mülakatlarının vazgeçilmezi. Microsoft, Power Virtual Agents'ı 2024'te Copilot Studio olarak yeniden markaladı.</p>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">7.1</span>Copilot Studio nedir, nasıl çalışır?</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Eğitilmiş bir resepsiyonist gibi — soruları anlar, doğru kaynağa yönlendirir, gerektiğinde başkasıyla konuşur, bilmediğini sana sorar.</p></div>
+      <ul class="items">
+        <li><strong>Topics:</strong> Konuşma akışları — trigger phrase + branching mantığı</li>
+        <li><strong>Entities:</strong> Kullanıcı mesajından çekilen yapılandırılmış bilgi</li>
+        <li><strong>Generative Answers:</strong> SharePoint, web, Dataverse'ten AI yanıt</li>
+        <li><strong>Actions:</strong> Power Automate flow tetikleme, harici API çağırma</li>
+        <li><strong>Channels:</strong> Teams, Web, Slack, Telegram — aynı bot, çoklu kanal</li>
+      </ul>
+      <div class="tbl-wrap"><table>
+        <tr><th>Mod</th><th>Açıklama</th></tr>
+        <tr><td>Classic (no-code)</td><td>Topics + nodes ile akış tabanlı kurulum</td></tr>
+        <tr><td>Generative (AI-first)</td><td>LLM kararıyla dinamik akış</td></tr>
+        <tr><td>Hybrid</td><td>Kritik akışlar topic, açık uçlu sorular generative</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">7.2</span>AI Builder vs Copilot Studio</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>AI Builder LEGO'nun pre-built modelleri gibi. Copilot Studio ise LEGO'larla robot yapmak — hazır yetenekleri kullanarak konuşan asistan kurarsın.</p></div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Özellik</th><th>AI Builder</th><th>Copilot Studio</th></tr>
+        <tr><td>Amaç</td><td>Yetenek (skill)</td><td>Konuşma ajanı</td></tr>
+        <tr><td>Kullanım</td><td>Flow / App içinde aksiyon</td><td>Standalone bot</td></tr>
+        <tr><td>Çıktı</td><td>Yapılandırılmış data</td><td>Doğal dil yanıt</td></tr>
+      </table></div>
+      <div class="note"><div class="label">🤝 Birlikte Kullanım</div><p>Copilot Studio bot'u → Action olarak Power Automate'i çağırır → Flow içinde AI Builder OCR ile fatura okur → Sonuç bot'a döner.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">7.3</span>AI Ajan tasarlarsam mimari nasıl olmalı?</div>
+      <div class="arch">┌─────────────────────────────────────────────┐
+│  Channel (Teams / Web / Mobile)             │  ← Kullanıcı arayüzü
+├─────────────────────────────────────────────┤
+│  Copilot Studio (NLU + Topic Engine)        │  ← Anlama + akış
+├─────────────────────────────────────────────┤
+│  Knowledge Sources                          │
+│   • SharePoint  • Dataverse  • Web URL      │  ← Bilgi
+├─────────────────────────────────────────────┤
+│  Actions Layer                              │
+│   • Power Automate Flows                    │  ← İş mantığı
+│   • Connectors (Standard / Custom)          │
+│   • Plugins (OpenAPI / M365)                │
+├─────────────────────────────────────────────┤
+│  Backend                                    │
+│   • Dataverse  • Azure  • External APIs     │  ← Veri & sistem
+└─────────────────────────────────────────────┘
+      └── Identity: Microsoft Entra ID (AAD)
+      └── Governance: DLP, audit, content moderation</div>
+      <div class="tip"><div class="label">🤖 Prompt Engineering İpucu</div><p>3 katman: 1) Persona ('Sen bir İK asistanısın') · 2) Constraint ('Sadece izin/maaş konuları') · 3) Format ('Cevapları madde madde ver')</p></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 8 ════════════════ -->
+  <section class="section" id="b8">
+    <h2 class="section-title">Bölüm 8 — Custom Connectors (Derinlemesine)</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">8.1</span>Custom Connector nasıl yapılır — uçtan uca</div>
+      <ul class="items">
+        <li><strong>4 Yöntem:</strong> OpenAPI 2.0 (Swagger) · Postman Collection · Boş başlat · Azure Service</li>
+        <li><strong>1. General</strong> — Icon, color, description, host URL</li>
+        <li><strong>2. Security</strong> — Auth type: No auth / Basic / API Key / OAuth 2.0 / AAD</li>
+        <li><strong>3. Definition</strong> — Actions ve Triggers tanımla</li>
+        <li><strong>4. Code (preview)</strong> — C# script ile request/response transform</li>
+        <li><strong>5. Test</strong> — Connection oluştur → operation çalıştır → response gör</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">8.2</span>Authentication türleri</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Tip</th><th>Kullanım</th><th>Güvenlik</th></tr>
+        <tr><td>No Auth</td><td>Public API, dev/test</td><td>Düşük</td></tr>
+        <tr><td>Basic</td><td>Username + Password</td><td>Düşük (HTTPS şart)</td></tr>
+        <tr><td>API Key</td><td>Header veya query string</td><td>Orta</td></tr>
+        <tr><td>OAuth 2.0</td><td>Authorization Code flow</td><td>Yüksek</td></tr>
+        <tr><td>AAD (Entra)</td><td>Microsoft tenant API'leri</td><td>Çok yüksek</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">8.3</span>Policies ve Code section</div>
+      <ul class="items">
+        <li>Set HTTP Header — sabit header ekle</li>
+        <li>Route Request — version'a göre URL değiştir</li>
+        <li>Set Host URL — environment'a göre switch</li>
+        <li>Throttle by key — rate limit</li>
+      </ul>
+<pre>public class Script : ScriptBase
+{
+    public override async Task&lt;HttpResponseMessage&gt; ExecuteAsync()
+    {
+        var content = await Context.Request.Content.ReadAsStringAsync();
+        var json = JObject.Parse(content);
+        json["timestamp"] = DateTime.UtcNow.ToString("o");
+        Context.Request.Content = CreateJsonContent(json.ToString());
+        return await Context.SendAsync(Context.Request, CancellationToken);
+    }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 9 ════════════════ -->
+  <section class="section" id="b9">
+    <h2 class="section-title">Bölüm 9 — C# Plugins (Dataverse)</h2>
+    <p class="section-intro">Plugin'ler Dataverse'in motor odasıdır — server-side, sync/async, transaction içinde çalışan business logic.</p>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">9.1</span>Plugin nedir, ne zaman kullanılır?</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Yöntem</th><th>Ne zaman kullan?</th></tr>
+        <tr><td>Business Rule</td><td>Form-level, basit if-then, sadece UI</td></tr>
+        <tr><td>Power Automate Flow</td><td>Async, harici sistem, low-code</td></tr>
+        <tr><td>Custom API</td><td>Reusable server-side action</td></tr>
+        <tr><td><strong>PLUGIN</strong></td><td><strong>Sync, complex, transaction-aware, kritik logic</strong></td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">9.2</span>Plugin pipeline ve stages</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Stage</th><th>No</th><th>Ne zaman?</th></tr>
+        <tr><td>Pre-validation</td><td>10</td><td>Transaction'dan ÖNCE — yetki kontrolü</td></tr>
+        <tr><td>Pre-operation</td><td>20</td><td>Transaction içinde, DB write'tan ÖNCE</td></tr>
+        <tr><td>Main operation</td><td>30</td><td>Dataverse core operation — değiştirilemez</td></tr>
+        <tr><td>Post-operation</td><td>40</td><td>DB write'tan SONRA — sync child write</td></tr>
+        <tr><td>Post-operation async</td><td>40</td><td>Background — email, integration</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">9.3</span>Plugin örnek kodu</div>
+<pre>public class HesapValidationPlugin : IPlugin
+{
+    public void Execute(IServiceProvider serviceProvider)
+    {
+        var context = (IPluginExecutionContext)serviceProvider
+            .GetService(typeof(IPluginExecutionContext));
+        var serviceFactory = (IOrganizationServiceFactory)serviceProvider
+            .GetService(typeof(IOrganizationServiceFactory));
+        var service = serviceFactory.CreateOrganizationService(context.UserId);
+        var tracingService = (ITracingService)serviceProvider
+            .GetService(typeof(ITracingService));
+
+        if (context.MessageName != "Create" &amp;&amp; context.MessageName != "Update") return;
+        if (!(context.InputParameters["Target"] is Entity target)) return;
+        if (target.LogicalName != "account") return;
+
+        try {
+            if (target.Contains("revenue")) {
+                var revenue = target.GetAttributeValue&lt;Money&gt;("revenue");
+                if (revenue.Value > 1000000 &amp;&amp; !target.Contains("creditrating"))
+                    throw new InvalidPluginExecutionException(
+                        "1M üstü hesaplar için credit rating zorunludur");
+            }
+        }
+        catch (InvalidPluginExecutionException) { throw; }
+        catch (Exception ex) {
+            throw new InvalidPluginExecutionException("Plugin hatası: " + ex.Message, ex);
+        }
+    }
+}</pre>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">9.4</span>Plugin Best Practices</div>
+      <ul class="items">
+        <li>✅ Filtering attributes kullan — gereksiz tetiklenme önle</li>
+        <li>✅ Tracing service ile log yaz</li>
+        <li>✅ Stateless yaz — instance variable kullanma</li>
+        <li>✅ Depth check: <code>if (context.Depth &gt; 1) return;</code> — sonsuz döngüyü engelle</li>
+        <li>❌ External HTTP call YAPMA (sandbox kısıtlı)</li>
+        <li>❌ Long-running işlem yapma (2 dk sync, 24 saat async limit)</li>
+        <li>❌ Hardcoded GUID/URL kullanma</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 10 ════════════════ -->
+  <section class="section" id="b10">
+    <h2 class="section-title">Bölüm 10 — Power Automate (Cloud + Desktop / RPA)</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">10.1</span>Cloud Flows vs Desktop Flows (RPA)</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Cloud Flow telefon görüşmesi gibi — uzaktan, dijital. Desktop Flow ise fiziksel asistan — bilgisayarın başında ekran tıklayan robot.</p></div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Özellik</th><th>Cloud Flow</th><th>Desktop Flow (RPA)</th></tr>
+        <tr><td>Hedef</td><td>API'ler, connectors</td><td>Eski uygulamalar, web UI, Excel</td></tr>
+        <tr><td>Hız</td><td>Saniye</td><td>Dakika (UI etkileşimi)</td></tr>
+        <tr><td>Kırılganlık</td><td>Az (API contract)</td><td>Yüksek (UI değişirse bozulur)</td></tr>
+        <tr><td>Kullanım</td><td>Modern sistemler</td><td>Legacy, SAP, eski ERP</td></tr>
+      </table></div>
+      <div class="note"><div class="label">🤝 Hibrit Senaryo</div><p>Cloud Flow tetikler → Desktop Flow eski sistemde işi yapar → Sonucu Cloud Flow'a döner → Modern sistemlere yazar.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">10.2</span>Trigger türleri</div>
+      <ul class="items">
+        <li><strong>Automated:</strong> Olay-tabanlı — When item is created, When email arrives</li>
+        <li><strong>Instant (Manual):</strong> Kullanıcı tetikler — Power App'ten, mobil, button</li>
+        <li><strong>Scheduled:</strong> Zamanlanmış — günde 1 kez, her Pazartesi 09:00</li>
+        <li><strong>Polling:</strong> Power Automate her N dakikada bir API'yi sorar</li>
+        <li><strong>Webhook:</strong> Servis Power Automate'e push eder (anlık, daha az kaynak)</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">10.3</span>Concurrency &amp; Performans</div>
+      <ul class="items">
+        <li>Trigger concurrency — aynı trigger'dan eşzamanlı kaç flow run? (1-100)</li>
+        <li>Apply to each → Concurrency Control (1-50)</li>
+        <li>✅ Aç: Bağımsız öğeler işleniyorsa — performans artışı</li>
+        <li>❌ Kapat: Sıra önemliyse veya shared resource varsa (counter)</li>
+      </ul>
+      <div class="tip"><div class="label">⚡ Hız İpucu</div><p>Çoğu flow'un yavaşlığı 'Apply to each' içindeki sequential işlemden gelir. 20+ item varsa concurrency 10-20 yap.</p></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 11 ════════════════ -->
+  <section class="section" id="b11">
+    <h2 class="section-title">Bölüm 11 — Dataverse Derinlemesine</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">11.1</span>Dataverse'in temel yapı taşları</div>
+      <ul class="items">
+        <li><strong>Tables</strong> — Standard / Custom / Activity / Virtual</li>
+        <li><strong>Columns</strong> — Text, Number, Currency, Date, Choice, Lookup, File, Calculated, Roll-up</li>
+        <li><strong>Relationships</strong> — 1:N, N:1, N:N</li>
+        <li><strong>Choices</strong> — Global veya local enum</li>
+        <li><strong>Business Rules</strong> — UI/Server level basit kurallar</li>
+      </ul>
+      <div class="tbl-wrap"><table>
+        <tr><th></th><th>Calculated</th><th>Roll-up</th></tr>
+        <tr><td>Zamanlama</td><td>Anlık hesaplanır</td><td>12 saatte bir (+ manuel)</td></tr>
+        <tr><td>Kapsam</td><td>Tek satır içinde</td><td>Parent-child agregasyonu</td></tr>
+        <tr><td>Performans</td><td>Etkisi az</td><td>Async job — büyük veride yavaşlayabilir</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">11.2</span>Virtual Tables</div>
+      <div class="analoji"><div class="label">🎯 Analoji</div><p>Aynaya benzer — Dataverse'te tablo gibi görünür ama veri başka yerde (SQL, OData, SharePoint, Cosmos).</p></div>
+      <ul class="items">
+        <li>✅ Veri replikasyonu YOK — kaynak sistemde yaşar</li>
+        <li>✅ Power Apps, flow'da normal tablo gibi kullanılır</li>
+        <li>❌ Plugin / Workflow trigger LIMITED</li>
+        <li>❌ Performans — kaynak sistemin hızına bağımlı</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">11.3</span>Dataverse for Teams vs Tam Dataverse</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Özellik</th><th>Dataverse for Teams</th><th>Tam Dataverse</th></tr>
+        <tr><td>Lisans</td><td>M365 ile ücretsiz</td><td>Premium</td></tr>
+        <tr><td>Plugins</td><td class="no">❌</td><td class="yes">✅</td></tr>
+        <tr><td>Custom Connectors</td><td class="no">❌</td><td class="yes">✅</td></tr>
+        <tr><td>Audit</td><td class="no">❌</td><td class="yes">✅</td></tr>
+        <tr><td>Channel</td><td>Sadece Teams</td><td>Web, mobile, Teams</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 12 ════════════════ -->
+  <section class="section" id="b12">
+    <h2 class="section-title">Bölüm 12 — Güvenlik &amp; Yetkilendirme</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">12.1</span>Dataverse Güvenlik Modeli — katmanlar</div>
+      <ul class="items">
+        <li><strong>1. Tenant:</strong> Microsoft 365 yönetici düzeyi</li>
+        <li><strong>2. Environment:</strong> Maker/User/Admin rolü</li>
+        <li><strong>3. Business Unit:</strong> Departman/şirket</li>
+        <li><strong>4. Security Role:</strong> Privilege seti</li>
+        <li><strong>5. Team:</strong> Owner / Access / AAD Group</li>
+        <li><strong>6. Record Sharing:</strong> Tek kayda bireysel yetki</li>
+        <li><strong>7. Field Security Profile:</strong> Kolon seviyesinde mask/read/write</li>
+        <li><strong>8. Hierarchical Security:</strong> Manager kendi altındakileri görür</li>
+      </ul>
+      <div class="tbl-wrap"><table>
+        <tr><th>Privilege</th><th>Access Level</th></tr>
+        <tr><td>Create / Read / Write / Delete</td><td>User (sadece kendi)</td></tr>
+        <tr><td>Append / Append To</td><td>Business Unit (kendi BU)</td></tr>
+        <tr><td>Assign</td><td>Parent: Child Business Units</td></tr>
+        <tr><td>Share</td><td>Organization (tüm tenant)</td></tr>
+      </table></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">12.2</span>Service Principal &amp; Application User</div>
+      <ul class="items">
+        <li>1. Azure AD'de App Registration oluştur</li>
+        <li>2. Client ID + Secret (veya certificate) oluştur</li>
+        <li>3. Power Platform admin → Application Users → New</li>
+        <li>4. Security Role ata</li>
+        <li>5. OAuth 2.0 client_credentials flow ile token al, API çağır</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 13 ════════════════ -->
+  <section class="section" id="b13">
+    <h2 class="section-title">Bölüm 13 — Power BI Entegrasyonu</h2>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">13.1</span>Power Platform içinde Power BI'ın rolü</div>
+      <ul class="items">
+        <li>Power BI tile — Canvas App içine embed</li>
+        <li>Power Automate — Power BI dataset refresh tetikleme</li>
+        <li>Power BI alert → Power Automate → Action (anomaly detection)</li>
+        <li>Streaming dataset — real-time KPI dashboard</li>
+      </ul>
+      <div class="tip"><div class="label">🎯 Senior İpucu</div><p>'Ekibe rapor paylaşmanın en hızlı yolu' = Power BI Workspace + RLS + Teams kanalına embed.</p></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-title"><span class="num">13.2</span>Dataverse → Power BI bağlantı yöntemleri</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Yöntem</th><th>Avantaj</th><th>Dezavantaj</th></tr>
+        <tr><td>Import</td><td>Hızlı, tüm DAX, offline</td><td>Refresh gerekir</td></tr>
+        <tr><td>DirectQuery</td><td>Anlık veri</td><td>Yavaş, DAX kısıtlı</td></tr>
+        <tr><td>Dataverse Connector</td><td>Native, optimal</td><td>Premium gerekebilir</td></tr>
+        <tr><td>TDS Endpoint (SQL)</td><td>T-SQL ile sorgu</td><td>Read-only, sınırlı</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ BÖLÜM 14 ════════════════ -->
+  <section class="section" id="b14">
+    <h2 class="section-title">Bölüm 14 — Genel Best Practices</h2>
+    <p class="section-intro">Tüm rehberin damıtılmış hali. 'Projende neye dikkat ediyorsun?' sorusuna 5 madde say, kazanırsın.</p>
+
+    <h3>Naming Conventions</h3>
+    <ul class="items">
+      <li>Tablo: PascalCase, tekil — <code>IzinTalebi</code>, <code>MaliyetMerkezi</code></li>
+      <li>Kolon: camelCase / prefix — <code>pp_durum</code></li>
+      <li>Solution: <code>CompanyName_AppName_Type</code> — <code>contoso_hr_managed</code></li>
+      <li>Flow: Verb-Noun-Trigger — <code>CreateApprovalRequest_OnNewItem</code></li>
+      <li>Variable: <code>var</code> prefix · Collection: <code>col</code> prefix · Component: <code>cmp</code> prefix</li>
+    </ul>
+
+    <h3>Performance</h3>
+    <ul class="items">
+      <li>OnStart kısa tut — kritik olmayanı OnVisible'a ertele</li>
+      <li>Concurrent() ile paralel yükleme</li>
+      <li>Delegation-friendly fonksiyonlar kullan</li>
+      <li>UpdateContext &gt; Set (scope avantajı)</li>
+    </ul>
+
+    <h3>Security</h3>
+    <ul class="items">
+      <li>Hardcoded credentials YASAK — Environment Variable / Key Vault</li>
+      <li>UI-level gizleme ≠ data-level güvenlik</li>
+      <li>Service Principal ile entegrasyon</li>
+      <li>DLP policy'leri tanımla · Audit log aktif</li>
+    </ul>
+
+    <h3>Error Handling</h3>
+    <ul class="items">
+      <li>Try-Catch-Finally pattern (flow'da Scope'lar)</li>
+      <li>IfError() ile Power FX</li>
+      <li>Notify() ile kullanıcıya geribildirim</li>
+      <li>Plugin'de <code>InvalidPluginExecutionException</code></li>
+      <li>Dead-letter queue başarısız mesajlar için · Retry policy + idempotency</li>
+    </ul>
+
+    <h3>Maintenance</h3>
+    <ul class="items">
+      <li>Solution + Source Control (Azure DevOps / GitHub)</li>
+      <li>Comments — flow'da Note action, formüllerde <code>// yorum</code></li>
+      <li>Versioning — major.minor.patch</li>
+      <li>Documentation — README, mimari diyagramı, decision log</li>
+    </ul>
+  </section>
+
+  <!-- ════════════════ KAPANIŞ ════════════════ -->
+  <section class="section" id="kapanis">
+    <div class="note" style="padding:1.4rem;text-align:center">
+      <div class="label" style="text-align:center;margin-bottom:0.8rem">💎 Altın İlke</div>
+      <p style="font-size:1rem;font-weight:500;margin-bottom:0.8rem">Mülakatta kazanan <strong>'en çok bilen'</strong> değil, <strong>'en net düşünen'</strong>dir.</p>
+      <p style="font-size:0.88rem">1. Problemi anlat (analoji ile) &nbsp;·&nbsp; 2. Çözümü mantığıyla açıkla &nbsp;·&nbsp; 3. Trade-off'u söyle</p>
+      <p style="margin-top:1rem;font-size:1.2rem">İyi Şanslar! 🚀</p>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+// Highlight active TOC item on scroll
+const sections = document.querySelectorAll('.section[id]');
+const tocItems = document.querySelectorAll('.toc-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocItems.forEach(t => t.classList.remove('active'));
+      const active = document.querySelector('.toc-item[href="#' + e.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
