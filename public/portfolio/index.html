@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gursel Olca — Project Portfolio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#dbeafe;
+  --surface:#ffffff;
+  --surface2:#eff6ff;
+  --surface3:#e0f2fe;
+  --primary:#1e40af;
+  --accent:#2563eb;
+  --accent-light:#93c5fd;
+  --accent-dim:#bfdbfe;
+  --text:#0f172a;
+  --muted:#475569;
+  --border:#bfdbfe;
+  --green:#15803d;
+  --green-bg:#dcfce7;
+  --tag-bg:#dbeafe;
+  --tag-border:#93c5fd;
+  --tag-text:#1d4ed8;
+}
+
+html,body{
+  height:100%;overflow:hidden;
+  background:var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  color:var(--text);
+}
+
+/* ════ SLIDES CONTAINER ════ */
+.slides-wrap{
+  position:relative;width:100%;height:100vh;overflow:hidden;
+}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);
+  transition:transform 0.6s cubic-bezier(0.77,0,0.175,1), opacity 0.6s ease;
+  will-change:transform,opacity;
+}
+.slide.active{transform:translateX(0);opacity:1;z-index:2}
+.slide.prev{transform:translateX(-100%);opacity:0;z-index:1}
+.slide.next{transform:translateX(100%);opacity:0;z-index:1}
+
+/* ════ NAV DOTS ════ */
+.dots{
+  position:fixed;right:1.8rem;top:50%;transform:translateY(-50%);
+  z-index:100;display:flex;flex-direction:column;gap:0.6rem;
+}
+.dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent-dim);border:2px solid var(--accent-light);
+  cursor:pointer;transition:all 0.25s;
+}
+.dot.active{background:var(--accent);border-color:var(--accent);transform:scale(1.3)}
+.dot:hover:not(.active){background:var(--accent-light)}
+
+/* ════ PREV / NEXT ARROWS ════ */
+.arrow-prev,.arrow-next{
+  position:fixed;bottom:2rem;z-index:100;
+  background:var(--accent);color:#fff;
+  border:none;border-radius:50%;
+  width:46px;height:46px;font-size:1.2rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s,transform 0.2s;
+  box-shadow:0 4px 12px rgba(37,99,235,0.35);
+}
+.arrow-prev{left:50%;transform:translateX(calc(-100% - 0.6rem))}
+.arrow-next{left:50%;transform:translateX(0.6rem)}
+.arrow-prev:hover,.arrow-next:hover{background:var(--primary);transform:translateX(calc(-100% - 0.6rem)) scale(1.08)}
+.arrow-next:hover{transform:translateX(0.6rem) scale(1.08)}
+.arrow-prev:disabled,.arrow-next:disabled{background:var(--accent-dim);cursor:default;box-shadow:none}
+
+/* slide counter */
+.counter{
+  position:fixed;bottom:2.4rem;left:50%;transform:translateX(-50%);
+  font-size:0.8rem;color:var(--muted);letter-spacing:0.06em;z-index:100;
+  pointer-events:none;
+}
+
+/* ════ SLIDE 0 — COVER ════ */
+.cover{
+  justify-content:center;align-items:center;
+  background:linear-gradient(145deg,#1e3a8a 0%,#1e40af 40%,#2563eb 100%);
+  position:relative;overflow:hidden;
+}
+.cover::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 20%,rgba(147,197,253,0.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 10% 80%,rgba(96,165,250,0.1) 0%,transparent 50%);
+}
+.cover-inner{
+  position:relative;z-index:1;text-align:center;
+  max-width:900px;padding:3rem 2rem;
+  animation:fadeUp 0.8s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+.cover-name{
+  font-size:clamp(2.8rem,7vw,5.5rem);font-weight:700;
+  color:#fff;letter-spacing:-0.02em;line-height:1;
+  margin-bottom:0.6rem;
+}
+.cover-title{
+  font-size:clamp(1rem,2.2vw,1.4rem);color:#93c5fd;
+  letter-spacing:0.03em;margin-bottom:0.5rem;font-weight:400;
+}
+.cover-contact{
+  font-size:0.95rem;color:rgba(219,234,254,0.8);margin-bottom:2rem;letter-spacing:0.02em;
+}
+.cover-contact a{color:#bfdbfe;text-decoration:none;}
+.cover-contact a:hover{text-decoration:underline;}
+
+.impact-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;
+}
+.impact-card{
+  background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.15);border-radius:12px;
+  padding:1rem 0.8rem;text-align:center;
+}
+.impact-num{font-size:2rem;font-weight:700;color:#fff;line-height:1.1}
+.impact-label{font-size:0.72rem;color:#93c5fd;letter-spacing:0.05em;text-transform:uppercase;margin-top:0.3rem}
+
+.toc-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:0.6rem;
+}
+.toc-btn{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+  border-radius:8px;padding:0.65rem 0.5rem;cursor:pointer;
+  color:#dbeafe;font-size:0.78rem;text-align:center;line-height:1.3;
+  transition:background 0.2s,border-color 0.2s;font-family:inherit;
+}
+.toc-btn:hover{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.4);color:#fff}
+.toc-btn .pnum{font-size:1.1rem;font-weight:700;color:#93c5fd;display:block;margin-bottom:0.2rem}
+
+/* ════ PROJECT SLIDES ════ */
+.proj-slide{
+  background:var(--bg);overflow:hidden;
+}
+.proj-slide .scroll-area{
+  flex:1;overflow-y:auto;padding:2rem 4rem 4rem;
+  scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;
+}
+
+/* Project header bar */
+.proj-header{
+  display:flex;align-items:baseline;gap:1rem;
+  margin-bottom:0.5rem;
+}
+.proj-num{
+  font-size:clamp(3rem,6vw,5rem);font-weight:800;
+  color:var(--accent-dim);line-height:1;letter-spacing:-0.03em;flex-shrink:0;
+}
+.proj-title{
+  font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;
+  color:var(--primary);line-height:1.2;letter-spacing:-0.01em;
+}
+.proj-meta{
+  font-size:0.88rem;color:var(--muted);margin-bottom:1.8rem;
+  padding:0.6rem 1rem;background:var(--surface2);
+  border-left:3px solid var(--accent-light);border-radius:0 6px 6px 0;
+  font-style:italic;
+}
+
+/* Two-column layout */
+.proj-cols{display:grid;grid-template-columns:1.1fr 0.9fr;gap:2rem;align-items:start}
+
+/* Left column sections */
+.section-label{
+  font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;
+  font-weight:700;color:var(--accent);margin-bottom:0.5rem;
+  padding-bottom:0.3rem;border-bottom:2px solid var(--accent-dim);
+}
+.section-block{margin-bottom:1.4rem}
+.section-text{font-size:1rem;color:var(--text);line-height:1.7}
+
+ul.blist{list-style:none;padding:0;margin:0}
+ul.blist li{
+  padding:0.35rem 0 0.35rem 1.4rem;position:relative;
+  font-size:0.95rem;color:var(--text);line-height:1.6;
+  border-bottom:1px solid rgba(191,219,254,0.4);
+}
+ul.blist li:last-child{border-bottom:none}
+ul.blist li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700;font-size:1.1rem}
+ul.blist li strong{color:var(--primary)}
+
+/* Right column */
+.results-card{
+  background:var(--surface);
+  border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;position:sticky;top:0;
+  box-shadow:0 4px 24px rgba(37,99,235,0.08);
+}
+.results-head{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;padding:1rem 1.2rem;
+  font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;
+}
+.results-body{padding:1rem 1.2rem}
+ul.rlist{list-style:none;padding:0;margin:0 0 1.2rem}
+ul.rlist li{
+  padding:0.5rem 0 0.5rem 1.8rem;position:relative;
+  font-size:0.95rem;color:var(--text);
+  border-bottom:1px solid var(--accent-dim);line-height:1.5;
+  font-weight:500;
+}
+ul.rlist li:last-child{border-bottom:none}
+ul.rlist li::before{
+  content:'✓';position:absolute;left:0;
+  color:var(--green);font-weight:700;font-size:1rem;
+}
+
+.tech-label{
+  font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;margin-bottom:0.5rem;
+}
+.tags{display:flex;flex-wrap:wrap;gap:0.35rem}
+.tag{
+  background:var(--tag-bg);border:1px solid var(--tag-border);
+  color:var(--tag-text);font-size:0.75rem;font-weight:500;
+  padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.02em;
+}
+
+/* Demo link */
+.demo-link{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  background:var(--accent);color:#fff;font-size:0.82rem;
+  padding:0.5rem 1rem;border-radius:6px;text-decoration:none;
+  font-weight:600;margin-top:0.8rem;letter-spacing:0.02em;
+  transition:background 0.2s;
+}
+.demo-link:hover{background:var(--primary)}
+
+/* ════ CLOSING SLIDE ════ */
+.closing{
+  justify-content:center;align-items:center;
+  background:linear-gradient(145deg,#1e3a8a 0%,#1e40af 50%,#2563eb 100%);
+}
+.closing-inner{text-align:center;color:#fff;padding:3rem 2rem;max-width:700px}
+.closing-name{font-size:2.5rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.4rem}
+.closing-lines{font-size:1.1rem;color:#93c5fd;margin-bottom:2rem;line-height:2}
+.closing-lines a{color:#bfdbfe;text-decoration:none}
+.closing-lines a:hover{text-decoration:underline}
+.closing-cert{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;padding:1rem 1.5rem;font-size:0.95rem;color:#dbeafe;
+  font-style:italic;
+}
+
+/* ════ TOP PROGRESS BAR ════ */
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;background:var(--accent);
+  transition:width 0.5s ease;z-index:200;
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .proj-cols{grid-template-columns:1fr}
+  .impact-grid{grid-template-columns:repeat(2,1fr)}
+  .toc-grid{grid-template-columns:repeat(3,1fr)}
+  .proj-slide .scroll-area{padding:1.5rem 1.5rem 4rem}
+  .dots{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Navigation dots -->
+<div class="dots" id="dots"></div>
+
+<!-- Prev / Next arrows -->
+<button class="arrow-prev" id="btnPrev" aria-label="Previous">&#8592;</button>
+<button class="arrow-next" id="btnNext" aria-label="Next">&#8594;</button>
+<div class="counter" id="counter"></div>
+
+<!-- ════════════════ SLIDES ════════════════ -->
+<div class="slides-wrap" id="slidesWrap">
+
+  <!-- SLIDE 0 — COVER -->
+  <div class="slide cover active" data-index="0">
+    <div class="cover-inner">
+      <div class="cover-name">GURSEL OLCA</div>
+      <div class="cover-title">Power Platform Developer &nbsp;|&nbsp; SharePoint Online &amp; SPFx &nbsp;|&nbsp; Copilot Studio Agentic AI</div>
+      <div class="cover-contact">
+        Tempe, AZ 85282 &nbsp;·&nbsp; (929) 346-1629 &nbsp;·&nbsp;
+        <a href="mailto:gurselolca@hotmail.com">gurselolca@hotmail.com</a> &nbsp;·&nbsp;
+        <a href="https://linkedin.com/in/esember" target="_blank">linkedin.com/in/esember</a>
+      </div>
+
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-num">70%</div>
+          <div class="impact-label">Less Manual Processing</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-num">60%</div>
+          <div class="impact-label">Faster Compliance Cycles</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-num">380+</div>
+          <div class="impact-label">Vendors Managed</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-num">2,300+</div>
+          <div class="impact-label">Auto Folder Structures</div>
+        </div>
+      </div>
+
+      <div class="toc-grid">
+        <button class="toc-btn" onclick="goTo(1)"><span class="pnum">01</span>Vendor Lifecycle &amp; Contract Mgmt</button>
+        <button class="toc-btn" onclick="goTo(2)"><span class="pnum">02</span>Clinical Supervision &amp; Audit</button>
+        <button class="toc-btn" onclick="goTo(3)"><span class="pnum">03</span>Facilities Audit &amp; Compliance</button>
+        <button class="toc-btn" onclick="goTo(4)"><span class="pnum">04</span>HR Certification Rules Engine</button>
+        <button class="toc-btn" onclick="goTo(5)"><span class="pnum">05</span>B2B Inventory &amp; Order System</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1 — PROJECT 1 -->
+  <div class="slide proj-slide next" data-index="1">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">01</span>
+        <h1 class="proj-title">Enterprise SharePoint Vendor Lifecycle<br>&amp; Contract Management System</h1>
+      </div>
+      <div class="proj-meta">A New Leaf, Mesa, AZ &nbsp;·&nbsp; Timeline: 2022–2023 (maintained through 2026) &nbsp;·&nbsp; Scale: 380+ active vendors, 5 departments, 2,300+ folder structures</div>
+
+      <div class="proj-cols">
+        <!-- LEFT -->
+        <div>
+          <div class="section-block">
+            <div class="section-label">Business Problem</div>
+            <p class="section-text">The organization managed 380+ vendor and contractor relationships across five departments — Procurement, Facilities, HR, Legal, and Administration — through disconnected email chains, spreadsheets, and physical folders. Contract expiration dates were tracked manually in Excel, causing missed renewals and compliance risk. Approval routing was inconsistent and there was no central visibility into SLA compliance or vendor status.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">SharePoint Architecture</div>
+            <ul class="blist">
+              <li><strong>Vendors Master List</strong> — core vendor registry with 40+ columns. Custom Power Apps form enforced conditional validation and multi-step data entry.</li>
+              <li><strong>Contracts List</strong> — linked via lookup column. JSON column formatting applied color-coded SLA expiration indicators (green/yellow/red) visible directly in list view.</li>
+              <li><strong>Vendor Services List</strong> — many-to-many relationship tracking individual services with pricing, SLA targets, and performance notes.</li>
+              <li><strong>Vendor Documents Library</strong> — structured library with metadata columns, auto-tagged via Power Automate.</li>
+              <li><strong>Approval Queue List</strong> — tracked multi-tier approval status with approver level (1/2/3), decision, timestamp, and comments.</li>
+              <li><strong>Incidents &amp; Issues List</strong> — custom Power Apps form for vendor performance issues with severity classification.</li>
+            </ul>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Automation &amp; Integration</div>
+            <ul class="blist">
+              <li>PnP PowerShell script provisioned complete 6-tier hierarchical folder structure per vendor across 3 SharePoint libraries automatically upon new vendor record creation.</li>
+              <li>Power Automate flow launched a 3-level sequential approval workflow via Teams Adaptive Cards with 48-hour SLA per level and auto-escalation.</li>
+              <li>Scheduled flow scanned all contracts for expiration within 30/60/90 days, sending personalized alerts to responsible department managers.</li>
+              <li>JSON column formatting rendered visual SLA status badges (active/expiring soon/expired) directly in the list view.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+          <div class="results-card">
+            <div class="results-head">Measurable Results</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li>380+ active vendors in a single normalized system across 5 departments</li>
+                <li>2,300+ hierarchical folder structures provisioned automatically — replaced a multi-day manual task per vendor</li>
+                <li>100% elimination of manual contract renewal tracking via Excel</li>
+                <li>Zero missed SLA expiration deadlines post-deployment</li>
+                <li>60% faster approval turnaround through structured Teams approval routing</li>
+              </ul>
+              <div class="tech-label">Tech Stack</div>
+              <div class="tags">
+                <span class="tag">SharePoint Online</span>
+                <span class="tag">Microsoft Lists</span>
+                <span class="tag">Power Apps</span>
+                <span class="tag">Power Automate</span>
+                <span class="tag">PnP PowerShell</span>
+                <span class="tag">JSON Formatting</span>
+                <span class="tag">Teams Adaptive Cards</span>
+                <span class="tag">Azure DevOps ALM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 — PROJECT 2 -->
+  <div class="slide proj-slide next" data-index="2">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">02</span>
+        <h1 class="proj-title">Clinical Supervision &amp; Audit<br>Compliance Automation</h1>
+      </div>
+      <div class="proj-meta">A New Leaf — Behavioral Health Division &nbsp;·&nbsp; Timeline: 2022–2023 (maintained through 2026) &nbsp;·&nbsp; Compliance: State behavioral health &amp; child welfare regulations</div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Business Problem</div>
+            <p class="section-text">Clinical staff were required to complete monthly supervision documentation for child welfare cases — a regulatory requirement with zero tolerance for missing records. The process required data entry by clinical staff, sequential approvals from Clinical Directors and up to 10 concurrent supervisors, PDF dossier generation, and archival. Everything was done manually via email and physical forms, creating compliance risk and consuming significant staff time.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Microsoft Lists &amp; Forms Architecture</div>
+            <ul class="blist">
+              <li><strong>Clinical Supervision Sessions List</strong> — 30+ columns tracking session date, supervisor, supervisee, focus area, hours, notes. Custom Power Apps form with conditional visibility for supervision types (individual/group/peer).</li>
+              <li><strong>Supervisees Registry List</strong> — tracking certification requirements and compliance status. Auto-calculated compliance percentage displayed in form header.</li>
+              <li><strong>Supervision Plans List</strong> — individual plans per clinician with auto-population from supervisee profile and plan status tracking.</li>
+              <li><strong>Audit Evidence List</strong> — capturing audit artifacts with document links, approval signatures, and regulatory category codes. Read-only Power Apps view for auditor access.</li>
+            </ul>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Automation Architecture</div>
+            <ul class="blist">
+              <li>Concurrent approval branches sent simultaneous requests to up to 10 supervisors; Power Automate collected all responses and computed approval quorum before proceeding.</li>
+              <li>Upon full approval, automated pipeline generated a structured e-signed PDF dossier merging all session data, supervisor notes, and approval timestamps.</li>
+              <li>PDF was encrypted, watermarked with session metadata, and automatically archived to the SharePoint Compliance Library with proper metadata tags for regulatory retrieval.</li>
+              <li>Monthly scheduled flow generated compliance dashboard snapshot for Clinical Directors showing completion rates by supervisee and flagging overdue sessions.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Measurable Results</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li>100% elimination of manual PDF compilation for clinical audit dossiers</li>
+                <li>Estimated 80% reduction in audit documentation time per supervisor</li>
+                <li>Zero compliance incidents related to missing documentation post-deployment</li>
+                <li>Full digital audit trail for every supervision session with tamper-evident PDF records</li>
+              </ul>
+              <div class="tech-label">Tech Stack</div>
+              <div class="tags">
+                <span class="tag">SharePoint Online</span>
+                <span class="tag">Microsoft Lists</span>
+                <span class="tag">JSON Formatting</span>
+                <span class="tag">Power Apps</span>
+                <span class="tag">Power Automate</span>
+                <span class="tag">Teams Approvals</span>
+                <span class="tag">PDF Generation</span>
+                <span class="tag">Compliance Library</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — PROJECT 3 -->
+  <div class="slide proj-slide next" data-index="3">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">03</span>
+        <h1 class="proj-title">Enterprise Facilities Audit<br>&amp; Compliance Engine</h1>
+      </div>
+      <div class="proj-meta">A New Leaf — Facilities Management Division &nbsp;·&nbsp; Timeline: 2023–2024 &nbsp;·&nbsp; Impact: 60% reduction in audit cycle time</div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Business Problem</div>
+            <p class="section-text">Monthly facility compliance audits required inspectors to complete detailed checklists across multiple facilities, compile inspection data into formatted PDF reports, route them through management review, and archive approved reports by deadline. The entire process was manual, taking multiple staff-days per cycle and regularly running close to regulatory deadlines.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Lists &amp; Forms Architecture</div>
+            <ul class="blist">
+              <li><strong>Facility Registry List</strong> — master list of all facilities with address, responsible manager, inspection frequency, and compliance category. Linked to all inspection records via lookup.</li>
+              <li><strong>Inspection Checklist Items List</strong> — normalized list of all audit checklist items organized by category and facility type. Used as reference lookup to build dynamic inspection forms.</li>
+              <li><strong>Inspection Records List</strong> — primary capture list with custom Power Apps form providing a structured, mobile-friendly inspection experience with section-by-section navigation.</li>
+              <li><strong>Deficiencies Tracking List</strong> — tracking each identified deficiency with severity, assigned responsible party, corrective action, and resolution deadline.</li>
+              <li><strong>Microsoft Forms Integration</strong> — for field inspectors without Power Apps access, Microsoft Forms survey captured data automatically parsed into Inspection Records via Power Automate.</li>
+            </ul>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Automation Architecture</div>
+            <ul class="blist">
+              <li>Power Automate parsed complex nested JSON payload from Microsoft Forms, mapping all fields to corresponding Inspection Records List columns.</li>
+              <li>JSON parsing extracted array-structure checklist scores, computed section totals and overall compliance percentage, and wrote calculated values back to the list.</li>
+              <li>Dynamic PDF generation pipeline rendered a formatted compliance report template populated with all inspection data, deficiency details, and photographic evidence.</li>
+              <li>Power BI report connected to Inspection Records List provided real-time compliance dashboard visible to Facilities Director.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Measurable Results</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li>60% reduction in end-to-end facility audit and approval cycle time</li>
+                <li>100% elimination of manual data re-entry from paper forms to digital records</li>
+                <li>Zero missed monthly regulatory compliance deadlines post-deployment</li>
+                <li>Complete photographic evidence archive linked to every inspection record</li>
+              </ul>
+              <div class="tech-label">Tech Stack</div>
+              <div class="tags">
+                <span class="tag">Microsoft Lists</span>
+                <span class="tag">Microsoft Forms</span>
+                <span class="tag">Power Apps</span>
+                <span class="tag">Power Automate</span>
+                <span class="tag">JSON Parsing</span>
+                <span class="tag">PDF Generation</span>
+                <span class="tag">SharePoint Online</span>
+                <span class="tag">Power BI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — PROJECT 4 -->
+  <div class="slide proj-slide next" data-index="4">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">04</span>
+        <h1 class="proj-title">HR Certification Dynamic Rules<br>&amp; Tracking Engine</h1>
+      </div>
+      <div class="proj-meta">A New Leaf — Human Resources Division &nbsp;·&nbsp; Timeline: 2023 &nbsp;·&nbsp; Scale: Organization-wide staff certification management</div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Business Problem</div>
+            <p class="section-text">HR was required to track mandatory certification completion across all staff, assign follow-up training modules based on assessment scores, and maintain documentation for regulatory review. The process relied on manual review of assessment results, manual calculation of required follow-up modules, and manual dispatch of assignment emails — consuming significant HR staff time and creating inconsistencies.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Lists Architecture &amp; Power Apps Forms</div>
+            <ul class="blist">
+              <li><strong>Staff Certifications Master List</strong> — central tracking with auto-calculated compliance percentage and color-coded status indicator.</li>
+              <li><strong>Certification Catalog List</strong> — reference list organized by role, department, and frequency. Used as lookup source to validate assignment completeness per staff member.</li>
+              <li><strong>Assessment Results List</strong> — raw assessment data from Microsoft Forms. Each submission auto-created a linked record in Staff Certifications Master List.</li>
+              <li><strong>Follow-up Modules Assignment List</strong> — dynamically populated by the rules engine based on assessment scores. Custom Power Apps form for HR to review and override assignments.</li>
+              <li><strong>Compliance Status Dashboard List</strong> — aggregated list updated nightly by Power Automate, connected to Power BI for executive reporting.</li>
+            </ul>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Dynamic Rules Engine Architecture</div>
+            <ul class="blist">
+              <li>Power Automate flow parsed multi-dimensional JSON array of assessment scores, evaluating each section against a configurable threshold matrix stored in SharePoint — not hardcoded — HR could update thresholds without developer involvement.</li>
+              <li>Rules engine applied conditional logic to determine which follow-up modules were required: score &lt;70% on Section 3 → assign Module 3A and 3B; score &lt;50% on Section 1 → reassign full certification.</li>
+              <li>Assigned modules dispatched to staff via personalized Teams notification with direct link to assigned module.</li>
+              <li>Completion status updates fed back from Relias Learning (external LMS) via scheduled data reconciliation flow.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Measurable Results</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li>100% elimination of manual HR assessment review and module assignment</li>
+                <li>Estimated 80%+ reduction in HR administrative time per certification cycle</li>
+                <li>Complete auditable history for every certification event with timestamps and assigned modules</li>
+                <li>HR managers able to update scoring thresholds independently without IT involvement</li>
+              </ul>
+              <div class="tech-label">Tech Stack</div>
+              <div class="tags">
+                <span class="tag">Microsoft Lists</span>
+                <span class="tag">Microsoft Forms</span>
+                <span class="tag">Power Apps</span>
+                <span class="tag">Power Automate</span>
+                <span class="tag">JSON Operations</span>
+                <span class="tag">Teams Notifications</span>
+                <span class="tag">Power BI</span>
+                <span class="tag">SharePoint Online</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — PROJECT 5 -->
+  <div class="slide proj-slide next" data-index="5">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">05</span>
+        <h1 class="proj-title">B2B Inventory &amp; Order<br>Management System</h1>
+      </div>
+      <div class="proj-meta">A New Leaf — IT &nbsp;·&nbsp; Sep 2025 – Mar 2026 &nbsp;·&nbsp; Scale: Organization-wide field sales operations</div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Business Problem</div>
+            <p class="section-text">A B2B business needed an integrated, mobile-first inventory and order management system supporting field sales representatives, administrative management, automated transaction processing, real-time inventory updates, and AI-assisted data querying — all within the Microsoft ecosystem without external platforms.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Solution Architecture</div>
+            <ul class="blist">
+              <li><strong>Canvas App</strong> optimized for mobile field operations — field sales reps browsed inventory, placed orders, checked pricing by customer tier, and reviewed order history using complex Power Fx formulas.</li>
+              <li><strong>Model-Driven App</strong> for administrative management — back-office staff managed products, customers, pricing rules, and order fulfillment with Dataverse-backed custom views, dashboards, and business process flows.</li>
+              <li><strong>Dataverse schema</strong> with 7 interrelated tables: Products, Customers, Orders, Order Lines, Inventory Transactions, Pricing Rules, and User Profiles. Polymorphic lookup relationships for flexible customer-product-pricing associations.</li>
+              <li><strong>Power Automate</strong> for end-to-end order processing: submission → availability check → pricing rule application → confirmation → inventory decrement → fulfillment notification.</li>
+              <li><strong>RBAC security model</strong> with three roles (Field Sales Rep, Admin, Manager). Field Sales Reps could only see their own customers and orders.</li>
+              <li><strong>Copilot Studio Agentic AI</strong> with RAG-pattern knowledge grounding — non-technical business owners queried inventory, order status, and customer history using natural language via Teams.</li>
+              <li><strong>CI/CD pipeline</strong> via Azure DevOps and Power Platform Build Tools with managed/unmanaged solution packaging across Dev/Test/Prod environments.</li>
+              <li><strong>C# server-side plugin</strong> enforcing business rule: no order submission if customer account balance exceeded credit limit — validated synchronously at the Dataverse layer.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Measurable Results</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li>First production Copilot Studio Agentic AI deployment with real-time natural language Dataverse querying</li>
+                <li>Full CI/CD governance from day one — zero ad-hoc deployments</li>
+                <li>Mobile-first Canvas App enabling field reps to place orders without back-office involvement</li>
+                <li>Complete inventory audit trail with automated transaction logging for every order event</li>
+              </ul>
+              <a class="demo-link" href="https://youtu.be/lfo9UmtAYcA" target="_blank">▶ Watch Demo Video</a>
+              <div style="margin-top:1.2rem">
+                <div class="tech-label">Tech Stack</div>
+                <div class="tags">
+                  <span class="tag">Power Apps Canvas</span>
+                  <span class="tag">Model-Driven</span>
+                  <span class="tag">Dataverse</span>
+                  <span class="tag">Power Automate</span>
+                  <span class="tag">Copilot Studio</span>
+                  <span class="tag">Agentic AI</span>
+                  <span class="tag">C# Plugins</span>
+                  <span class="tag">RBAC</span>
+                  <span class="tag">Azure DevOps</span>
+                  <span class="tag">CI/CD</span>
+                  <span class="tag">Custom Connectors</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 — CLOSING -->
+  <div class="slide closing next" data-index="6">
+    <div class="closing-inner">
+      <div class="cover-name" style="font-size:clamp(2rem,5vw,3.5rem)">GURSEL OLCA</div>
+      <div class="closing-lines">
+        <a href="mailto:gurselolca@hotmail.com">gurselolca@hotmail.com</a><br>
+        (929) 346-1629<br>
+        <a href="https://linkedin.com/in/esember" target="_blank">linkedin.com/in/esember</a>
+      </div>
+      <div class="closing-cert">
+        Microsoft Certified: Power Platform Developer Associate (PL-400)<br>
+        <em>In Progress — Expected Q2 2026</em>
+      </div>
+      <div style="margin-top:1.5rem">
+        <a class="demo-link" href="https://youtu.be/lfo9UmtAYcA" target="_blank" style="display:inline-flex">▶ Portfolio Demo Video</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slides-wrap -->
+
+<script>
+const TOTAL = 7;
+let current = 0;
+let isAnimating = false;
+
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const counterEl = document.getElementById('counter');
+const progressBar = document.getElementById('progressBar');
+
+// Build dots
+const dotEls = [];
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Contact'][i];
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+  dotEls.push(d);
+}
+
+function updateUI(){
+  dotEls.forEach((d,i)=>d.classList.toggle('active',i===current));
+  btnPrev.disabled = current===0;
+  btnNext.disabled = current===TOTAL-1;
+  counterEl.textContent = current===0?'':current===TOTAL-1?'':current+' / '+(TOTAL-2);
+  const pct = (current/(TOTAL-1))*100;
+  progressBar.style.width = pct+'%';
+}
+
+function goTo(index){
+  if(isAnimating || index===current || index<0 || index>=TOTAL) return;
+  isAnimating=true;
+  const dir = index>current ? 1 : -1;
+  const prev = slides[current];
+  const next = slides[index];
+
+  // Set next to off-screen position first
+  next.style.transition='none';
+  next.classList.remove('active','prev','next');
+  next.style.transform = dir===1 ? 'translateX(100%)' : 'translateX(-100%)';
+  next.style.opacity='0';
+
+  // Force reflow
+  next.offsetWidth;
+
+  // Animate both
+  next.style.transition='';
+  prev.style.transition='';
+
+  prev.style.transform = dir===1 ? 'translateX(-100%)' : 'translateX(100%)';
+  prev.style.opacity='0';
+  next.style.transform='translateX(0)';
+  next.style.opacity='1';
+
+  current=index;
+  updateUI();
+
+  setTimeout(()=>{
+    slides.forEach((s,i)=>{
+      s.style.transition='';
+      s.style.transform='';
+      s.style.opacity='';
+      if(i===current){s.className='slide '+(s.dataset.type||'')+' active '+getTypeClass(i)}
+      else if(i<current){s.className='slide prev '+getTypeClass(i)}
+      else{s.className='slide next '+getTypeClass(i)}
+    });
+    isAnimating=false;
+  },650);
+}
+
+function getTypeClass(i){
+  if(i===0) return 'cover';
+  if(i===TOTAL-1) return 'closing';
+  return 'proj-slide';
+}
+
+function next(){goTo(current+1)}
+function prev(){goTo(current-1)}
+
+btnNext.addEventListener('click',next);
+btnPrev.addEventListener('click',prev);
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') next();
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') prev();
+});
+
+// Touch/swipe support
+let touchStartX=0;
+document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(Math.abs(dx)>50){dx<0?next():prev()}
+});
+
+updateUI();
+</script>
+</body>
+</html>

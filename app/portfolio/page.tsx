@@ -1,17 +1,13 @@
-import Link from 'next/link'
-import styles from './portfolio.module.css'
-
-export const metadata = {
-  title: 'Portfolio — Mekazek',
+﻿export const metadata = {
+  title: 'Portfolio — Gursel Olca',
 }
 
 export default function Portfolio() {
   return (
-    <main className={styles.main}>
-      <h2 className={styles.heading}>Portfolio</h2>
-      <div className={styles.divider} />
-      <p className={styles.subtitle}>Coming soon</p>
-      <Link href="/" className={styles.back}>&larr; Back</Link>
-    </main>
+    <iframe
+      src="/portfolio/index.html"
+      style={{ display: 'block', width: '100%', height: '100vh', border: 'none' }}
+      title="Gursel Olca Project Portfolio"
+    />
   )
 }
