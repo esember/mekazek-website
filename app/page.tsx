@@ -14,10 +14,10 @@ export default function Home() {
 
       <nav className={styles.nav}>
         <Link href="/english" className={styles.navLink}>
-          English App
+          
         </Link>
         <Link href="/powerplatform" className={styles.navLink}>
-          Power Platform
+          
         </Link>
         <button className={styles.navLink} onClick={() => setModalOpen(true)}>
           Portfolio
