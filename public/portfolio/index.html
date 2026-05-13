@@ -128,7 +128,7 @@ html,body{
 .impact-label{font-size:0.72rem;color:#93c5fd;letter-spacing:0.05em;text-transform:uppercase;margin-top:0.3rem}
 
 .toc-grid{
-  display:grid;grid-template-columns:repeat(5,1fr);gap:0.6rem;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;
 }
 .toc-btn{
   background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
@@ -321,6 +321,7 @@ ul.rlist li::before{
         <button class="toc-btn" onclick="goTo(3)"><span class="pnum">03</span>Facilities Audit &amp; Compliance</button>
         <button class="toc-btn" onclick="goTo(4)"><span class="pnum">04</span>HR Certification Rules Engine</button>
         <button class="toc-btn" onclick="goTo(5)"><span class="pnum">05</span>B2B Inventory &amp; Order System</button>
+        <button class="toc-btn" onclick="goTo(6)"><span class="pnum">06</span>Job Search Agent</button>
       </div>
     </div>
   </div>
@@ -657,8 +658,78 @@ ul.rlist li::before{
     </div>
   </div>
 
-  <!-- SLIDE 6 — CLOSING -->
-  <div class="slide closing next" data-index="6">
+  <!-- SLIDE 6 — PROJECT 6 -->
+  <div class="slide proj-slide next" data-index="6">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">06</span>
+        <h1 class="proj-title">Job Search Agent</h1>
+      </div>
+      <div class="proj-meta">Personal Project &nbsp;·&nbsp; Python · LangChain · Groq &nbsp;·&nbsp; <a href="https://github.com/esember/job-search-agent" target="_blank" style="color:var(--accent);font-style:normal">github.com/esember/job-search-agent</a></div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Overview</div>
+            <p class="section-text">Multi-tool Agentic AI built with Python, LangChain, and Groq. Features job search and CV matching — an autonomous agent that searches job listings and evaluates candidate fit against a CV, leveraging a fast LLM inference backend to deliver real-time recommendations.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Architecture &amp; Features</div>
+            <ul class="blist">
+              <li><strong>Multi-tool agent loop</strong> — LangChain ReAct agent orchestrates multiple tools in sequence: job search, CV parsing, and match scoring without manual intervention.</li>
+              <li><strong>Groq LLM backend</strong> — ultra-fast inference via Groq API enables real-time agent reasoning and tool-call decisions.</li>
+              <li><strong>Job search tool</strong> — queries live job listings based on role, location, and keywords provided by the user.</li>
+              <li><strong>CV matching tool</strong> — parses the candidate's CV and computes skill-gap and relevance scores against each job listing.</li>
+              <li><strong>Agentic reasoning</strong> — the agent autonomously decides which tools to invoke, in what order, and when the task is complete — no hard-coded workflow.</li>
+            </ul>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">Tech Highlights</div>
+            <ul class="blist">
+              <li>LangChain agent executor with custom tool definitions and structured output parsing.</li>
+              <li>Groq API integration for low-latency LLM calls (Llama 3 / Mixtral models).</li>
+              <li>Python-based, fully open-source, easily extensible with additional tools.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Key Capabilities</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li>Autonomous multi-step job search without manual tool chaining</li>
+                <li>Real-time CV-to-job match scoring powered by LLM reasoning</li>
+                <li>Groq-accelerated inference for near-instant agent responses</li>
+                <li>Extensible tool architecture — add new data sources with minimal code</li>
+              </ul>
+              <a class="demo-link" href="https://github.com/esember/job-search-agent" target="_blank">
+                ⬡ View on GitHub
+              </a>
+              <div style="margin-top:1.2rem">
+                <div class="tech-label">Tech Stack</div>
+                <div class="tags">
+                  <span class="tag">Python</span>
+                  <span class="tag">LangChain</span>
+                  <span class="tag">Groq API</span>
+                  <span class="tag">Agentic AI</span>
+                  <span class="tag">ReAct Agent</span>
+                  <span class="tag">LLM Tool Use</span>
+                  <span class="tag">CV Matching</span>
+                  <span class="tag">Job Search</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 — CLOSING -->
+  <div class="slide closing next" data-index="7">
     <div class="closing-inner">
       <div class="cover-name" style="font-size:clamp(2rem,5vw,3.5rem)">GURSEL OLCA</div>
       <div class="closing-lines">
@@ -679,7 +750,7 @@ ul.rlist li::before{
 </div><!-- /slides-wrap -->
 
 <script>
-const TOTAL = 7;
+const TOTAL = 8;
 let current = 0;
 let isAnimating = false;
 
@@ -695,7 +766,7 @@ const dotEls = [];
 for(let i=0;i<TOTAL;i++){
   const d=document.createElement('div');
   d.className='dot'+(i===0?' active':'');
-  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Contact'][i];
+  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Project 6','Contact'][i];
   d.onclick=()=>goTo(i);
   dotsEl.appendChild(d);
   dotEls.push(d);
