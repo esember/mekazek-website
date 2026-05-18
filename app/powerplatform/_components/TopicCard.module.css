@@ -7,12 +7,21 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: border-left-color 0.3s ease;
+  transition:
+    border-left-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
 /* Left border changes with status */
-.card.in_progress { border-left-color: var(--accent); }
-.card.completed   { border-left-color: #4caf7a; }
+.card.not_started { border-left-color: var(--border); }
+.card.in_progress { border-left-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-dim); }
+.card.completed   { border-left-color: #4caf7a; box-shadow: 0 0 0 1px rgba(76,175,122,0.25); }
 
 /* ── Header ── */
 .cardHeader {
@@ -26,7 +35,10 @@
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
+.card.in_progress .colorDot { transform: scale(1.4); }
+.card.completed   .colorDot { transform: scale(1.2); }
 
 .topicName {
   font-size: 0.95rem;
@@ -66,13 +78,21 @@
   cursor: pointer;
   padding: 0.4rem 0.5rem;
   white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
   text-align: center;
 }
 
 .statusBtn:hover:not(.statusActive) {
   border-color: var(--muted);
   color: var(--text);
+}
+
+.statusBtn:active {
+  transform: scale(0.95);
 }
 
 .checkmark {
@@ -87,15 +107,23 @@
 }
 
 .btn_in_progress.statusActive {
-  background: rgba(0, 120, 212, 0.12);
-  border-color: var(--pp-blue);
-  color: var(--pp-blue);
+  background: rgba(155, 45, 138, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  animation: pulseBtn 0.35s ease;
 }
 
 .btn_completed.statusActive {
   background: rgba(76, 175, 122, 0.12);
   border-color: #4caf7a;
   color: #4caf7a;
+  animation: pulseBtn 0.35s ease;
+}
+
+@keyframes pulseBtn {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 /* ── Notes ── */
@@ -123,11 +151,14 @@
   padding: 0.65rem 0.85rem;
   resize: vertical;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
 }
 
-.notes:focus { border-color: var(--pp-blue); }
+.notes:focus {
+  border-color: var(--pp-blue);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.15);
+}
 .notes::placeholder { color: var(--muted); font-style: italic; }
 
 @media (max-width: 480px) {
