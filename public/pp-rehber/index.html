@@ -7,11 +7,11 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0812;--surface:#120f20;--surface2:#1a1530;--border:#2a2045;
-  --text:#ede8f5;--muted:#7a6fa8;--accent:#9b2d8a;--accent-dim:#611b57;
+  --bg:#f4f1fc;--surface:#ffffff;--surface2:#ece7f8;--border:#d5ccea;
+  --text:#1a1130;--muted:#7060a0;--accent:#9b2d8a;--accent-dim:#611b57;
   --pp-blue:#0078d4;--pp-blue-dim:#004e8c;
-  --green:#4caf7a;--blue:#0078d4;--red:#e05555;--purple:#9b72cf;
-  --code-bg:#0e0b1e;--sidebar:260px;
+  --green:#2a7d4f;--blue:#0078d4;--red:#c0392b;--purple:#7b5ea7;
+  --code-bg:#eee9fa;--sidebar:260px;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.7}
 a{color:var(--accent);text-decoration:none}
@@ -30,7 +30,7 @@ a:hover{text-decoration:underline}
   text-transform:uppercase;color:var(--accent);font-weight:600;border-bottom:1px solid var(--border);margin-bottom:0.8rem}
 .toc-item{display:block;padding:0.45rem 1.2rem;font-size:0.82rem;color:var(--muted);
   border-left:2px solid transparent;transition:all 0.15s;cursor:pointer}
-.toc-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.toc-item:hover{color:var(--text);background:rgba(155,45,138,0.06)}
 .toc-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(155,45,138,0.08)}
 
 /* ── Main ── */
@@ -84,14 +84,14 @@ a:hover{text-decoration:underline}
 
 /* ── Lists ── */
 ul.items{list-style:none;padding:0;margin:0.5rem 0 1rem}
-ul.items li{padding:0.3rem 0 0.3rem 1.3rem;position:relative;font-size:0.88rem;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.03)}
+ul.items li{padding:0.3rem 0 0.3rem 1.3rem;position:relative;font-size:0.88rem;color:var(--text);border-bottom:1px solid rgba(0,0,0,0.05)}
 ul.items li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700}
 ul.items li:last-child{border-bottom:none}
 
 /* ── Code ── */
 pre,code{font-family:'Fira Code','Cascadia Code',Consolas,monospace}
 pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
-  padding:1.2rem;overflow-x:auto;font-size:0.78rem;line-height:1.7;margin:1rem 0;color:#c9d1d9}
+  padding:1.2rem;overflow-x:auto;font-size:0.78rem;line-height:1.7;margin:1rem 0;color:#2d1f4a}
 code{background:var(--code-bg);padding:0.15em 0.4em;border-radius:4px;font-size:0.85em;color:var(--accent)}
 
 /* ── Tables ── */
@@ -100,7 +100,7 @@ table{width:100%;border-collapse:collapse;font-size:0.83rem}
 th{background:var(--surface2);color:var(--accent);font-weight:600;text-align:left;
   padding:0.6rem 0.9rem;border-bottom:2px solid var(--border)}
 td{padding:0.55rem 0.9rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
-tr:hover td{background:rgba(255,255,255,0.02)}
+tr:hover td{background:rgba(155,45,138,0.04)}
 .yes{color:var(--green);font-weight:600}
 .no{color:var(--red);font-weight:600}
 
@@ -110,11 +110,11 @@ h3{font-size:0.9rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;
 
 /* ── Flow diagram ── */
 .flow{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
-  padding:1.1rem 1.3rem;font-size:0.8rem;line-height:2;color:#c9d1d9;font-family:monospace;margin:1rem 0;white-space:pre}
+  padding:1.1rem 1.3rem;font-size:0.8rem;line-height:2;color:#2d1f4a;font-family:monospace;margin:1rem 0;white-space:pre}
 
 /* ── Architecture box ── */
 .arch{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
-  padding:1.1rem 1.3rem;font-size:0.78rem;line-height:1.8;color:#c9d1d9;font-family:monospace;margin:1rem 0;overflow-x:auto;white-space:pre}
+  padding:1.1rem 1.3rem;font-size:0.78rem;line-height:1.8;color:#2d1f4a;font-family:monospace;margin:1rem 0;overflow-x:auto;white-space:pre}
 
 /* ── Responsive ── */
 @media(max-width:900px){
@@ -133,7 +133,7 @@ h3{font-size:0.9rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;
   border-bottom:none;
   border-left:3px solid var(--accent);
   padding-left:0.8rem;
-  background:linear-gradient(90deg,rgba(155,45,138,0.06) 0%,transparent 100%);
+  background:linear-gradient(90deg,rgba(155,45,138,0.08) 0%,transparent 100%);
   padding-top:0.4rem;padding-bottom:0.6rem;border-radius:0 6px 6px 0;
 }
 
