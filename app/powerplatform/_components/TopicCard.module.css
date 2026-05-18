@@ -87,9 +87,9 @@
 }
 
 .btn_in_progress.statusActive {
-  background: rgba(200, 169, 110, 0.12);
-  border-color: var(--accent-dim);
-  color: var(--accent);
+  background: rgba(0, 120, 212, 0.12);
+  border-color: var(--pp-blue);
+  color: var(--pp-blue);
 }
 
 .btn_completed.statusActive {
@@ -127,7 +127,7 @@
   width: 100%;
 }
 
-.notes:focus { border-color: var(--accent-dim); }
+.notes:focus { border-color: var(--pp-blue); }
 .notes::placeholder { color: var(--muted); font-style: italic; }
 
 @media (max-width: 480px) {

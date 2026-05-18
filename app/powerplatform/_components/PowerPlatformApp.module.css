@@ -1,4 +1,14 @@
 .app {
+  /* ── Power Platform brand colours ── */
+  --bg:         #0e0b1e;
+  --surface:    #1b1630;
+  --border:     #2e2550;
+  --text:       #ede8f5;
+  --muted:      #8077a8;
+  --accent:     #9b2d8a;   /* Power Apps magenta-bordeaux */
+  --accent-dim: #611b57;
+  --pp-blue:    #0078d4;   /* Power Automate blue */
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -61,7 +71,7 @@
 
 .fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  background: linear-gradient(90deg, var(--accent), var(--pp-blue));
   border-radius: 2px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
