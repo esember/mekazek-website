@@ -7,10 +7,11 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0e0e0e;--surface:#151515;--surface2:#1c1c1c;--border:#252525;
-  --text:#e2e2e2;--muted:#666;--accent:#c8a96e;--accent-dim:#9a7d4e;
-  --green:#4caf7a;--blue:#5b9bd5;--red:#e05555;--purple:#9b72cf;
-  --code-bg:#1a1a1a;--sidebar:260px;
+  --bg:#0a0812;--surface:#120f20;--surface2:#1a1530;--border:#2a2045;
+  --text:#ede8f5;--muted:#7a6fa8;--accent:#9b2d8a;--accent-dim:#611b57;
+  --pp-blue:#0078d4;--pp-blue-dim:#004e8c;
+  --green:#4caf7a;--blue:#0078d4;--red:#e05555;--purple:#9b72cf;
+  --code-bg:#0e0b1e;--sidebar:260px;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.7}
 a{color:var(--accent);text-decoration:none}
@@ -30,13 +31,15 @@ a:hover{text-decoration:underline}
 .toc-item{display:block;padding:0.45rem 1.2rem;font-size:0.82rem;color:var(--muted);
   border-left:2px solid transparent;transition:all 0.15s;cursor:pointer}
 .toc-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
-.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(200,169,110,0.06)}
+.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(155,45,138,0.08)}
 
 /* ── Main ── */
 .main{flex:1;min-width:0;padding:3rem 4rem;max-width:900px}
 
 /* ── Hero ── */
-.hero{text-align:center;padding:2rem 0 3.5rem;border-bottom:1px solid var(--border);margin-bottom:3rem}
+.hero{text-align:center;padding:2rem 0 3.5rem;border-bottom:1px solid var(--border);margin-bottom:3rem;
+  opacity:0;transform:translateY(16px);transition:opacity 0.5s ease,transform 0.5s ease}
+.hero.visible{opacity:1;transform:translateY(0)}
 .hero h1{font-size:2.2rem;font-weight:300;letter-spacing:-0.02em;color:var(--text);margin-bottom:0.5rem}
 .hero .subtitle{color:var(--accent);font-size:0.95rem;letter-spacing:0.04em;margin-bottom:1rem}
 .hero .tags{display:flex;flex-wrap:wrap;justify-content:center;gap:0.4rem;margin-top:1rem}
@@ -58,7 +61,7 @@ a:hover{text-decoration:underline}
 .qa-title .num{font-size:0.75rem;color:var(--accent-dim);margin-right:0.4rem}
 
 /* ── Boxes ── */
-.analoji{background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.2);
+.analoji{background:rgba(155,45,138,0.08);border:1px solid rgba(155,45,138,0.25);
   border-radius:8px;padding:0.9rem 1.1rem;margin-bottom:1rem}
 .analoji .label{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;
   color:var(--accent);font-weight:700;margin-bottom:0.4rem}
@@ -118,6 +121,64 @@ h3{font-size:0.9rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;
   .sidebar{display:none}
   .main{padding:2rem 1.5rem}
 }
+
+/* ── Sidebar gradient header ── */
+.sidebar-title{
+  background:linear-gradient(135deg,var(--accent-dim),var(--pp-blue-dim));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ── Section-title left accent bar ── */
+.section-title{
+  border-bottom:none;
+  border-left:3px solid var(--accent);
+  padding-left:0.8rem;
+  background:linear-gradient(90deg,rgba(155,45,138,0.06) 0%,transparent 100%);
+  padding-top:0.4rem;padding-bottom:0.6rem;border-radius:0 6px 6px 0;
+}
+
+/* ── Hero gradient title ── */
+.hero h1{
+  background:linear-gradient(90deg,var(--accent),var(--pp-blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:600;
+}
+.hero .subtitle{color:var(--pp-blue);opacity:0.85}
+
+/* ── Progress bar in sidebar ── */
+.sidebar::before{
+  content:'';display:block;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--pp-blue));
+  margin-bottom:0;
+}
+
+/* ── Scroll-in animation for sections ── */
+.section{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 0.5s ease, transform 0.5s ease;
+}
+.section.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ── qa-title blue left bar ── */
+.qa-title{
+  border-left-color:var(--pp-blue);
+  background:rgba(0,120,212,0.06);
+}
+.qa-title .num{color:var(--pp-blue);}
+
+/* ── tag hover ── */
+.tag{transition:background 0.2s,border-color 0.2s,color 0.2s;cursor:default}
+.tag:hover{background:rgba(155,45,138,0.12);border-color:var(--accent-dim);color:var(--text)}
+
+/* ── toc-item smooth transition ── */
+.toc-item{transition:all 0.2s ease}
+
+/* ── table header ── */
+th{background:linear-gradient(90deg,rgba(155,45,138,0.15),rgba(0,120,212,0.12));color:var(--text)}
 </style>
 </head>
 <body>
@@ -946,19 +1007,41 @@ With({rec: LookUp(Talepler, ID = varID)}, rec.Baslik)</pre>
 </div>
 
 <script>
-// Highlight active TOC item on scroll
 const sections = document.querySelectorAll('.section[id]');
 const tocItems = document.querySelectorAll('.toc-item');
-const observer = new IntersectionObserver((entries) => {
+
+// ── TOC active highlight ──
+const tocObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
       tocItems.forEach(t => t.classList.remove('active'));
       const active = document.querySelector('.toc-item[href="#' + e.target.id + '"]');
-      if (active) active.classList.add('active');
+      if (active) {
+        active.classList.add('active');
+        active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
     }
   });
-}, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
-sections.forEach(s => observer.observe(s));
+}, { threshold: 0.15, rootMargin: '-80px 0px -55% 0px' });
+
+// ── Section scroll-in animation ──
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      fadeObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+sections.forEach(s => {
+  tocObserver.observe(s);
+  fadeObserver.observe(s);
+});
+
+// Hero girer hemen
+const hero = document.querySelector('.hero');
+if (hero) requestAnimationFrame(() => hero.classList.add('visible'));
 </script>
 </body>
 </html>
