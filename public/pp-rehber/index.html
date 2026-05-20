@@ -179,6 +179,64 @@ h3{font-size:0.9rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;
 
 /* ── table header ── */
 th{background:linear-gradient(90deg,rgba(155,45,138,0.15),rgba(0,120,212,0.12));color:var(--text)}
+
+/* ── Home button ── */
+.home-btn{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  margin:0 1.2rem 1rem;padding:0.4rem 0.85rem;
+  background:linear-gradient(135deg,var(--accent-dim),var(--pp-blue-dim));
+  color:#fff;font-size:0.78rem;font-weight:600;letter-spacing:0.06em;
+  text-transform:uppercase;border-radius:20px;text-decoration:none;
+  transition:opacity 0.2s,transform 0.15s;white-space:nowrap;
+}
+.home-btn:hover{opacity:0.85;transform:translateX(-2px);text-decoration:none}
+
+/* ── 12 Concepts section ── */
+.concepts-section{margin-bottom:4rem;scroll-margin-top:2rem}
+
+.concepts-header{
+  text-align:center;padding:2rem 0 1.5rem;
+  border-bottom:1px solid var(--border);margin-bottom:2rem;
+}
+.concepts-header h2{
+  font-size:2rem;font-weight:700;letter-spacing:-0.01em;
+  background:linear-gradient(90deg,var(--accent),var(--pp-blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.concepts-header .sub{color:var(--muted);font-size:0.95rem;margin-top:0.4rem;font-style:italic}
+
+.concepts-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+}
+@media(max-width:700px){.concepts-grid{grid-template-columns:1fr}}
+
+.c-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:0.6rem;
+  transition:transform 0.2s ease,box-shadow 0.2s ease;
+}
+.c-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(155,45,138,0.12)}
+
+.c-num{
+  font-size:1.4rem;font-weight:800;line-height:1;
+  background:linear-gradient(135deg,var(--accent),var(--pp-blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.c-title{
+  font-size:0.95rem;font-weight:600;color:var(--text);line-height:1.3;
+}
+.c-desc{
+  font-size:0.82rem;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);
+  padding-top:0.6rem;margin-top:0.2rem;
+}
+
+.concepts-footer{
+  margin-top:1.5rem;padding:1rem 1.2rem;border-radius:8px;
+  background:linear-gradient(90deg,rgba(155,45,138,0.06),rgba(0,120,212,0.06));
+  border:1px solid var(--border);text-align:center;
+  font-size:0.88rem;color:var(--muted);font-style:italic;
+}
+.concepts-footer strong{color:var(--pp-blue)}
 </style>
 </head>
 <body>
@@ -186,7 +244,9 @@ th{background:linear-gradient(90deg,rgba(155,45,138,0.15),rgba(0,120,212,0.12));
 
 <!-- ── Sidebar ── -->
 <nav class="sidebar">
+  <a href="/" class="home-btn">← Home</a>
   <div class="sidebar-title">İçindekiler</div>
+  <a class="toc-item" href="#kavramlar">0 · 12 Temel Kavram</a>
   <a class="toc-item" href="#b1">1 · Temel Kavramlar</a>
   <a class="toc-item" href="#b2">2 · Gerçek Proje Deneyimi</a>
   <a class="toc-item" href="#b3">3 · Senior Senaryolar</a>
@@ -205,6 +265,95 @@ th{background:linear-gradient(90deg,rgba(155,45,138,0.15),rgba(0,120,212,0.12));
 
 <!-- ── Main ── -->
 <main class="main">
+
+  <!-- ════════════════ 12 KAVRAM ════════════════ -->
+  <section class="concepts-section section" id="kavramlar">
+    <div class="concepts-header">
+      <h2>12 Power Platform Concepts</h2>
+      <div class="sub">Real-World Analogies to Remember</div>
+    </div>
+
+    <div class="concepts-grid">
+
+      <div class="c-card">
+        <div class="c-num">1</div>
+        <div class="c-title">Canvas App vs Model-Driven</div>
+        <div class="c-desc">Canvas App boş bir tuval gibidir — her pikseli sen çizersin. Model-Driven ise hazır bir bina planı gibidir: duvarlar zaten var, sen sadece odaları döşersin.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">2</div>
+        <div class="c-title">Patch vs SubmitForm</div>
+        <div class="c-desc">SubmitForm hazır bir kargo formu gibidir — doldur, tek tuşla gönder. Patch ise mektubu elle yazmak gibidir: her alanı, her kaydı, her hedefi sen belirlersin.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">3</div>
+        <div class="c-title">Dataverse vs SharePoint</div>
+        <div class="c-desc">Dataverse bir banka kasası gibidir — güvenli, ilişkisel, kurumsal veri için. SharePoint ise bir dosya dolabı — erişimi kolay, ama hassas varlıkları oraya koymaz­sın.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">4</div>
+        <div class="c-title">Delegation Limit</div>
+        <div class="c-desc">Gölün tamamına ağ atarak balık yakalamaya çalışma. Filtreleri sunucu tarafına it, istemcide 500 satır limitini asla işleme.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">5</div>
+        <div class="c-title">ALM: DEV → UAT → PROD</div>
+        <div class="c-desc">Restoran mutfağı gibi düşün: tarifi DEV'de mükemmelleştir, UAT'ta gerçek misafirlere test et, ancak onay sonrası PROD menüsüne al — tadımı asla atlama.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">6</div>
+        <div class="c-title">Multi-Level Approval System</div>
+        <div class="c-desc">Mahkeme sistemi gibi çalışır: ilk yargıç davayı reddederse üst mahkemeye çıkar. Zaman aşımı otomatik yönlendirme tetikler — manuel müdahale gerekmez.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">7</div>
+        <div class="c-title">Role-Based Access Control</div>
+        <div class="c-desc">Otel anahtar kartı gibi düşün: müdür her odaya girer, misafir sadece kendi odasına, temizlikçi yalnızca vardiyasında. Güvenlik veri katmanında yaşar, UI'de değil.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">8</div>
+        <div class="c-title">Failed Flows &amp; Retry Logic</div>
+        <div class="c-desc">İade mektup gibi: sistem kapıya üç kez çalar, hatayı dead-letter tablosuna yazar ve devam etmeden önce ekibi bilgilendirir.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">9</div>
+        <div class="c-title">Securing External APIs</div>
+        <div class="c-desc">Custom Connector pasaport, Azure Key Vault vize ofisi. Kimlik bilgileri asla açıkta dolaşmaz — her zaman çalışma anında güvenli şekilde alınır.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">10</div>
+        <div class="c-title">C# Plugin (Dataverse)</div>
+        <div class="c-desc">Plugin bir araba motoru gibidir — olay anında (Create/Update) ateşlenir, transaction içinde çalışır ve bir şeyler ters giderse her şeyi temizce geri alır.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">11</div>
+        <div class="c-title">Custom Connector</div>
+        <div class="c-desc">Custom Connector oluşturmak, çilingir tarafından belirli bir kilit için anahtar kesmek gibidir: Power Platform'a şirketinin API'siyle nasıl konuşacağını öğretirsin.</div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-num">12</div>
+        <div class="c-title">AI Agent Architecture</div>
+        <div class="c-desc">AI agent tasarımı bir restoran gibidir: bot garson (sipariş alır), flow'lar mutfak (işi yapar), knowledge source'lar ise kiler (cevapları sağlar).</div>
+      </div>
+
+    </div>
+
+    <div class="concepts-footer">
+      Harika çözümler iyi mimari, güvenli veri ve akıllı uygulamalar üzerine kurulur. —
+      <strong>Mimar gibi düşün. Pro gibi inşa et.</strong>
+    </div>
+  </section>
 
   <div class="hero">
     <h1>Power Platform</h1>
@@ -1039,9 +1188,11 @@ sections.forEach(s => {
   fadeObserver.observe(s);
 });
 
-// Hero girer hemen
+// Hero ve ilk section (12 kavram) hemen girer
 const hero = document.querySelector('.hero');
 if (hero) requestAnimationFrame(() => hero.classList.add('visible'));
+const firstSection = document.querySelector('#kavramlar');
+if (firstSection) requestAnimationFrame(() => firstSection.classList.add('visible'));
 </script>
 </body>
 </html>
