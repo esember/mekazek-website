@@ -34,15 +34,27 @@
 }
 
 .back {
+  display: inline-flex;
+  align-items: center;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.2s;
   text-decoration: none;
+  background: linear-gradient(135deg, var(--accent-dim), var(--pp-blue-dim));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: backFadeIn 0.4s ease both;
 }
-.back:hover { color: var(--accent); }
+.back:hover { transform: translateX(-2px); }
+@keyframes backFadeIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 
 .title {
   font-size: 1.1rem;
