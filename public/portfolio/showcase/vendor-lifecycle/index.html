@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Lifecycle & Contract Management — SharePoint Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sp-blue:#0078d4;--sp-navy:#003366;--sp-bg:#f3f2f1;
+  --sp-white:#ffffff;--sp-border:#e1dfdd;--sp-text:#323130;
+  --sp-muted:#605e5c;--sp-hover:#f3f2f1;--sp-selected:#deecf9;
+  --sp-red:#d13438;--sp-yellow:#ffa500;--sp-green:#107c10;
+  --sp-red-bg:#fde7e9;--sp-yellow-bg:#fff4ce;--sp-green-bg:#dff6dd;
+}
+html,body{height:100%;background:var(--sp-bg);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  color:var(--sp-text);font-size:14px;}
+
+/* ── M365 TOP BAR ── */
+.m365-bar{
+  height:48px;background:#0a2a5e;
+  display:flex;align-items:center;padding:0 1rem;gap:0.5rem;
+  position:sticky;top:0;z-index:200;flex-shrink:0;
+}
+.waffle{width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border-radius:4px;color:#fff;font-size:1.1rem;flex-shrink:0;}
+.waffle:hover{background:rgba(255,255,255,0.1);}
+.m365-logo{color:#fff;font-size:0.85rem;font-weight:600;margin-right:1rem;
+  display:flex;align-items:center;gap:0.4rem;white-space:nowrap;}
+.m365-logo span{opacity:0.7;font-weight:400;}
+.m365-search{flex:1;max-width:560px;margin:0 auto;
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);
+  border-radius:4px;display:flex;align-items:center;gap:0.5rem;
+  padding:0.3rem 0.7rem;color:rgba(255,255,255,0.7);font-size:0.82rem;}
+.m365-right{margin-left:auto;display:flex;align-items:center;gap:0.2rem;}
+.m365-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border-radius:4px;color:rgba(255,255,255,0.85);font-size:1rem;}
+.m365-icon:hover{background:rgba(255,255,255,0.1);}
+.m365-avatar{width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#0078d4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;color:#fff;cursor:pointer;}
+
+/* ── SP SUITE BAR ── */
+.sp-suite{
+  height:40px;background:#0078d4;
+  display:flex;align-items:center;padding:0 1rem;gap:1rem;
+  position:sticky;top:48px;z-index:190;flex-shrink:0;
+}
+.sp-site-name{color:#fff;font-size:0.88rem;font-weight:600;}
+.sp-suite-nav{display:flex;gap:0;margin-left:1.5rem;}
+.sp-snav-item{color:rgba(255,255,255,0.85);font-size:0.8rem;padding:0 0.9rem;
+  height:40px;display:flex;align-items:center;cursor:pointer;
+  border-bottom:2px solid transparent;transition:background 0.15s;}
+.sp-snav-item:hover{background:rgba(255,255,255,0.1);}
+.sp-snav-item.active{color:#fff;border-bottom-color:#fff;}
+.sp-suite-right{margin-left:auto;display:flex;align-items:center;gap:0.5rem;}
+.sp-edit-btn{background:transparent;border:1px solid rgba(255,255,255,0.6);
+  color:#fff;border-radius:2px;padding:0.2rem 0.75rem;font-size:0.78rem;
+  cursor:pointer;font-family:inherit;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;min-height:calc(100vh - 88px);}
+
+/* LEFT NAV */
+.sp-leftnav{
+  width:220px;flex-shrink:0;background:var(--sp-white);
+  border-right:1px solid var(--sp-border);padding:0.5rem 0;
+  position:sticky;top:88px;height:calc(100vh - 88px);overflow-y:auto;
+}
+.leftnav-label{font-size:0.68rem;font-weight:700;color:var(--sp-muted);
+  text-transform:uppercase;letter-spacing:0.06em;
+  padding:0.8rem 1rem 0.3rem;}
+.leftnav-item{display:flex;align-items:center;gap:0.6rem;
+  padding:0.45rem 1rem;font-size:0.82rem;color:var(--sp-text);
+  cursor:pointer;border-left:2px solid transparent;transition:background 0.12s;}
+.leftnav-item:hover{background:var(--sp-hover);}
+.leftnav-item.active{background:#deecf9;border-left-color:var(--sp-blue);
+  color:var(--sp-blue);font-weight:600;}
+.leftnav-icon{font-size:0.9rem;width:18px;text-align:center;}
+
+/* MAIN */
+.sp-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+/* PAGE HEADER */
+.page-header{
+  background:var(--sp-white);border-bottom:1px solid var(--sp-border);
+  padding:0.8rem 1.5rem;
+}
+.breadcrumb{font-size:0.75rem;color:var(--sp-muted);margin-bottom:0.4rem;
+  display:flex;align-items:center;gap:0.3rem;}
+.breadcrumb a{color:var(--sp-blue);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+.page-title{font-size:1.25rem;font-weight:600;color:var(--sp-text);
+  display:flex;align-items:center;gap:0.8rem;}
+.page-subtitle{font-size:0.78rem;color:var(--sp-muted);margin-top:0.2rem;}
+
+/* KPI ROW */
+.kpi-row{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+  background:var(--sp-border);border-bottom:1px solid var(--sp-border);
+}
+.kpi-card{background:var(--sp-white);padding:0.9rem 1.2rem;text-align:center;}
+.kpi-val{font-size:1.6rem;font-weight:700;line-height:1;}
+.kpi-label{font-size:0.7rem;color:var(--sp-muted);margin-top:0.2rem;text-transform:uppercase;
+  letter-spacing:0.04em;}
+.kpi-val.green{color:var(--sp-green);}
+.kpi-val.yellow{color:var(--sp-yellow);}
+.kpi-val.red{color:var(--sp-red);}
+.kpi-val.blue{color:var(--sp-blue);}
+
+/* COMMAND BAR */
+.cmd-bar{
+  background:var(--sp-white);border-bottom:1px solid var(--sp-border);
+  padding:0 1rem;display:flex;align-items:center;gap:0.2rem;min-height:44px;
+  flex-wrap:wrap;
+}
+.cmd-btn{display:flex;align-items:center;gap:0.35rem;
+  padding:0.35rem 0.7rem;border:none;background:transparent;
+  font-size:0.82rem;font-family:inherit;color:var(--sp-text);
+  cursor:pointer;border-radius:2px;transition:background 0.12s;}
+.cmd-btn:hover{background:var(--sp-hover);}
+.cmd-btn.primary{color:var(--sp-blue);font-weight:600;}
+.cmd-btn svg{width:14px;height:14px;flex-shrink:0;}
+.cmd-sep{width:1px;height:24px;background:var(--sp-border);margin:0 0.2rem;}
+.cmd-right{margin-left:auto;display:flex;align-items:center;gap:0.2rem;}
+.view-btn{padding:0.3rem 0.5rem;border:none;background:transparent;
+  cursor:pointer;border-radius:2px;color:var(--sp-muted);font-size:0.9rem;}
+.view-btn.active{background:var(--sp-selected);color:var(--sp-blue);}
+
+/* FILTER BAR */
+.filter-bar{
+  background:var(--sp-white);border-bottom:1px solid var(--sp-border);
+  padding:0.4rem 1rem;display:flex;align-items:center;gap:0.5rem;
+  font-size:0.78rem;color:var(--sp-muted);flex-wrap:wrap;
+}
+.filter-chip{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  background:var(--sp-selected);border:1px solid #c7e0f4;border-radius:12px;
+  padding:0.18rem 0.6rem;font-size:0.74rem;color:var(--sp-blue);cursor:pointer;
+}
+.filter-chip .x{color:var(--sp-muted);font-size:0.8rem;margin-left:0.1rem;}
+.filter-add{color:var(--sp-blue);cursor:pointer;font-size:0.78rem;
+  display:flex;align-items:center;gap:0.2rem;}
+
+/* LIST */
+.sp-list{flex:1;background:var(--sp-white);overflow-x:auto;}
+.sp-table{width:100%;border-collapse:collapse;min-width:900px;}
+.sp-table thead th{
+  padding:0.55rem 0.8rem;text-align:left;font-size:0.75rem;font-weight:600;
+  color:var(--sp-muted);background:var(--sp-white);
+  border-bottom:1px solid var(--sp-border);white-space:nowrap;
+  position:sticky;top:0;cursor:pointer;user-select:none;
+}
+.sp-table thead th:hover{background:var(--sp-hover);}
+.sp-table thead th.sorted{color:var(--sp-blue);}
+.sp-table tbody tr{border-bottom:1px solid var(--sp-border);
+  transition:background 0.1s;cursor:pointer;}
+.sp-table tbody tr:hover{background:#f5f5f5;}
+.sp-table tbody tr.selected{background:var(--sp-selected);}
+.sp-table td{padding:0.55rem 0.8rem;font-size:0.8rem;color:var(--sp-text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+.sp-table td.link-cell{color:var(--sp-blue);font-weight:500;}
+.sp-table td.link-cell:hover{text-decoration:underline;}
+.row-cb{width:32px;padding:0 0.4rem;}
+.row-checkbox{width:16px;height:16px;accent-color:var(--sp-blue);cursor:pointer;}
+
+/* SLA BADGE */
+.sla-badge{display:inline-flex;align-items:center;gap:0.3rem;
+  padding:0.18rem 0.55rem;border-radius:2px;font-size:0.73rem;font-weight:600;}
+.sla-active{background:var(--sp-green-bg);color:var(--sp-green);}
+.sla-expiring{background:var(--sp-yellow-bg);color:#7a5400;}
+.sla-expired{background:var(--sp-red-bg);color:var(--sp-red);}
+.sla-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sla-active .sla-dot{background:var(--sp-green);}
+.sla-expiring .sla-dot{background:var(--sp-yellow);}
+.sla-expired .sla-dot{background:var(--sp-red);}
+
+/* DEPT BADGE */
+.dept{display:inline-block;padding:0.1rem 0.45rem;border-radius:10px;
+  font-size:0.7rem;font-weight:600;}
+.dept-proc{background:#e8f4fd;color:#0078d4;}
+.dept-fac{background:#e8f0fe;color:#4f46e5;}
+.dept-hr{background:#fce8f3;color:#9b2d8a;}
+.dept-leg{background:#fff4ce;color:#7a5400;}
+.dept-adm{background:#dff6dd;color:#107c10;}
+
+/* PRIORITY */
+.pri{font-size:0.72rem;font-weight:600;}
+.pri-critical{color:var(--sp-red);}
+.pri-high{color:#ca5010;}
+.pri-medium{color:#7a5400;}
+.pri-low{color:var(--sp-green);}
+
+/* DETAIL PANEL */
+.detail-overlay{
+  position:fixed;inset:0;z-index:300;
+  display:flex;justify-content:flex-end;
+  background:rgba(0,0,0,0.3);
+}
+.detail-panel{
+  width:460px;background:var(--sp-white);
+  box-shadow:-4px 0 24px rgba(0,0,0,0.15);
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:panelIn 0.2s ease;
+}
+@keyframes panelIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.dp-header{
+  padding:1rem 1.2rem;border-bottom:1px solid var(--sp-border);
+  display:flex;align-items:flex-start;gap:0.8rem;
+}
+.dp-title{font-size:1rem;font-weight:600;color:var(--sp-text);flex:1;}
+.dp-close{background:none;border:none;font-size:1.1rem;cursor:pointer;
+  color:var(--sp-muted);padding:0.2rem;border-radius:2px;}
+.dp-close:hover{background:var(--sp-hover);}
+.dp-tabs{display:flex;border-bottom:1px solid var(--sp-border);}
+.dp-tab{padding:0.6rem 1rem;font-size:0.8rem;cursor:pointer;
+  border-bottom:2px solid transparent;color:var(--sp-muted);}
+.dp-tab.active{color:var(--sp-blue);border-bottom-color:var(--sp-blue);font-weight:600;}
+.dp-body{flex:1;overflow-y:auto;padding:1rem 1.2rem;}
+.dp-section{margin-bottom:1.2rem;}
+.dp-section-title{font-size:0.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.06em;color:var(--sp-muted);margin-bottom:0.6rem;}
+.dp-field{margin-bottom:0.7rem;}
+.dp-field-label{font-size:0.72rem;color:var(--sp-muted);margin-bottom:0.1rem;}
+.dp-field-val{font-size:0.85rem;color:var(--sp-text);}
+.dp-field-val.highlight{color:var(--sp-blue);font-weight:600;}
+.approval-step{
+  display:flex;align-items:flex-start;gap:0.7rem;
+  padding:0.6rem 0;border-bottom:1px solid var(--sp-border);}
+.approval-step:last-child{border-bottom:none;}
+.step-icon{width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;}
+.step-approved{background:#dff6dd;color:var(--sp-green);}
+.step-pending{background:#fff4ce;color:#7a5400;}
+.step-waiting{background:var(--sp-hover);color:var(--sp-muted);}
+.step-info{flex:1;}
+.step-name{font-size:0.8rem;font-weight:600;color:var(--sp-text);}
+.step-meta{font-size:0.72rem;color:var(--sp-muted);}
+.dp-actions{padding:0.8rem 1.2rem;border-top:1px solid var(--sp-border);
+  display:flex;gap:0.5rem;}
+.dp-btn{padding:0.45rem 1rem;border-radius:2px;font-size:0.82rem;
+  cursor:pointer;font-family:inherit;font-weight:600;}
+.dp-btn-primary{background:var(--sp-blue);color:#fff;border:none;}
+.dp-btn-primary:hover{background:#106ebe;}
+.dp-btn-ghost{background:#fff;border:1px solid var(--sp-border);color:var(--sp-text);}
+.dp-btn-ghost:hover{background:var(--sp-hover);}
+
+/* STATUS BAR */
+.status-bar{
+  background:#fff4ce;border-top:1px solid #fde7a0;
+  padding:0.4rem 1.5rem;font-size:0.75rem;color:#7a5400;
+  display:flex;align-items:center;gap:0.5rem;
+}
+
+/* BACK LINK */
+.back-bar{
+  background:var(--sp-white);border-bottom:1px solid var(--sp-border);
+  padding:0.5rem 1.5rem;display:flex;align-items:center;gap:0.8rem;
+}
+.back-link{display:inline-flex;align-items:center;gap:0.4rem;
+  color:var(--sp-blue);text-decoration:none;font-size:0.8rem;font-weight:600;}
+.back-link:hover{text-decoration:underline;}
+.demo-tag{font-size:0.72rem;background:#e8f4fd;border:1px solid #c7e0f4;
+  color:var(--sp-blue);border-radius:10px;padding:0.1rem 0.55rem;font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- M365 TOP BAR -->
+<div class="m365-bar">
+  <div class="waffle">⊞</div>
+  <div class="m365-logo">
+    <svg viewBox="0 0 23 23" fill="none" width="18" height="18"><path d="M1 1h10v10H1z" fill="#f25022"/><path d="M12 1h10v10H12z" fill="#7fba00"/><path d="M1 12h10v10H1z" fill="#00a4ef"/><path d="M12 12h10v10H12z" fill="#ffb900"/></svg>
+    Microsoft 365
+  </div>
+  <div class="m365-search">
+    🔍 &nbsp; Search
+  </div>
+  <div class="m365-right">
+    <div class="m365-icon">🔔</div>
+    <div class="m365-icon">❓</div>
+    <div class="m365-icon">⚙️</div>
+    <div class="m365-avatar">GO</div>
+  </div>
+</div>
+
+<!-- SP SUITE BAR -->
+<div class="sp-suite">
+  <div class="sp-site-name">📋 Vendor Management Portal</div>
+  <nav class="sp-suite-nav">
+    <div class="sp-snav-item active">Home</div>
+    <div class="sp-snav-item">Vendors</div>
+    <div class="sp-snav-item">Contracts</div>
+    <div class="sp-snav-item">Documents</div>
+    <div class="sp-snav-item">Approvals</div>
+    <div class="sp-snav-item">Reports</div>
+  </nav>
+  <div class="sp-suite-right">
+    <button class="sp-edit-btn">✏ Edit</button>
+  </div>
+</div>
+
+<!-- BACK BAR -->
+<div class="back-bar">
+  <a href="/portfolio/showcase" class="back-link">← Apps Showcase</a>
+  <span class="demo-tag">📐 UI Mockup — Enterprise Project 01</span>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  ⚠️ &nbsp; 3 contracts expiring within 30 days — <strong>review required</strong>. &nbsp;
+  <span style="color:var(--sp-blue);cursor:pointer;text-decoration:underline">View expiring contracts →</span>
+</div>
+
+<div class="shell">
+
+  <!-- LEFT NAV -->
+  <nav class="sp-leftnav">
+    <div class="leftnav-label">Navigation</div>
+    <div class="leftnav-item active"><span class="leftnav-icon">🏠</span> Home</div>
+    <div class="leftnav-item"><span class="leftnav-icon">🏢</span> Vendors Master</div>
+    <div class="leftnav-item"><span class="leftnav-icon">📄</span> Contracts</div>
+    <div class="leftnav-item"><span class="leftnav-icon">🔧</span> Vendor Services</div>
+    <div class="leftnav-item"><span class="leftnav-icon">📁</span> Documents Library</div>
+    <div class="leftnav-item"><span class="leftnav-icon">✅</span> Approval Queue</div>
+    <div class="leftnav-item"><span class="leftnav-icon">⚠️</span> Incidents & Issues</div>
+    <div class="leftnav-label">Reports</div>
+    <div class="leftnav-item"><span class="leftnav-icon">📊</span> SLA Dashboard</div>
+    <div class="leftnav-item"><span class="leftnav-icon">📈</span> Compliance Report</div>
+    <div class="leftnav-item"><span class="leftnav-icon">📅</span> Expiry Calendar</div>
+    <div class="leftnav-label">Admin</div>
+    <div class="leftnav-item"><span class="leftnav-icon">⚙️</span> List Settings</div>
+    <div class="leftnav-item"><span class="leftnav-icon">👥</span> Permissions</div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="sp-main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a href="#">Vendor Management Portal</a> › <span>Vendors Master List</span>
+      </div>
+      <div class="page-title">
+        🏢 Vendors Master List
+        <span style="font-size:0.75rem;font-weight:400;color:var(--sp-muted);
+          background:#f3f2f1;border:1px solid var(--sp-border);border-radius:10px;
+          padding:0.1rem 0.6rem">384 items</span>
+      </div>
+      <div class="page-subtitle">Enterprise vendor registry — Procurement · Facilities · HR · Legal · Administration</div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val blue">384</div>
+        <div class="kpi-label">Total Vendors</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val green">341</div>
+        <div class="kpi-label">Active SLA</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val yellow">28</div>
+        <div class="kpi-label">Expiring &lt; 90d</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val red">15</div>
+        <div class="kpi-label">Expired / At Risk</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" style="color:#8764b8">12</div>
+        <div class="kpi-label">Pending Approval</div>
+      </div>
+    </div>
+
+    <!-- COMMAND BAR -->
+    <div class="cmd-bar">
+      <button class="cmd-btn primary" onclick="showNewVendor()">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a1 1 0 011 1v4h4a1 1 0 010 2H9v4a1 1 0 01-2 0V9H3a1 1 0 010-2h4V3a1 1 0 011-1z"/></svg>
+        New Vendor
+      </button>
+      <div class="cmd-sep"></div>
+      <button class="cmd-btn" id="btnEdit" onclick="alert('Select a vendor to edit')">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.013 1.427a1.75 1.75 0 012.474 0l1.086 1.086a1.75 1.75 0 010 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 01-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.609zm1.414 1.06a.25.25 0 00-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 000-.354l-1.086-1.086zM11.189 6.25L9.75 4.81l-6.286 6.287a.25.25 0 00-.064.108l-.558 1.953 1.953-.558a.25.25 0 00.108-.064L11.19 6.25z"/></svg>
+        Edit
+      </button>
+      <button class="cmd-btn">
+        🔗 Share
+      </button>
+      <button class="cmd-btn" onclick="showFilters()">
+        ⚙️ Filter
+      </button>
+      <button class="cmd-btn">
+        📊 Export to Excel
+      </button>
+      <button class="cmd-btn">
+        🔔 Alert Me
+      </button>
+      <div class="cmd-sep"></div>
+      <button class="cmd-btn">
+        ⚡ Automate ▾
+      </button>
+      <div class="cmd-right">
+        <button class="view-btn active" title="List view">☰</button>
+        <button class="view-btn" title="Gallery view">⊞</button>
+        <button class="view-btn" title="Calendar">📅</button>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <span>Filtered by:</span>
+      <span class="filter-chip">Status: Active <span class="x">×</span></span>
+      <span class="filter-chip">Dept: All <span class="x">×</span></span>
+      <span class="filter-add">+ Add filter</span>
+      <span style="margin-left:auto;color:var(--sp-blue);cursor:pointer">Clear all</span>
+    </div>
+
+    <!-- LIST -->
+    <div class="sp-list">
+      <table class="sp-table" id="vendorTable">
+        <thead>
+          <tr>
+            <th class="row-cb"><input type="checkbox" class="row-checkbox" onchange="selectAll(this)"></th>
+            <th onclick="sortBy('id')" class="sorted">ID ↑</th>
+            <th onclick="sortBy('name')">Vendor Name</th>
+            <th onclick="sortBy('category')">Category</th>
+            <th onclick="sortBy('dept')">Department</th>
+            <th onclick="sortBy('sla')">SLA Status</th>
+            <th onclick="sortBy('expiry')">Contract Expiry</th>
+            <th onclick="sortBy('priority')">Priority</th>
+            <th onclick="sortBy('contact')">Contact</th>
+            <th onclick="sortBy('approver')">Approver L1</th>
+          </tr>
+        </thead>
+        <tbody id="vendorBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detailOverlay" style="display:none" onclick="closeDetail(event)">
+  <div class="detail-panel" onclick="event.stopPropagation()">
+    <div class="dp-header">
+      <div>
+        <div class="dp-title" id="dpTitle">—</div>
+        <div style="font-size:0.75rem;color:var(--sp-muted);margin-top:0.2rem" id="dpMeta">—</div>
+      </div>
+      <button class="dp-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dp-tabs">
+      <div class="dp-tab active" onclick="dpTab(0,this)">Details</div>
+      <div class="dp-tab" onclick="dpTab(1,this)">Approval Flow</div>
+      <div class="dp-tab" onclick="dpTab(2,this)">Services (3)</div>
+    </div>
+    <div class="dp-body">
+
+      <!-- TAB 0: DETAILS -->
+      <div id="dpTab0">
+        <div class="dp-section">
+          <div class="dp-section-title">Vendor Information</div>
+          <div class="dp-field"><div class="dp-field-label">Vendor ID</div><div class="dp-field-val highlight" id="dp-id">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Legal Name</div><div class="dp-field-val" id="dp-name">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Category</div><div class="dp-field-val" id="dp-category">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Department</div><div class="dp-field-val" id="dp-dept">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Primary Contact</div><div class="dp-field-val" id="dp-contact">—</div></div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-section-title">Contract & SLA</div>
+          <div class="dp-field"><div class="dp-field-label">SLA Status</div><div class="dp-field-val" id="dp-sla">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Contract Expiry</div><div class="dp-field-val" id="dp-expiry">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Annual Value</div><div class="dp-field-val" id="dp-value">—</div></div>
+          <div class="dp-field"><div class="dp-field-label">Priority Tier</div><div class="dp-field-val" id="dp-priority">—</div></div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-section-title">Folder Structure</div>
+          <div style="background:#f3f2f1;border-radius:4px;padding:0.7rem;font-size:0.75rem;
+            font-family:monospace;color:var(--sp-text);line-height:1.7">
+            📁 Vendors / <span id="dp-folder">VND-000</span> /<br>
+            &nbsp;&nbsp;📂 Contracts<br>
+            &nbsp;&nbsp;📂 Invoices<br>
+            &nbsp;&nbsp;📂 Correspondence<br>
+            &nbsp;&nbsp;📂 Performance Reviews<br>
+            &nbsp;&nbsp;📂 Insurance &amp; Compliance<br>
+            &nbsp;&nbsp;📂 Incident Reports
+          </div>
+          <div style="font-size:0.72rem;color:var(--sp-green);margin-top:0.4rem">
+            ✅ Auto-provisioned by PnP PowerShell on vendor creation
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: APPROVAL FLOW -->
+      <div id="dpTab1" style="display:none">
+        <div class="dp-section">
+          <div class="dp-section-title">3-Level Approval Workflow</div>
+          <div class="approval-step">
+            <div class="step-icon step-approved">✓</div>
+            <div class="step-info">
+              <div class="step-name">Level 1 — Department Manager</div>
+              <div class="step-meta">Approved by Maria Chen · May 12, 2025 · 9:42 AM</div>
+              <div style="font-size:0.75rem;color:var(--sp-text);margin-top:0.25rem;
+                background:#f3f2f1;padding:0.3rem 0.5rem;border-radius:2px;margin-top:0.3rem">
+                "Vendor meets all procurement criteria."
+              </div>
+            </div>
+          </div>
+          <div class="approval-step">
+            <div class="step-icon step-approved">✓</div>
+            <div class="step-info">
+              <div class="step-name">Level 2 — Procurement Director</div>
+              <div class="step-meta">Approved by James Wilson · May 13, 2025 · 2:15 PM</div>
+            </div>
+          </div>
+          <div class="approval-step">
+            <div class="step-icon step-pending">⏳</div>
+            <div class="step-info">
+              <div class="step-name">Level 3 — Legal Review</div>
+              <div class="step-meta" style="color:var(--sp-yellow)">Awaiting response · SLA: 48h remaining</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:0.74rem;color:var(--sp-muted);margin-top:0.5rem">
+          ⚡ Powered by Power Automate — Teams Adaptive Cards approval routing
+        </div>
+      </div>
+
+      <!-- TAB 2: SERVICES -->
+      <div id="dpTab2" style="display:none">
+        <div class="dp-section">
+          <div class="dp-section-title">Active Services</div>
+          <div style="font-size:0.8rem;border:1px solid var(--sp-border);border-radius:4px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;
+              padding:0.5rem 0.8rem;background:#f3f2f1;font-weight:600;font-size:0.72rem;
+              color:var(--sp-muted)">
+              <span>Service</span><span>SLA</span><span>Status</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;
+              padding:0.5rem 0.8rem;border-top:1px solid var(--sp-border)">
+              <span>Network Maintenance</span><span>99.5%</span>
+              <span class="sla-badge sla-active" style="font-size:0.65rem">● Active</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;
+              padding:0.5rem 0.8rem;border-top:1px solid var(--sp-border)">
+              <span>Hardware Support</span><span>98.0%</span>
+              <span class="sla-badge sla-active" style="font-size:0.65rem">● Active</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;
+              padding:0.5rem 0.8rem;border-top:1px solid var(--sp-border)">
+              <span>On-site Response</span><span>95.0%</span>
+              <span class="sla-badge sla-expiring" style="font-size:0.65rem">⚠ Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="dp-actions">
+      <button class="dp-btn dp-btn-primary">Open Full Record</button>
+      <button class="dp-btn dp-btn-ghost">Edit</button>
+      <button class="dp-btn dp-btn-ghost" onclick="closeDetail()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const VENDORS = [
+  {id:'VND-001',name:'Apex Technology Solutions',category:'IT Services',dept:'IT / Procurement',deptKey:'proc',sla:'active',expiry:'Dec 31, 2025',priority:'Critical',contact:'Sarah Miller',approver:'J. Wilson',value:'$148,000'},
+  {id:'VND-002',name:'BuildRight Contractors LLC',category:'Facilities / Construction',dept:'Facilities',deptKey:'fac',sla:'expiring',expiry:'Jul 15, 2025',priority:'High',contact:'Tom Richards',approver:'M. Chen',value:'$92,500'},
+  {id:'VND-003',name:'ComplianceFirst Legal Group',category:'Legal Services',dept:'Legal',deptKey:'leg',sla:'active',expiry:'Mar 31, 2026',priority:'High',contact:'Diana Park',approver:'R. Torres',value:'$210,000'},
+  {id:'VND-004',name:'DataSecure Inc.',category:'Cybersecurity',dept:'IT / Procurement',deptKey:'proc',sla:'active',expiry:'Nov 30, 2025',priority:'Critical',contact:'Kevin Lam',approver:'J. Wilson',value:'$175,000'},
+  {id:'VND-005',name:'EverGreen Landscaping',category:'Grounds Maintenance',dept:'Facilities',deptKey:'fac',sla:'expired',expiry:'Feb 28, 2025',priority:'Low',contact:'Bill Foster',approver:'M. Chen',value:'$24,000'},
+  {id:'VND-006',name:'FlexStaff Solutions',category:'Temporary Staffing',dept:'HR',deptKey:'hr',sla:'active',expiry:'Sep 30, 2025',priority:'High',contact:'Lisa Monroe',approver:'K. Davis',value:'$380,000'},
+  {id:'VND-007',name:'Global Print & Supply Co.',category:'Office Supplies',dept:'Administration',deptKey:'adm',sla:'active',expiry:'Dec 31, 2025',priority:'Medium',contact:'Ray Santos',approver:'A. Patel',value:'$18,500'},
+  {id:'VND-008',name:'HealthGuard Medical Supplies',category:'Medical Equipment',dept:'Procurement',deptKey:'proc',sla:'expiring',expiry:'Jun 30, 2025',priority:'Critical',contact:'Dr. N. Pham',approver:'J. Wilson',value:'$290,000'},
+  {id:'VND-009',name:'InfraTech Networking',category:'Network Infrastructure',dept:'IT / Procurement',deptKey:'proc',sla:'active',expiry:'Jan 31, 2026',priority:'High',contact:'Alan Cross',approver:'J. Wilson',value:'$156,000'},
+  {id:'VND-010',name:'JanitorPro Cleaning Services',category:'Facility Maintenance',dept:'Facilities',deptKey:'fac',sla:'active',expiry:'Aug 31, 2025',priority:'Medium',contact:'Paula Diaz',approver:'M. Chen',value:'$42,000'},
+  {id:'VND-011',name:'KlearView Window Services',category:'Facility Maintenance',dept:'Facilities',deptKey:'fac',sla:'expired',expiry:'Jan 15, 2025',priority:'Low',contact:'Ed Brown',approver:'M. Chen',value:'$8,200'},
+  {id:'VND-012',name:'LexPro HR Consulting',category:'HR Consulting',dept:'HR',deptKey:'hr',sla:'active',expiry:'Dec 31, 2025',priority:'High',contact:'Gina Park',approver:'K. Davis',value:'$95,000'},
+  {id:'VND-013',name:'MedTech Biomedical Corp',category:'Biomedical Services',dept:'Procurement',deptKey:'proc',sla:'expiring',expiry:'Jul 31, 2025',priority:'High',contact:'Dr. A. Singh',approver:'J. Wilson',value:'$340,000'},
+  {id:'VND-014',name:'NovaCare Staffing Agency',category:'Healthcare Staffing',dept:'HR',deptKey:'hr',sla:'active',expiry:'Oct 31, 2025',priority:'Critical',contact:'T. Bradley',approver:'K. Davis',value:'$520,000'},
+  {id:'VND-015',name:'OfficePlus Furniture & Design',category:'Office Equipment',dept:'Administration',deptKey:'adm',sla:'active',expiry:'Mar 31, 2026',priority:'Low',contact:'Cindy Hall',approver:'A. Patel',value:'$31,000'},
+];
+
+const DEPT_CLASS={proc:'dept-proc',fac:'dept-fac',hr:'dept-hr',leg:'dept-leg',adm:'dept-adm'};
+const DEPT_SHORT={proc:'Procurement',fac:'Facilities',hr:'HR',leg:'Legal',adm:'Admin'};
+const PRI_CLASS={Critical:'pri-critical',High:'pri-high',Medium:'pri-medium',Low:'pri-low'};
+const SLA_HTML={
+  active:'<span class="sla-badge sla-active"><span class="sla-dot"></span>Active</span>',
+  expiring:'<span class="sla-badge sla-expiring"><span class="sla-dot"></span>Expiring Soon</span>',
+  expired:'<span class="sla-badge sla-expired"><span class="sla-dot"></span>Expired</span>',
+};
+
+function renderTable(){
+  document.getElementById('vendorBody').innerHTML = VENDORS.map(v=>`
+    <tr onclick="openDetail('${v.id}')">
+      <td class="row-cb"><input type="checkbox" class="row-checkbox" onclick="event.stopPropagation()"></td>
+      <td style="color:var(--sp-blue);font-weight:500">${v.id}</td>
+      <td class="link-cell">${v.name}</td>
+      <td style="color:var(--sp-muted)">${v.category}</td>
+      <td><span class="dept ${DEPT_CLASS[v.deptKey]}">${DEPT_SHORT[v.deptKey]}</span></td>
+      <td>${SLA_HTML[v.sla]}</td>
+      <td style="color:${v.sla==='expired'?'var(--sp-red)':v.sla==='expiring'?'#ca5010':'var(--sp-text)'};font-weight:${v.sla!=='active'?600:400}">${v.expiry}</td>
+      <td><span class="${PRI_CLASS[v.priority]} pri">${v.priority}</span></td>
+      <td style="color:var(--sp-muted)">${v.contact}</td>
+      <td style="color:var(--sp-muted)">${v.approver}</td>
+    </tr>`).join('');
+}
+
+function openDetail(id){
+  const v=VENDORS.find(x=>x.id===id);
+  if(!v) return;
+  document.getElementById('dpTitle').textContent=v.name;
+  document.getElementById('dpMeta').textContent=v.id+' · '+v.category+' · '+v.dept;
+  document.getElementById('dp-id').textContent=v.id;
+  document.getElementById('dp-name').textContent=v.name;
+  document.getElementById('dp-category').textContent=v.category;
+  document.getElementById('dp-dept').textContent=v.dept;
+  document.getElementById('dp-contact').textContent=v.contact;
+  document.getElementById('dp-sla').innerHTML=SLA_HTML[v.sla];
+  document.getElementById('dp-expiry').innerHTML=`<span style="color:${v.sla==='expired'?'var(--sp-red)':v.sla==='expiring'?'#ca5010':'var(--sp-green)'}; font-weight:600">${v.expiry}</span>`;
+  document.getElementById('dp-value').textContent=v.value+' / year';
+  document.getElementById('dp-priority').innerHTML=`<span class="${PRI_CLASS[v.priority]} pri">${v.priority} Tier</span>`;
+  document.getElementById('dp-folder').textContent=v.id;
+  dpTab(0,document.querySelector('.dp-tab'));
+  document.getElementById('detailOverlay').style.display='flex';
+}
+
+function closeDetail(e){
+  if(e&&e.target!==document.getElementById('detailOverlay')) return;
+  document.getElementById('detailOverlay').style.display='none';
+}
+
+function dpTab(idx,el){
+  document.querySelectorAll('.dp-tab').forEach((t,i)=>{
+    t.classList.toggle('active',i===idx);
+  });
+  [0,1,2].forEach(i=>{
+    const el=document.getElementById('dpTab'+i);
+    if(el) el.style.display=i===idx?'block':'none';
+  });
+}
+
+function selectAll(cb){
+  document.querySelectorAll('.row-checkbox').forEach(c=>c.checked=cb.checked);
+}
+
+function sortBy(col){
+  document.querySelectorAll('.sp-table th').forEach(t=>t.classList.remove('sorted'));
+  event.target.classList.add('sorted');
+}
+
+function showFilters(){
+  document.querySelector('.filter-bar').style.background='#e8f4fd';
+  setTimeout(()=>document.querySelector('.filter-bar').style.background='',1000);
+}
+
+function showNewVendor(){
+  alert('Power Apps custom form would open here for new vendor data entry with conditional validation across 40+ fields.');
+}
+
+renderTable();
+</script>
+</body>
+</html>
