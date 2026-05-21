@@ -237,6 +237,41 @@ ul.rlist li::before{
 }
 .demo-link:hover{background:var(--primary)}
 
+/* ════ TOOLS SLIDE ════ */
+.tools-slide{ background:var(--bg); overflow:hidden; }
+.tools-slide .scroll-area{ flex:1;overflow-y:auto;padding:2rem 4rem 4rem;
+  scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent; }
+.tools-header{ margin-bottom:2rem; }
+.tools-eyebrow{ font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;color:var(--accent);margin-bottom:0.5rem; }
+.tools-title{ font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--primary);
+  letter-spacing:-0.02em;line-height:1.2;margin-bottom:0.5rem; }
+.tools-sub{ font-size:0.95rem;color:var(--muted);line-height:1.6; }
+.tools-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem; }
+.tool-card{ background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.5rem;display:flex;flex-direction:column;gap:0.9rem;
+  box-shadow:0 4px 24px rgba(37,99,235,0.07);
+  transition:box-shadow 0.2s,transform 0.2s; }
+.tool-card:hover{ box-shadow:0 8px 32px rgba(37,99,235,0.14);transform:translateY(-2px); }
+.tool-card-top{ display:flex;align-items:flex-start;gap:0.9rem; }
+.tool-icon{ font-size:2rem;flex-shrink:0;line-height:1; }
+.tool-name{ font-size:1.1rem;font-weight:700;color:var(--primary);line-height:1.3; }
+.tool-type{ font-size:0.76rem;color:var(--muted);margin-top:0.15rem; }
+.tool-badge{ margin-left:auto;flex-shrink:0;background:var(--tag-bg);border:1px solid var(--tag-border);
+  color:var(--tag-text);font-size:0.7rem;font-weight:600;padding:0.15rem 0.55rem;border-radius:20px; }
+.tool-desc{ font-size:0.9rem;color:var(--text);line-height:1.65; }
+.tool-stats{ display:flex;flex-wrap:wrap;gap:0.35rem; }
+.tool-stat{ background:var(--surface2);border:1px solid var(--border);
+  font-size:0.73rem;color:var(--muted);padding:0.18rem 0.55rem;border-radius:20px;font-weight:500; }
+.tool-links{ display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.2rem; }
+.tool-link{ display:inline-flex;align-items:center;gap:0.35rem;
+  font-size:0.8rem;font-weight:600;padding:0.4rem 0.9rem;border-radius:6px;
+  text-decoration:none;transition:background 0.2s,opacity 0.2s; }
+.tool-link.live{ background:var(--accent);color:#fff; }
+.tool-link.live:hover{ background:var(--primary); }
+.tool-link.gh{ background:var(--surface2);border:1px solid var(--border);color:var(--primary); }
+.tool-link.gh:hover{ background:var(--tag-bg); }
+
 /* ════ CLOSING SLIDE ════ */
 .closing{
   justify-content:center;align-items:center;
@@ -345,6 +380,7 @@ ul.rlist li::before{
         <button class="toc-btn" onclick="goTo(4)"><span class="pnum">04</span>HR Certification Rules Engine</button>
         <button class="toc-btn" onclick="goTo(5)"><span class="pnum">05</span>B2B Inventory &amp; Order System</button>
         <button class="toc-btn" onclick="goTo(6)"><span class="pnum">06</span>Job Search Agent</button>
+        <button class="toc-btn" onclick="goTo(7)"><span class="pnum">🛠</span>Tools &amp; Side Projects</button>
       </div>
     </div>
   </div>
@@ -751,8 +787,53 @@ ul.rlist li::before{
     </div>
   </div>
 
-  <!-- SLIDE 7 — CLOSING -->
-  <div class="slide closing next" data-index="7">
+  <!-- SLIDE 7 — TOOLS & SIDE PROJECTS -->
+  <div class="slide tools-slide next" data-index="7">
+    <div class="scroll-area">
+      <div class="tools-header">
+        <div class="tools-eyebrow">Beyond Enterprise</div>
+        <h2 class="tools-title">Tools &amp; Side Projects</h2>
+        <p class="tools-sub">Personal tools and experiments built for learning, exploration, and fun.</p>
+      </div>
+
+      <div class="tools-grid">
+
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <span class="tool-icon">📚</span>
+            <div>
+              <div class="tool-name">Vocabulary Learning Tool</div>
+              <div class="tool-type">Vanilla JS · Tailwind CSS · Web Speech API</div>
+            </div>
+            <span class="tool-badge">2025</span>
+          </div>
+          <p class="tool-desc">
+            Flashcard-style app for learning the 2,000 most frequently used B2 &amp; C1 English words.
+            Features text-to-speech, auto-timer, alphabetical index, level filtering, and bilingual
+            (Turkish + English) display.
+          </p>
+          <div class="tool-stats">
+            <span class="tool-stat">1,816 words</span>
+            <span class="tool-stat">B2 &amp; C1</span>
+            <span class="tool-stat">Text-to-Speech</span>
+            <span class="tool-stat">Auto-timer</span>
+            <span class="tool-stat">Level filter</span>
+          </div>
+          <div class="tool-links">
+            <a href="https://mekazek.com/english" target="_blank" class="tool-link live">🌐 Live Demo</a>
+            <a href="https://github.com/esember/vocab-learning-tool" target="_blank" class="tool-link gh">
+              <svg viewBox="0 0 16 16" fill="currentColor" style="width:13px;height:13px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 — CLOSING -->
+  <div class="slide closing next" data-index="8">
     <div class="closing-inner">
       <div class="cover-name" style="font-size:clamp(2rem,5vw,3.5rem)">GURSEL OLCA</div>
       <div class="closing-lines">
@@ -773,7 +854,7 @@ ul.rlist li::before{
 </div><!-- /slides-wrap -->
 
 <script>
-const TOTAL = 8;
+const TOTAL = 9;
 let current = 0;
 let isAnimating = false;
 
@@ -789,7 +870,7 @@ const dotEls = [];
 for(let i=0;i<TOTAL;i++){
   const d=document.createElement('div');
   d.className='dot'+(i===0?' active':'');
-  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Project 6','Contact'][i];
+  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Project 6','Tools & Side Projects','Contact'][i];
   d.onclick=()=>goTo(i);
   dotsEl.appendChild(d);
   dotEls.push(d);
@@ -848,6 +929,7 @@ function goTo(index){
 function getTypeClass(i){
   if(i===0) return 'cover';
   if(i===TOTAL-1) return 'closing';
+  if(i===TOTAL-2) return 'tools-slide';
   return 'proj-slide';
 }
 
