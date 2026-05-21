@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leave Request App</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--sidebar-bg:#0a0d14;--surface:#161b27;--surface2:#1e2535;
+  --border:#252d3d;--text:#e8eaf0;--muted:#6b7a99;--muted2:#8892a8;
+  --accent:#0078d4;--accent-dim:#004e8c;--accent-glow:rgba(0,120,212,0.18);
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.12);--green-border:rgba(34,197,94,0.25);
+  --yellow:#f59e0b;--yellow-bg:rgba(245,158,11,0.12);--yellow-border:rgba(245,158,11,0.25);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.12);--red-border:rgba(239,68,68,0.25);
+  --purple:#9b2d8a;--sidebar-w:230px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  color:var(--text);font-size:14px;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--sidebar-bg);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sidebar-brand{
+  padding:1rem 1.2rem 0.8rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.6rem;
+}
+.brand-icon{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+.brand-name{font-size:0.82rem;font-weight:700;color:var(--text);line-height:1.2;}
+.brand-sub{font-size:0.65rem;color:var(--muted);margin-top:0.1rem;}
+
+.sidebar-section{padding:0.6rem 0.6rem 0;}
+.sidebar-label{
+  font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);padding:0.4rem 0.6rem 0.3rem;
+}
+.nav-item{
+  display:flex;align-items:center;gap:0.65rem;
+  padding:0.55rem 0.75rem;border-radius:8px;
+  cursor:pointer;color:var(--muted2);font-size:0.82rem;font-weight:500;
+  transition:background 0.15s,color 0.15s;margin-bottom:2px;
+  background:none;border:none;width:100%;text-align:left;font-family:inherit;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(0,120,212,0.14);color:var(--accent);}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:0.8;}
+.nav-item.active svg{opacity:1;}
+.nav-badge{
+  margin-left:auto;min-width:18px;height:18px;border-radius:9px;
+  background:var(--yellow);color:#000;font-size:0.65rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+}
+
+.sidebar-divider{height:1px;background:var(--border);margin:0.6rem 0.8rem;}
+
+.sidebar-user{
+  margin-top:auto;padding:0.8rem 1rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:0.6rem;
+}
+.user-avatar{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent-dim),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;color:#fff;
+}
+.user-name{font-size:0.78rem;font-weight:600;color:var(--text);}
+.user-role{font-size:0.65rem;color:var(--muted);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{
+  flex-shrink:0;height:48px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 1.5rem;gap:1rem;
+}
+.topbar-title{font-size:0.9rem;font-weight:700;color:var(--text);}
+.topbar-sep{color:var(--border);font-size:1.1rem;}
+.topbar-page{font-size:0.82rem;color:var(--muted2);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:0.6rem;}
+.role-toggle{
+  display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+}
+.role-btn{
+  padding:0.28rem 0.75rem;font-size:0.72rem;font-weight:600;
+  background:transparent;border:none;cursor:pointer;font-family:inherit;
+  color:var(--muted);transition:background 0.15s,color 0.15s;
+}
+.role-btn.active{background:var(--accent);color:#fff;}
+
+.content{flex:1;overflow-y:auto;padding:1.5rem;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;}
+
+/* SECTION HEADER */
+.section-header{margin-bottom:1.4rem;}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.section-sub{font-size:0.8rem;color:var(--muted);}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:0.3rem;
+}
+.stat-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.06em;font-weight:600;}
+.stat-nums{display:flex;align-items:baseline;gap:0.4rem;margin-top:0.2rem;}
+.stat-remaining{font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1;}
+.stat-total{font-size:0.78rem;color:var(--muted);}
+.stat-bar{height:4px;background:var(--surface2);border-radius:2px;margin-top:0.6rem;overflow:hidden;}
+.stat-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 0.4s;}
+.stat-fill.green{background:var(--green);}
+.stat-fill.yellow{background:var(--yellow);}
+.stat-fill.red{background:var(--red);}
+
+/* CARDS ROW */
+.cards-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.panel-header{
+  padding:0.8rem 1.1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{font-size:0.82rem;font-weight:700;color:var(--text);}
+.panel-action{font-size:0.74rem;color:var(--accent);cursor:pointer;
+  background:none;border:none;font-family:inherit;font-weight:600;}
+.panel-action:hover{text-decoration:underline;}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{
+  padding:0.55rem 1rem;text-align:left;font-size:0.68rem;
+  font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.06em;border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+.tbl td{
+  padding:0.7rem 1rem;font-size:0.8rem;color:var(--text);
+  border-bottom:1px solid rgba(37,45,61,0.6);
+}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tbody tr{cursor:pointer;transition:background 0.12s;}
+.tbl tbody tr:hover{background:rgba(0,120,212,0.05);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.18rem 0.6rem;
+  border-radius:20px;font-size:0.68rem;font-weight:700;letter-spacing:0.02em;}
+.badge-pending{background:var(--yellow-bg);border:1px solid var(--yellow-border);color:var(--yellow);}
+.badge-approved{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.badge-rejected{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
+.badge-annual{background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.25);color:#60a5fa;}
+.badge-sick{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;}
+.badge-personal{background:rgba(155,45,138,0.12);border:1px solid rgba(155,45,138,0.25);color:#d479c4;}
+.badge-unpaid{background:rgba(107,114,153,0.12);border:1px solid rgba(107,114,153,0.25);color:var(--muted2);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;}
+.filter-btn{
+  padding:0.35rem 0.85rem;border-radius:20px;font-size:0.75rem;font-weight:600;
+  background:var(--surface);border:1px solid var(--border);color:var(--muted2);
+  cursor:pointer;font-family:inherit;transition:all 0.15s;
+}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.filter-btn:hover:not(.active){border-color:var(--accent);color:var(--accent);}
+.search-box{
+  padding:0.35rem 0.8rem;border-radius:8px;font-size:0.8rem;
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  font-family:inherit;outline:none;min-width:180px;margin-left:auto;
+}
+.search-box:focus{border-color:var(--accent);}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:0.75rem;font-weight:600;color:var(--muted2);}
+.form-input,.form-select,.form-textarea{
+  padding:0.55rem 0.75rem;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:0.82rem;outline:none;
+  transition:border-color 0.15s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);
+}
+.form-select option{background:var(--surface);}
+.form-textarea{resize:vertical;min-height:80px;}
+.form-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.5rem;max-width:700px;
+}
+.form-section-title{
+  font-size:0.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.08em;color:var(--muted);margin-bottom:1rem;
+  padding-bottom:0.5rem;border-bottom:1px solid var(--border);
+}
+.days-preview{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:0.6rem 1rem;display:flex;align-items:center;gap:0.5rem;
+  font-size:0.82rem;color:var(--muted2);
+}
+.days-count{font-size:1.5rem;font-weight:700;color:var(--accent);}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  padding:0.5rem 1.1rem;border-radius:8px;font-size:0.82rem;font-weight:600;
+  cursor:pointer;border:none;font-family:inherit;transition:opacity 0.2s,background 0.2s;
+}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dim);}
+.btn-success{background:#15803d;color:#fff;}
+.btn-success:hover{opacity:0.85;}
+.btn-danger{background:#b91c1c;color:#fff;}
+.btn-danger:hover{opacity:0.85;}
+.btn-ghost{background:var(--surface2);border:1px solid var(--border);color:var(--muted2);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:0.32rem 0.75rem;font-size:0.74rem;}
+
+/* DETAIL PANEL */
+.detail-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);
+  display:flex;justify-content:flex-end;
+}
+.detail-panel{
+  width:420px;background:var(--bg);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:panelIn 0.25s ease;
+}
+@keyframes panelIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.detail-header{
+  padding:1rem 1.2rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.8rem;
+}
+.detail-close{
+  margin-left:auto;background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:1.1rem;padding:0.2rem;
+}
+.detail-body{flex:1;overflow-y:auto;padding:1.2rem;}
+.detail-section{margin-bottom:1.2rem;}
+.detail-section-title{
+  font-size:0.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.08em;color:var(--muted);margin-bottom:0.6rem;
+}
+.detail-row{display:flex;justify-content:space-between;
+  padding:0.4rem 0;border-bottom:1px solid rgba(37,45,61,0.5);}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{font-size:0.78rem;color:var(--muted2);}
+.detail-val{font-size:0.78rem;color:var(--text);font-weight:500;text-align:right;}
+.detail-reason{
+  background:var(--surface2);border-radius:8px;padding:0.7rem 0.9rem;
+  font-size:0.82rem;color:var(--text);line-height:1.5;margin-top:0.4rem;
+}
+.detail-comment-box{
+  width:100%;padding:0.55rem 0.75rem;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:0.82rem;
+  outline:none;resize:vertical;min-height:70px;margin-top:0.5rem;
+}
+.detail-comment-box:focus{border-color:var(--accent);}
+.detail-actions{
+  padding:1rem 1.2rem;border-top:1px solid var(--border);
+  display:flex;gap:0.6rem;
+}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:0.5rem;}
+.cal-head{text-align:center;font-size:0.65rem;font-weight:700;
+  color:var(--muted);padding:0.3rem 0;text-transform:uppercase;}
+.cal-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;font-size:0.72rem;cursor:default;
+  background:var(--surface2);color:var(--muted2);
+}
+.cal-day.today{border:1px solid var(--accent);color:var(--accent);font-weight:700;}
+.cal-day.leave-annual{background:rgba(0,120,212,0.2);color:#60a5fa;font-weight:600;}
+.cal-day.leave-sick{background:rgba(239,68,68,0.15);color:#f87171;font-weight:600;}
+.cal-day.leave-personal{background:rgba(155,45,138,0.15);color:#d479c4;font-weight:600;}
+.cal-day.empty{background:transparent;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:0.75rem 1.1rem;font-size:0.82rem;color:var(--text);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:240px;
+  animation:toastIn 0.3s ease;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.toast.success{border-color:var(--green-border);}
+.toast.error{border-color:var(--red-border);}
+.toast.info{border-color:rgba(0,120,212,0.4);}
+
+/* HOME FAB */
+.home-fab{
+  position:fixed;top:0.75rem;right:1rem;z-index:9999;
+  display:inline-flex;align-items:center;gap:0.4rem;
+  background:linear-gradient(135deg,var(--accent-dim),var(--accent));
+  color:#fff;text-decoration:none;border-radius:10px;
+  padding:0.38rem 0.85rem 0.38rem 0.65rem;
+  font-size:0.75rem;font-weight:700;font-family:inherit;
+  box-shadow:0 4px 16px rgba(0,120,212,0.3);
+  transition:opacity 0.2s,transform 0.2s;
+}
+.home-fab:hover{opacity:0.85;transform:translateY(-1px);}
+
+/* EMPTY STATE */
+.empty{
+  text-align:center;padding:3rem 1rem;color:var(--muted);
+}
+.empty-icon{font-size:2.5rem;margin-bottom:0.8rem;}
+.empty-text{font-size:0.88rem;}
+
+/* APPROVAL CARD */
+.approval-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem 1.2rem;display:flex;align-items:flex-start;
+  gap:1rem;margin-bottom:0.8rem;transition:border-color 0.15s;
+}
+.approval-card:hover{border-color:var(--accent);}
+.approval-info{flex:1;}
+.approval-name{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:0.15rem;}
+.approval-meta{font-size:0.76rem;color:var(--muted2);line-height:1.5;}
+.approval-actions{display:flex;gap:0.5rem;flex-shrink:0;margin-top:0.2rem;}
+
+@media(max-width:900px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .cards-row{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+}
+</style>
+</head>
+<body>
+
+<a href="/" class="home-fab">
+  <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px;height:13px"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+  Home
+</a>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">📅</div>
+      <div>
+        <div class="brand-name">Leave Request</div>
+        <div class="brand-sub">HR Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Menu</div>
+      <button class="nav-item active" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="navigate('myRequests')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+        My Requests
+      </button>
+      <button class="nav-item" onclick="navigate('newRequest')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+        New Request
+      </button>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Manager</div>
+      <button class="nav-item" onclick="navigate('managerView')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+        Manager View
+        <span class="nav-badge" id="pendingBadge">0</span>
+      </button>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">SJ</div>
+      <div>
+        <div class="user-name" id="userName">Sarah Johnson</div>
+        <div class="user-role" id="userRoleLabel">Employee</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Leave Request App</span>
+      <span class="topbar-sep">›</span>
+      <span class="topbar-page" id="topbarPage">Dashboard</span>
+      <div class="topbar-right">
+        <div class="role-toggle">
+          <button class="role-btn active" id="roleEmployee" onclick="setRole('employee')">Employee</button>
+          <button class="role-btn" id="roleManager" onclick="setRole('manager')">Manager</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="section-header">
+          <div class="section-title">Dashboard</div>
+          <div class="section-sub" id="dashGreeting">Welcome back, Sarah</div>
+        </div>
+
+        <!-- Balance cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">Annual Leave</div>
+            <div class="stat-nums">
+              <span class="stat-remaining" id="bal-annual-rem">12</span>
+              <span class="stat-total">/ 20 days</span>
+            </div>
+            <div class="stat-bar"><div class="stat-fill" id="bar-annual" style="width:60%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sick Leave</div>
+            <div class="stat-nums">
+              <span class="stat-remaining" id="bal-sick-rem">8</span>
+              <span class="stat-total">/ 10 days</span>
+            </div>
+            <div class="stat-bar"><div class="stat-fill green" id="bar-sick" style="width:80%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Personal Leave</div>
+            <div class="stat-nums">
+              <span class="stat-remaining" id="bal-personal-rem">2</span>
+              <span class="stat-total">/ 3 days</span>
+            </div>
+            <div class="stat-bar"><div class="stat-fill yellow" id="bar-personal" style="width:67%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending Requests</div>
+            <div class="stat-nums">
+              <span class="stat-remaining" id="bal-pending" style="color:var(--yellow)">0</span>
+              <span class="stat-total">awaiting</span>
+            </div>
+            <div class="stat-bar"><div class="stat-fill yellow" id="bar-pending" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="cards-row">
+          <!-- Recent requests -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Recent Requests</span>
+              <button class="panel-action" onclick="navigate('myRequests')">View all →</button>
+            </div>
+            <table class="tbl">
+              <thead><tr>
+                <th>Type</th><th>Dates</th><th>Days</th><th>Status</th>
+              </tr></thead>
+              <tbody id="recentTbody"></tbody>
+            </table>
+          </div>
+
+          <!-- Calendar -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title" id="calTitle">Leave Calendar</span>
+            </div>
+            <div style="padding:0.8rem 1rem">
+              <div class="cal-grid" id="calHead"></div>
+              <div class="cal-grid" id="calBody" style="margin-top:4px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY REQUESTS -->
+      <div class="view" id="view-myRequests">
+        <div class="section-header">
+          <div class="section-title">My Requests</div>
+          <div class="section-sub">All your leave requests and their status</div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterRequests('All',this)">All</button>
+          <button class="filter-btn" onclick="filterRequests('Pending',this)">Pending</button>
+          <button class="filter-btn" onclick="filterRequests('Approved',this)">Approved</button>
+          <button class="filter-btn" onclick="filterRequests('Rejected',this)">Rejected</button>
+          <input class="search-box" placeholder="Search..." oninput="filterRequests(currentFilter,null,this.value)">
+        </div>
+        <div class="panel">
+          <table class="tbl">
+            <thead><tr>
+              <th>ID</th><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>Submitted</th>
+            </tr></thead>
+            <tbody id="requestsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NEW REQUEST -->
+      <div class="view" id="view-newRequest">
+        <div class="section-header">
+          <div class="section-title">New Leave Request</div>
+          <div class="section-sub">Submit a request for manager approval</div>
+        </div>
+        <div class="form-card">
+          <div class="form-section-title">Request Details</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Leave Type *</label>
+              <select class="form-select" id="fType" onchange="calcDays()">
+                <option value="">Select type...</option>
+                <option value="Annual">Annual Leave</option>
+                <option value="Sick">Sick Leave</option>
+                <option value="Personal">Personal Leave</option>
+                <option value="Unpaid">Unpaid Leave</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Requester</label>
+              <input class="form-input" id="fRequester" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Start Date *</label>
+              <input type="date" class="form-input" id="fStart" onchange="calcDays()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Date *</label>
+              <input type="date" class="form-input" id="fEnd" onchange="calcDays()">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Duration</label>
+              <div class="days-preview">
+                <span class="days-count" id="daysCount">—</span>
+                <span id="daysLabel">Select dates to calculate</span>
+              </div>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Reason *</label>
+              <textarea class="form-textarea" id="fReason" placeholder="Briefly describe the reason for your leave..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Coverage / Handover Notes</label>
+              <textarea class="form-textarea" id="fCoverage" placeholder="Who will cover your responsibilities? Any handover notes..."></textarea>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.8rem;margin-top:1.2rem">
+            <button class="btn btn-primary" onclick="submitRequest()">Submit Request</button>
+            <button class="btn btn-ghost" onclick="resetForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANAGER VIEW -->
+      <div class="view" id="view-managerView">
+        <div class="section-header">
+          <div class="section-title">Manager View</div>
+          <div class="section-sub">Review and action pending leave requests</div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterManager('Pending',this)">Pending</button>
+          <button class="filter-btn" onclick="filterManager('All',this)">All Requests</button>
+          <button class="filter-btn" onclick="filterManager('Approved',this)">Approved</button>
+          <button class="filter-btn" onclick="filterManager('Rejected',this)">Rejected</button>
+        </div>
+        <div id="approvalList"></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detailOverlay" style="display:none" onclick="closeDetail(event)">
+  <div class="detail-panel" onclick="event.stopPropagation()">
+    <div class="detail-header">
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;color:var(--text)" id="detailId"></div>
+        <div style="font-size:0.74rem;color:var(--muted);margin-top:0.1rem" id="detailType"></div>
+      </div>
+      <span id="detailBadge"></span>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="detail-section-title">Details</div>
+        <div class="detail-row"><span class="detail-key">Employee</span><span class="detail-val" id="dEmployee"></span></div>
+        <div class="detail-row"><span class="detail-key">Start Date</span><span class="detail-val" id="dStart"></span></div>
+        <div class="detail-row"><span class="detail-key">End Date</span><span class="detail-val" id="dEnd"></span></div>
+        <div class="detail-row"><span class="detail-key">Working Days</span><span class="detail-val" id="dDays"></span></div>
+        <div class="detail-row"><span class="detail-key">Submitted</span><span class="detail-val" id="dSubmitted"></span></div>
+        <div class="detail-row" id="dApprovedRow" style="display:none"><span class="detail-key">Actioned By</span><span class="detail-val" id="dApproved"></span></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Reason</div>
+        <div class="detail-reason" id="dReason"></div>
+      </div>
+      <div class="detail-section" id="dCoverageSection" style="display:none">
+        <div class="detail-section-title">Coverage Notes</div>
+        <div class="detail-reason" id="dCoverage"></div>
+      </div>
+      <div class="detail-section" id="dManagerSection" style="display:none">
+        <div class="detail-section-title">Manager Comment</div>
+        <textarea class="detail-comment-box" id="dManagerComment" placeholder="Optional comment..."></textarea>
+      </div>
+    </div>
+    <div class="detail-actions" id="detailActions"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const STORAGE_KEY = 'lra_requests_v1';
+const BALANCE_KEY = 'lra_balance_v1';
+
+const SEED = [
+  {id:'LR-001',employee:'Sarah Johnson',type:'Annual',start:'2026-06-10',end:'2026-06-12',days:3,reason:'Family vacation to the coast.',coverage:'Tom will handle my client calls.',status:'Approved',submitted:'2026-05-10',actionedBy:'Michael Chen',actionedDate:'2026-05-11',comment:'Approved. Enjoy!'},
+  {id:'LR-002',employee:'Sarah Johnson',type:'Sick',start:'2026-04-22',end:'2026-04-22',days:1,reason:'Flu symptoms.',coverage:'',status:'Approved',submitted:'2026-04-22',actionedBy:'Michael Chen',actionedDate:'2026-04-22',comment:''},
+  {id:'LR-003',employee:'Sarah Johnson',type:'Annual',start:'2026-07-01',end:'2026-07-04',days:4,reason:'Fourth of July break.',coverage:'Covering my reports: see shared doc.',status:'Pending',submitted:'2026-05-18',actionedBy:'',actionedDate:'',comment:''},
+  {id:'LR-004',employee:'James Wilson',type:'Annual',start:'2026-06-15',end:'2026-06-19',days:5,reason:'Summer vacation.',coverage:'Emily will cover.',status:'Pending',submitted:'2026-05-15',actionedBy:'',actionedDate:'',comment:''},
+  {id:'LR-005',employee:'Emily Davis',type:'Sick',start:'2026-05-08',end:'2026-05-09',days:2,reason:'Doctor appointment and recovery.',coverage:'',status:'Approved',submitted:'2026-05-08',actionedBy:'Michael Chen',actionedDate:'2026-05-08',comment:''},
+  {id:'LR-006',employee:'Robert Brown',type:'Personal',start:'2026-05-28',end:'2026-05-28',days:1,reason:'Moving apartments.',coverage:'Will check emails remotely.',status:'Pending',submitted:'2026-05-20',actionedBy:'',actionedDate:'',comment:''},
+  {id:'LR-007',employee:'James Wilson',type:'Personal',start:'2026-04-10',end:'2026-04-10',days:1,reason:'Child school event.',coverage:'',status:'Rejected',submitted:'2026-04-09',actionedBy:'Michael Chen',actionedDate:'2026-04-09',comment:'Short notice. Please plan ahead.'},
+  {id:'LR-008',employee:'Emily Davis',type:'Annual',start:'2026-08-04',end:'2026-08-08',days:5,reason:'Europe trip.',coverage:'Robert will cover my desk.',status:'Pending',submitted:'2026-05-19',actionedBy:'',actionedDate:'',comment:''},
+  {id:'LR-009',employee:'Sarah Johnson',type:'Personal',start:'2026-03-14',end:'2026-03-14',days:1,reason:'DMV appointment.',coverage:'',status:'Approved',submitted:'2026-03-13',actionedBy:'Michael Chen',actionedDate:'2026-03-13',comment:''},
+  {id:'LR-010',employee:'Robert Brown',type:'Annual',start:'2026-09-01',end:'2026-09-05',days:5,reason:'International travel.',coverage:'Emily handles my projects.',status:'Approved',submitted:'2026-05-05',actionedBy:'Michael Chen',actionedDate:'2026-05-06',comment:'Approved well in advance. Thanks.'},
+];
+
+const DEFAULT_BALANCE = {annual:{total:20,used:8},sick:{total:10,used:2},personal:{total:3,used:1}};
+
+function loadData(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw){ localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED)); return SEED; }
+  return JSON.parse(raw);
+}
+function saveData(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function loadBalance(){
+  const raw = localStorage.getItem(BALANCE_KEY);
+  if(!raw){ localStorage.setItem(BALANCE_KEY, JSON.stringify(DEFAULT_BALANCE)); return DEFAULT_BALANCE; }
+  return JSON.parse(raw);
+}
+
+let requests = loadData();
+let balance = loadBalance();
+let currentView = 'dashboard';
+let currentFilter = 'All';
+let currentManagerFilter = 'Pending';
+let currentRole = 'employee';
+let currentUser = {name:'Sarah Johnson',initials:'SJ'};
+let openDetailId = null;
+
+// ── NAVIGATION ──
+function navigate(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap={dashboard:0,myRequests:1,newRequest:2,managerView:3};
+  const items = document.querySelectorAll('.nav-item');
+  if(items[navMap[view]]) items[navMap[view]].classList.add('active');
+  const titles={dashboard:'Dashboard',myRequests:'My Requests',newRequest:'New Request',managerView:'Manager View'};
+  document.getElementById('topbarPage').textContent = titles[view]||view;
+  currentView = view;
+  if(view==='dashboard') renderDashboard();
+  if(view==='myRequests') renderRequests();
+  if(view==='managerView') renderManagerView();
+  if(view==='newRequest') initForm();
+}
+
+// ── ROLE ──
+function setRole(role){
+  currentRole = role;
+  document.getElementById('roleEmployee').classList.toggle('active', role==='employee');
+  document.getElementById('roleManager').classList.toggle('active', role==='manager');
+  if(role==='manager'){
+    currentUser={name:'Michael Chen',initials:'MC'};
+  } else {
+    currentUser={name:'Sarah Johnson',initials:'SJ'};
+  }
+  document.getElementById('userAvatar').textContent=currentUser.initials;
+  document.getElementById('userName').textContent=currentUser.name;
+  document.getElementById('userRoleLabel').textContent=role==='manager'?'Manager':'Employee';
+  document.getElementById('dashGreeting').textContent='Welcome back, '+currentUser.name.split(' ')[0];
+  if(currentView==='dashboard') renderDashboard();
+  if(currentView==='myRequests') renderRequests();
+  if(currentView==='managerView') renderManagerView();
+}
+
+// ── DASHBOARD ──
+function renderDashboard(){
+  renderRecentRequests();
+  renderCalendar();
+  updateBalanceCards();
+  updatePendingBadge();
+}
+
+function updateBalanceCards(){
+  const bal = loadBalance();
+  const annualRem = bal.annual.total - bal.annual.used;
+  const sickRem   = bal.sick.total   - bal.sick.used;
+  const personalRem = bal.personal.total - bal.personal.used;
+  document.getElementById('bal-annual-rem').textContent = annualRem;
+  document.getElementById('bal-sick-rem').textContent   = sickRem;
+  document.getElementById('bal-personal-rem').textContent = personalRem;
+  document.getElementById('bar-annual').style.width = Math.round(annualRem/bal.annual.total*100)+'%';
+  document.getElementById('bar-sick').style.width   = Math.round(sickRem/bal.sick.total*100)+'%';
+  document.getElementById('bar-personal').style.width = Math.round(personalRem/bal.personal.total*100)+'%';
+  const myPending = requests.filter(r=>r.employee===currentUser.name&&r.status==='Pending').length;
+  document.getElementById('bal-pending').textContent = myPending;
+  document.getElementById('bar-pending').style.width = Math.min(myPending*20,100)+'%';
+}
+
+function updatePendingBadge(){
+  const count = requests.filter(r=>r.status==='Pending').length;
+  document.getElementById('pendingBadge').textContent = count;
+}
+
+function renderRecentRequests(){
+  const mine = requests.filter(r=>r.employee===currentUser.name).slice(-5).reverse();
+  const tbody = document.getElementById('recentTbody');
+  if(!mine.length){
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem">No requests yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = mine.map(r=>`
+    <tr onclick="openDetail('${r.id}')">
+      <td><span class="badge badge-${r.type.toLowerCase()}">${r.type}</span></td>
+      <td>${fmtDate(r.start)}${r.start!==r.end?' – '+fmtDate(r.end):''}</td>
+      <td>${r.days}d</td>
+      <td><span class="badge badge-${r.status.toLowerCase()}">${r.status}</span></td>
+    </tr>`).join('');
+}
+
+function renderCalendar(){
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('calTitle').textContent = monthNames[month]+' '+year+' — Leave Calendar';
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const headEl = document.getElementById('calHead');
+  headEl.innerHTML = days.map(d=>`<div class="cal-head">${d}</div>`).join('');
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const approvedLeaves = requests.filter(r=>r.status==='Approved');
+  const calEl = document.getElementById('calBody');
+  let html = '';
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = d===now.getDate()&&month===now.getMonth()&&year===now.getFullYear();
+    const leave = approvedLeaves.find(r=>dateStr>=r.start&&dateStr<=r.end);
+    let cls = 'cal-day';
+    if(isToday) cls+=' today';
+    if(leave) cls+=` leave-${leave.type.toLowerCase()}`;
+    html+=`<div class="${cls}" title="${leave?leave.employee+' – '+leave.type:''}">${d}</div>`;
+  }
+  calEl.innerHTML = html;
+}
+
+// ── MY REQUESTS ──
+function filterRequests(filter, btn, search=''){
+  currentFilter = filter||currentFilter;
+  if(btn){ document.querySelectorAll('#view-myRequests .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  renderRequests(search);
+}
+
+function renderRequests(search=''){
+  const mine = requests.filter(r=>{
+    const matchUser = r.employee === currentUser.name;
+    const matchFilter = currentFilter==='All'||r.status===currentFilter;
+    const matchSearch = !search||r.id.toLowerCase().includes(search.toLowerCase())||r.type.toLowerCase().includes(search.toLowerCase())||r.reason.toLowerCase().includes(search.toLowerCase());
+    return matchUser&&matchFilter&&matchSearch;
+  });
+  const tbody = document.getElementById('requestsTbody');
+  if(!mine.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No requests found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = mine.map(r=>`
+    <tr onclick="openDetail('${r.id}')">
+      <td style="color:var(--muted2);font-size:0.75rem">${r.id}</td>
+      <td><span class="badge badge-${r.type.toLowerCase()}">${r.type}</span></td>
+      <td>${fmtDate(r.start)}</td>
+      <td>${fmtDate(r.end)}</td>
+      <td>${r.days}</td>
+      <td><span class="badge badge-${r.status.toLowerCase()}">${r.status}</span></td>
+      <td style="color:var(--muted2)">${fmtDate(r.submitted)}</td>
+    </tr>`).join('');
+}
+
+// ── NEW REQUEST ──
+function initForm(){
+  document.getElementById('fRequester').value = currentUser.name;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fStart').min = today;
+  document.getElementById('fEnd').min = today;
+  calcDays();
+}
+
+function calcDays(){
+  const s = document.getElementById('fStart').value;
+  const e = document.getElementById('fEnd').value;
+  if(!s||!e){
+    document.getElementById('daysCount').textContent='—';
+    document.getElementById('daysLabel').textContent='Select dates to calculate';
+    return;
+  }
+  if(e<s){ document.getElementById('fEnd').value=s; return; }
+  const d = workingDays(s,e);
+  document.getElementById('daysCount').textContent=d;
+  document.getElementById('daysLabel').textContent=`working day${d!==1?'s':''}`;
+}
+
+function workingDays(start,end){
+  let count=0, cur=new Date(start+'T12:00:00');
+  const endD=new Date(end+'T12:00:00');
+  while(cur<=endD){ const dow=cur.getDay(); if(dow!==0&&dow!==6)count++; cur.setDate(cur.getDate()+1); }
+  return count;
+}
+
+function submitRequest(){
+  const type=document.getElementById('fType').value;
+  const start=document.getElementById('fStart').value;
+  const end=document.getElementById('fEnd').value;
+  const reason=document.getElementById('fReason').value.trim();
+  if(!type||!start||!end||!reason){ showToast('Please fill in all required fields.','error'); return; }
+  const days=workingDays(start,end);
+  const id='LR-'+String(requests.length+1).padStart(3,'0');
+  const today=new Date().toISOString().split('T')[0];
+  requests.push({id,employee:currentUser.name,type,start,end,days,reason,
+    coverage:document.getElementById('fCoverage').value.trim(),
+    status:'Pending',submitted:today,actionedBy:'',actionedDate:'',comment:''});
+  saveData(requests);
+  showToast(`Request ${id} submitted successfully!`,'success');
+  resetForm();
+  navigate('myRequests');
+}
+
+function resetForm(){
+  ['fType','fStart','fEnd','fReason','fCoverage'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  document.getElementById('daysCount').textContent='—';
+  document.getElementById('daysLabel').textContent='Select dates to calculate';
+}
+
+// ── MANAGER VIEW ──
+function filterManager(filter,btn){
+  currentManagerFilter=filter;
+  if(btn){ document.querySelectorAll('#view-managerView .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  renderManagerView();
+}
+
+function renderManagerView(){
+  const list = requests.filter(r=>currentManagerFilter==='All'||r.status===currentManagerFilter);
+  const el = document.getElementById('approvalList');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">No ${currentManagerFilter.toLowerCase()} requests</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(r=>`
+    <div class="approval-card">
+      <div style="font-size:1.5rem">${typeIcon(r.type)}</div>
+      <div class="approval-info">
+        <div class="approval-name">${r.employee}</div>
+        <div class="approval-meta">
+          <span class="badge badge-${r.type.toLowerCase()}">${r.type}</span>
+          &nbsp;${fmtDate(r.start)} – ${fmtDate(r.end)} &nbsp;·&nbsp; ${r.days} day${r.days!==1?'s':''}
+          &nbsp;·&nbsp; Submitted ${fmtDate(r.submitted)}
+        </div>
+        <div style="font-size:0.78rem;color:var(--muted2);margin-top:0.3rem">${r.reason}</div>
+      </div>
+      <div class="approval-actions">
+        <span class="badge badge-${r.status.toLowerCase()}">${r.status}</span>
+        <button class="btn btn-sm btn-ghost" onclick="openDetail('${r.id}')">View</button>
+        ${r.status==='Pending'?`
+          <button class="btn btn-sm btn-success" onclick="actionRequest('${r.id}','Approved')">✓</button>
+          <button class="btn btn-sm btn-danger" onclick="actionRequest('${r.id}','Rejected')">✕</button>
+        `:''}
+      </div>
+    </div>`).join('');
+}
+
+function actionRequest(id,status){
+  const r=requests.find(r=>r.id===id);
+  if(!r) return;
+  r.status=status;
+  r.actionedBy=currentUser.name;
+  r.actionedDate=new Date().toISOString().split('T')[0];
+  saveData(requests);
+  updatePendingBadge();
+  renderManagerView();
+  closeDetail();
+  showToast(`Request ${id} ${status.toLowerCase()}.`,status==='Approved'?'success':'error');
+}
+
+// ── DETAIL ──
+function openDetail(id){
+  const r=requests.find(r=>r.id===id);
+  if(!r) return;
+  openDetailId=id;
+  document.getElementById('detailId').textContent=r.id;
+  document.getElementById('detailType').textContent=r.type+' Leave';
+  document.getElementById('detailBadge').innerHTML=`<span class="badge badge-${r.status.toLowerCase()}">${r.status}</span>`;
+  document.getElementById('dEmployee').textContent=r.employee;
+  document.getElementById('dStart').textContent=fmtDate(r.start);
+  document.getElementById('dEnd').textContent=fmtDate(r.end);
+  document.getElementById('dDays').textContent=r.days+' working day'+(r.days!==1?'s':'');
+  document.getElementById('dSubmitted').textContent=fmtDate(r.submitted);
+  const approvedRow=document.getElementById('dApprovedRow');
+  if(r.actionedBy){ approvedRow.style.display='flex'; document.getElementById('dApproved').textContent=r.actionedBy+' on '+fmtDate(r.actionedDate); }
+  else approvedRow.style.display='none';
+  document.getElementById('dReason').textContent=r.reason||'—';
+  const covSec=document.getElementById('dCoverageSection');
+  if(r.coverage){ covSec.style.display='block'; document.getElementById('dCoverage').textContent=r.coverage; }
+  else covSec.style.display='none';
+  const mgrSec=document.getElementById('dManagerSection');
+  const mgrComment=document.getElementById('dManagerComment');
+  if(currentRole==='manager'&&r.status==='Pending'){ mgrSec.style.display='block'; mgrComment.value=r.comment||''; }
+  else if(r.comment){ mgrSec.style.display='block'; mgrComment.value=r.comment; mgrComment.readOnly=true; }
+  else mgrSec.style.display='none';
+  const actions=document.getElementById('detailActions');
+  if(currentRole==='manager'&&r.status==='Pending'){
+    actions.innerHTML=`
+      <button class="btn btn-success" onclick="actionFromDetail('Approved')">✓ Approve</button>
+      <button class="btn btn-danger" onclick="actionFromDetail('Rejected')">✕ Reject</button>
+      <button class="btn btn-ghost" onclick="closeDetail()">Cancel</button>`;
+  } else if(currentRole==='employee'&&r.status==='Pending'){
+    actions.innerHTML=`
+      <button class="btn btn-danger" onclick="cancelRequest('${r.id}')">Withdraw Request</button>
+      <button class="btn btn-ghost" onclick="closeDetail()">Close</button>`;
+  } else {
+    actions.innerHTML=`<button class="btn btn-ghost" onclick="closeDetail()">Close</button>`;
+  }
+  document.getElementById('detailOverlay').style.display='flex';
+}
+
+function actionFromDetail(status){
+  if(!openDetailId) return;
+  const r=requests.find(r=>r.id===openDetailId);
+  if(!r) return;
+  r.status=status;
+  r.actionedBy=currentUser.name;
+  r.actionedDate=new Date().toISOString().split('T')[0];
+  r.comment=document.getElementById('dManagerComment').value.trim();
+  saveData(requests);
+  updatePendingBadge();
+  closeDetail();
+  if(currentView==='managerView') renderManagerView();
+  if(currentView==='myRequests') renderRequests();
+  if(currentView==='dashboard') renderDashboard();
+  showToast(`Request ${openDetailId} ${status.toLowerCase()}.`,status==='Approved'?'success':'error');
+}
+
+function cancelRequest(id){
+  requests = requests.filter(r=>r.id!==id);
+  saveData(requests);
+  closeDetail();
+  renderRequests();
+  updatePendingBadge();
+  showToast('Request withdrawn.','info');
+}
+
+function closeDetail(e){
+  if(e&&e.target!==document.getElementById('detailOverlay')) return;
+  document.getElementById('detailOverlay').style.display='none';
+  document.getElementById('dManagerComment').readOnly=false;
+  openDetailId=null;
+}
+
+// ── HELPERS ──
+function fmtDate(str){
+  if(!str) return '—';
+  const [y,m,d]=str.split('-');
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[parseInt(m)-1]+' '+parseInt(d)+', '+y;
+}
+function typeIcon(t){ return {Annual:'🌴',Sick:'🏥',Personal:'👤',Unpaid:'📋'}[t]||'📅'; }
+
+function showToast(msg,type='info'){
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// ── INIT ──
+initForm();
+renderDashboard();
+updatePendingBadge();
+</script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 export const metadata = {
-  title: 'Leave Request App — Apps Showcase',
+  title: 'Leave Request App — Mekazek',
 }
 
-export default function LeaveRequestShowcase() {
+export default function LeaveRequestPage() {
   return (
     <iframe
       src="/leave-request/index.html"
