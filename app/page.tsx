@@ -22,6 +22,9 @@ export default function Home() {
         <Link href="/pp-rehber" className={styles.navLink}>
           PP Mülakat Rehberi
         </Link>
+        <Link href="/helpdesk" className={styles.navLink}>
+          IT Help Desk
+        </Link>
         <button className={styles.navLink} onClick={() => setModalOpen(true)}>
           Portfolio
         </button>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Help Desk — Power Platform Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f9;--surface:#fff;--surface2:#f5f5f5;
+  --border:#e0e0e0;--text:#201f1e;--muted:#605e5c;
+  --pp-blue:#0078d4;--pp-blue-light:#deecf9;--pp-blue-dark:#005a9e;
+  --pp-magenta:#9b2d8a;--pp-magenta-light:#f3e5f5;
+  --sidebar-bg:#1b1a2e;--sidebar-text:#c8c6c4;--sidebar-active:#0078d4;
+  --open:#0078d4;--open-bg:#deecf9;
+  --inprogress:#ff8c00;--inprogress-bg:#fff4ce;
+  --resolved:#107c10;--resolved-bg:#dff6dd;
+  --closed:#8a8886;--closed-bg:#f3f2f1;
+  --critical:#d13438;--critical-bg:#fde7e9;
+  --high:#ff8c00;--high-bg:#fff4ce;
+  --medium:#c19c00;--medium-bg:#fdf6d3;
+  --low:#107c10;--low-bg:#dff6dd;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg)}
+
+/* ── Layout ── */
+.app{display:grid;grid-template-rows:48px 1fr;grid-template-columns:220px 1fr;height:100vh;overflow:hidden}
+
+/* ── Top bar ── */
+.topbar{grid-column:1/-1;display:flex;align-items:center;background:var(--pp-blue);color:#fff;padding:0 1rem;gap:1rem;z-index:20}
+.topbar-logo{display:flex;align-items:center;gap:0.5rem;font-weight:700;font-size:0.95rem;letter-spacing:0.02em}
+.topbar-logo svg{width:22px;height:22px;flex-shrink:0}
+.topbar-divider{width:1px;height:24px;background:rgba(255,255,255,0.3)}
+.topbar-title{font-size:0.88rem;font-weight:400;opacity:0.9}
+.topbar-spacer{flex:1}
+.topbar-user{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;opacity:0.9}
+.topbar-avatar{width:28px;height:28px;border-radius:50%;background:var(--pp-magenta);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem}
+.home-fab{display:inline-flex;align-items:center;gap:0.35rem;background:rgba(255,255,255,0.15);
+  color:#fff;text-decoration:none;border-radius:6px;padding:0.3rem 0.7rem;
+  font-size:0.75rem;font-weight:600;transition:background 0.2s;border:1px solid rgba(255,255,255,0.25)}
+.home-fab:hover{background:rgba(255,255,255,0.25)}
+
+/* ── Sidebar ── */
+.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);display:flex;flex-direction:column;overflow-y:auto;padding:0.5rem 0}
+.sidebar-section{padding:0.75rem 1rem 0.4rem;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#6e6d7a;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.55rem 1rem;cursor:pointer;
+  border-left:3px solid transparent;transition:all 0.15s;font-size:0.85rem;color:var(--sidebar-text)}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#fff}
+.nav-item.active{background:rgba(0,120,212,0.2);border-left-color:var(--pp-blue);color:#fff}
+.nav-item .nav-icon{font-size:1rem;flex-shrink:0;width:20px;text-align:center}
+.sidebar-stats{margin-top:auto;padding:1rem;border-top:1px solid rgba(255,255,255,0.08)}
+.sidebar-stat{display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0;font-size:0.78rem}
+.sidebar-stat-label{color:#8a8886}
+.sidebar-stat-val{font-weight:700;color:#fff}
+
+/* ── Main ── */
+.main{overflow:hidden;display:flex;flex-direction:column}
+.view{display:none;flex:1;overflow-y:auto;padding:1.5rem}
+.view.active{display:flex;flex-direction:column;gap:1.2rem}
+
+/* ── Page header ── */
+.page-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem}
+.page-title{font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:0.82rem;color:var(--muted);margin-top:0.15rem}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:4px;
+  font-size:0.82rem;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s}
+.btn-primary{background:var(--pp-blue);color:#fff}
+.btn-primary:hover{background:var(--pp-blue-dark)}
+.btn-outline{background:#fff;color:var(--pp-blue);border:1px solid var(--pp-blue)}
+.btn-outline:hover{background:var(--pp-blue-light)}
+.btn-sm{padding:0.3rem 0.7rem;font-size:0.75rem}
+.btn-danger{background:#d13438;color:#fff}
+.btn-danger:hover{background:#a4262c}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.2rem}
+.card-title{font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:0.8rem}
+
+/* ── Stat cards ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.1rem 1.2rem;
+  display:flex;flex-direction:column;gap:0.3rem;border-left:4px solid var(--pp-blue)}
+.stat-card.open{border-left-color:var(--open)}
+.stat-card.inprogress{border-left-color:var(--inprogress)}
+.stat-card.resolved{border-left-color:var(--resolved)}
+.stat-card.closed{border-left-color:var(--closed)}
+.stat-num{font-size:2rem;font-weight:700;line-height:1;color:var(--text)}
+.stat-label{font-size:0.75rem;color:var(--muted);font-weight:500}
+.stat-delta{font-size:0.72rem;color:var(--resolved);margin-top:0.2rem}
+
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.72rem;font-weight:600;white-space:nowrap}
+.badge-open{background:var(--open-bg);color:var(--open)}
+.badge-inprogress{background:var(--inprogress-bg);color:var(--inprogress)}
+.badge-resolved{background:var(--resolved-bg);color:var(--resolved)}
+.badge-closed{background:var(--closed-bg);color:var(--closed)}
+.badge-critical{background:var(--critical-bg);color:var(--critical)}
+.badge-high{background:var(--high-bg);color:var(--high)}
+.badge-medium{background:var(--medium-bg);color:var(--medium)}
+.badge-low{background:var(--low-bg);color:var(--low)}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:0.82rem}
+thead th{background:var(--surface2);color:var(--muted);font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;
+  padding:0.6rem 0.8rem;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer}
+tbody tr:hover{background:#f3f2f1}
+tbody td{padding:0.65rem 0.8rem;color:var(--text);vertical-align:middle}
+.ticket-id{font-family:monospace;font-size:0.78rem;color:var(--muted);font-weight:600}
+.ticket-title-cell{font-weight:500;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.assignee-cell{display:flex;align-items:center;gap:0.4rem}
+.assignee-avatar{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:#fff;flex-shrink:0}
+
+/* ── Search & filters ── */
+.toolbar{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap input{width:100%;padding:0.45rem 0.8rem 0.45rem 2rem;border:1px solid var(--border);border-radius:4px;font-size:0.82rem;font-family:inherit;outline:none;background:#fff}
+.search-wrap input:focus{border-color:var(--pp-blue);box-shadow:0 0 0 2px rgba(0,120,212,0.15)}
+.search-icon{position:absolute;left:0.6rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem}
+select.filter-sel{padding:0.45rem 0.7rem;border:1px solid var(--border);border-radius:4px;font-size:0.82rem;font-family:inherit;background:#fff;color:var(--text);outline:none;cursor:pointer}
+select.filter-sel:focus{border-color:var(--pp-blue)}
+
+/* ── Form ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid.full{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:0.35rem}
+.field label{font-size:0.78rem;font-weight:600;color:var(--text)}
+.field input,.field textarea,.field select{
+  padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:4px;
+  font-size:0.85rem;font-family:inherit;outline:none;color:var(--text);background:#fff;
+  transition:border-color 0.15s,box-shadow 0.15s}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--pp-blue);box-shadow:0 0 0 2px rgba(0,120,212,0.15)}
+.field textarea{resize:vertical;min-height:80px;line-height:1.5}
+.required{color:#d13438}
+.field-hint{font-size:0.72rem;color:var(--muted)}
+
+/* ── Priority indicator ── */
+.priority-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:4px}
+.dot-critical{background:var(--critical)}
+.dot-high{background:var(--high)}
+.dot-medium{background:var(--medium)}
+.dot-low{background:var(--low)}
+
+/* ── Dashboard charts ── */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.bar-list{display:flex;flex-direction:column;gap:0.6rem}
+.bar-item{display:flex;flex-direction:column;gap:0.25rem}
+.bar-label-row{display:flex;justify-content:space-between;font-size:0.78rem}
+.bar-label{color:var(--text);font-weight:500}
+.bar-count{color:var(--muted)}
+.bar-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
+
+/* ── Recent tickets ── */
+.recent-item{display:flex;align-items:center;gap:0.8rem;padding:0.65rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s}
+.recent-item:last-child{border-bottom:none}
+.recent-item:hover{background:var(--pp-blue-light);margin:0 -1.2rem;padding-left:1.2rem;padding-right:1.2rem;border-radius:4px}
+.recent-info{flex:1;min-width:0}
+.recent-title{font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-meta{font-size:0.72rem;color:var(--muted);margin-top:0.1rem}
+
+/* ── Detail view ── */
+.detail-header{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.detail-title{font-size:1.2rem;font-weight:700;color:var(--text);flex:1}
+.detail-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:1.2rem;align-items:start}
+.detail-meta-list{display:flex;flex-direction:column;gap:0}
+.meta-row{display:flex;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--border);font-size:0.83rem}
+.meta-row:last-child{border-bottom:none}
+.meta-key{width:110px;flex-shrink:0;color:var(--muted);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em}
+.meta-val{flex:1}
+.desc-box{background:var(--surface2);border-radius:6px;padding:0.85rem;font-size:0.85rem;line-height:1.65;color:var(--text)}
+
+/* ── Comments ── */
+.comment{display:flex;gap:0.75rem;padding:0.85rem 0;border-bottom:1px solid var(--border)}
+.comment:last-child{border-bottom:none}
+.comment-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px}
+.comment-body{flex:1}
+.comment-author{font-size:0.82rem;font-weight:600;color:var(--text)}
+.comment-time{font-size:0.72rem;color:var(--muted);margin-left:0.5rem}
+.comment-text{font-size:0.83rem;color:var(--text);margin-top:0.3rem;line-height:1.55}
+.comment-input-row{display:flex;gap:0.6rem;margin-top:0.8rem;align-items:flex-start}
+.comment-input-row textarea{flex:1;padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:0.83rem;resize:none;outline:none;height:60px}
+.comment-input-row textarea:focus{border-color:var(--pp-blue);box-shadow:0 0 0 2px rgba(0,120,212,0.15)}
+
+/* ── Status change ── */
+.status-select{padding:0.35rem 0.6rem;border-radius:4px;font-size:0.8rem;font-family:inherit;border:1px solid var(--border);background:#fff;cursor:pointer;outline:none}
+.status-select:focus{border-color:var(--pp-blue)}
+
+/* ── Empty state ── */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:0.75rem}
+.empty-text{font-size:0.9rem}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#323130;color:#fff;
+  padding:0.7rem 1.2rem;border-radius:6px;font-size:0.82rem;font-weight:500;
+  transform:translateY(100px);opacity:0;transition:all 0.3s ease;z-index:1000;
+  display:flex;align-items:center;gap:0.5rem}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#107c10}
+.toast.error{background:#d13438}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:48px auto 1fr}
+  .sidebar{display:none}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .charts-row{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.15)"/>
+        <path d="M8 10h6v6H8zm10 0h6v6h-6zM8 18h6v6H8zm10 0h6v6h-6z" fill="#fff" opacity=".9"/>
+      </svg>
+      Power Platform
+    </div>
+    <div class="topbar-divider"></div>
+    <span class="topbar-title">IT Help Desk</span>
+    <div class="topbar-spacer"></div>
+    <a href="/" class="home-fab" title="Home">
+      <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px;height:13px"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+      Home
+    </a>
+    <div class="topbar-divider"></div>
+    <div class="topbar-user">
+      <div class="topbar-avatar">GO</div>
+      Gursel Olca
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <div class="nav-item active" onclick="showView('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showView('tickets')">
+      <span class="nav-icon">🎫</span> All Tickets
+    </div>
+    <div class="nav-item" onclick="showView('new')">
+      <span class="nav-icon">➕</span> New Ticket
+    </div>
+
+    <div class="sidebar-section" style="margin-top:1rem">Quick Stats</div>
+    <div class="sidebar-stats">
+      <div class="sidebar-stat">
+        <span class="sidebar-stat-label">Open</span>
+        <span class="sidebar-stat-val" id="sb-open">—</span>
+      </div>
+      <div class="sidebar-stat">
+        <span class="sidebar-stat-label">In Progress</span>
+        <span class="sidebar-stat-val" id="sb-inprogress">—</span>
+      </div>
+      <div class="sidebar-stat">
+        <span class="sidebar-stat-label">Resolved</span>
+        <span class="sidebar-stat-val" id="sb-resolved">—</span>
+      </div>
+      <div class="sidebar-stat">
+        <span class="sidebar-stat-label">Total</span>
+        <span class="sidebar-stat-val" id="sb-total">—</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Overview of all support tickets</div>
+        </div>
+        <button class="btn btn-primary" onclick="showView('new')">+ New Ticket</button>
+      </div>
+
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <div class="charts-row">
+        <div class="card">
+          <div class="card-title">By Priority</div>
+          <div class="bar-list" id="chart-priority"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">By Category</div>
+          <div class="bar-list" id="chart-category"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent Tickets</div>
+        <div id="recent-list"></div>
+      </div>
+    </div>
+
+    <!-- ALL TICKETS VIEW -->
+    <div class="view" id="view-tickets">
+      <div class="page-header">
+        <div>
+          <div class="page-title">All Tickets</div>
+          <div class="page-sub" id="tickets-count-label">Loading...</div>
+        </div>
+        <button class="btn btn-primary" onclick="showView('new')">+ New Ticket</button>
+      </div>
+
+      <div class="card" style="padding:0.8rem">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search tickets..." oninput="renderTicketTable()">
+          </div>
+          <select class="filter-sel" id="filter-status" onchange="renderTicketTable()">
+            <option value="">All Statuses</option>
+            <option>Open</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+            <option>Closed</option>
+          </select>
+          <select class="filter-sel" id="filter-priority" onchange="renderTicketTable()">
+            <option value="">All Priorities</option>
+            <option>Critical</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+          <select class="filter-sel" id="filter-category" onchange="renderTicketTable()">
+            <option value="">All Categories</option>
+            <option>Hardware</option>
+            <option>Software</option>
+            <option>Network</option>
+            <option>Access</option>
+            <option>Other</option>
+          </select>
+          <button class="btn btn-outline btn-sm" onclick="clearFilters()">Clear</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Category</th>
+                <th>Assignee</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="ticket-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW TICKET VIEW -->
+    <div class="view" id="view-new">
+      <div class="page-header">
+        <div>
+          <div class="page-title">New Ticket</div>
+          <div class="page-sub">Submit a support request</div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:680px">
+        <form id="new-ticket-form" onsubmit="submitTicket(event)">
+          <div style="display:flex;flex-direction:column;gap:1rem">
+            <div class="field">
+              <label>Title <span class="required">*</span></label>
+              <input type="text" id="f-title" placeholder="Brief description of the issue" required maxlength="120">
+            </div>
+            <div class="field">
+              <label>Description <span class="required">*</span></label>
+              <textarea id="f-desc" placeholder="Detailed description of the issue, steps to reproduce, error messages..." required rows="4"></textarea>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Category <span class="required">*</span></label>
+                <select id="f-category" required>
+                  <option value="">Select category...</option>
+                  <option>Hardware</option>
+                  <option>Software</option>
+                  <option>Network</option>
+                  <option>Access</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Priority <span class="required">*</span></label>
+                <select id="f-priority" required>
+                  <option value="">Select priority...</option>
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                  <option>Critical</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Assignee</label>
+                <select id="f-assignee">
+                  <option value="">Auto-assign</option>
+                  <option>Alex Johnson</option>
+                  <option>Maria Garcia</option>
+                  <option>James Wilson</option>
+                  <option>Sarah Chen</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Your Name <span class="required">*</span></label>
+                <input type="text" id="f-requester" placeholder="Full name" required>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.6rem;padding-top:0.5rem">
+              <button type="submit" class="btn btn-primary">Submit Ticket</button>
+              <button type="button" class="btn btn-outline" onclick="resetForm()">Clear</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div class="view" id="view-detail">
+      <div class="page-header">
+        <div style="display:flex;align-items:center;gap:0.8rem">
+          <button class="btn btn-outline btn-sm" onclick="showView('tickets')">← Back</button>
+          <div>
+            <div class="page-title" id="detail-title-header">Ticket Detail</div>
+            <div class="page-sub" id="detail-id-header"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.6rem;align-items:center">
+          <label style="font-size:0.78rem;font-weight:600;color:var(--muted)">Status:</label>
+          <select class="status-select" id="detail-status-select" onchange="updateStatus()"></select>
+          <button class="btn btn-danger btn-sm" onclick="deleteTicket()">Delete</button>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div class="card">
+            <div class="card-title">Description</div>
+            <div class="desc-box" id="detail-desc"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Comments (<span id="comment-count">0</span>)</div>
+            <div id="comments-list"></div>
+            <div class="comment-input-row">
+              <textarea id="new-comment" placeholder="Add a comment..."></textarea>
+              <button class="btn btn-primary btn-sm" onclick="addComment()">Post</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Ticket Information</div>
+          <div class="detail-meta-list" id="detail-meta"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Constants ──
+const ASSIGNEES = ['Alex Johnson','Maria Garcia','James Wilson','Sarah Chen'];
+const AVATAR_COLORS = ['#0078d4','#9b2d8a','#107c10','#ff8c00','#5c2d91','#008575'];
+
+function avatarColor(name){
+  let h=0; for(let c of name) h=(h*31+c.charCodeAt(0))%AVATAR_COLORS.length;
+  return AVATAR_COLORS[h];
+}
+function initials(name){
+  return name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
+}
+function fmtDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function fmtDateTime(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+function genId(){
+  const tickets=getTickets();
+  const max=tickets.reduce((m,t)=>Math.max(m,parseInt(t.id.split('-')[1]||0)),0);
+  return 'TKT-'+String(max+1).padStart(3,'0');
+}
+
+// ── Storage ──
+function getTickets(){ return JSON.parse(localStorage.getItem('hd_tickets')||'[]'); }
+function saveTickets(t){ localStorage.setItem('hd_tickets',JSON.stringify(t)); }
+
+// ── Seed data ──
+function seedData(){
+  if(localStorage.getItem('hd_seeded')) return;
+  const now=Date.now();
+  const seed=[
+    {id:'TKT-001',title:'Laptop will not start after Windows update',description:'My laptop stopped booting after the latest Windows update last night. It gets stuck on the loading screen and then shows a blue screen error.',category:'Hardware',priority:'Critical',status:'Open',assignee:'Alex Johnson',requester:'John Smith',createdAt:new Date(now-5*86400000).toISOString(),updatedAt:new Date(now-5*86400000).toISOString(),comments:[{author:'Alex Johnson',text:'I will look into this right away. Can you bring the laptop to IT?',timestamp:new Date(now-4*86400000).toISOString()}]},
+    {id:'TKT-002',title:'Cannot access SharePoint site',description:'Getting "Access Denied" error when trying to open the HR SharePoint site. I had access last week and nothing has changed on my end.',category:'Access',priority:'High',status:'In Progress',assignee:'Sarah Chen',requester:'Emily Davis',createdAt:new Date(now-4*86400000).toISOString(),updatedAt:new Date(now-3*86400000).toISOString(),comments:[{author:'Sarah Chen',text:'Checking your permissions now. It looks like they were accidentally removed during a group policy update.',timestamp:new Date(now-3*86400000).toISOString()},{author:'Emily Davis',text:'Thank you for looking into it!',timestamp:new Date(now-3*86400000+3600000).toISOString()}]},
+    {id:'TKT-003',title:'Outlook emails not syncing on mobile',description:'My Outlook app on iPhone stopped syncing emails since yesterday morning. I can send emails but new ones do not appear.',category:'Software',priority:'Medium',status:'Open',assignee:'Maria Garcia',requester:'Robert Wilson',createdAt:new Date(now-3*86400000).toISOString(),updatedAt:new Date(now-3*86400000).toISOString(),comments:[]},
+    {id:'TKT-004',title:'Office printer showing offline',description:'The HP printer on Floor 3 shows as offline even though it is powered on. Other users on the floor are having the same issue.',category:'Hardware',priority:'Low',status:'Resolved',assignee:'James Wilson',requester:'Lisa Thompson',createdAt:new Date(now-7*86400000).toISOString(),updatedAt:new Date(now-6*86400000).toISOString(),comments:[{author:'James Wilson',text:'Resolved — printer driver was corrupted. Reinstalled and it is working now.',timestamp:new Date(now-6*86400000).toISOString()}]},
+    {id:'TKT-005',title:'VPN disconnects every 10 minutes',description:'The VPN connection drops every 10 minutes exactly. This is happening to at least 3 people on my team. We are all using Windows 11.',category:'Network',priority:'High',status:'In Progress',assignee:'Alex Johnson',requester:'Michael Brown',createdAt:new Date(now-2*86400000).toISOString(),updatedAt:new Date(now-1*86400000).toISOString(),comments:[{author:'Alex Johnson',text:'Identified as a timeout setting issue on the VPN server. Working with the network team to fix.',timestamp:new Date(now-1*86400000).toISOString()}]},
+    {id:'TKT-006',title:'Teams microphone not working in meetings',description:'My microphone works fine in other apps but Teams shows it as unavailable. Other participants cannot hear me in calls.',category:'Software',priority:'Medium',status:'Open',assignee:'Maria Garcia',requester:'Jennifer Lee',createdAt:new Date(now-1*86400000).toISOString(),updatedAt:new Date(now-1*86400000).toISOString(),comments:[]},
+    {id:'TKT-007',title:'Password reset — locked out of account',description:'Got locked out after entering wrong password too many times. Need access reset urgently for a client presentation in 2 hours.',category:'Access',priority:'Critical',status:'Resolved',assignee:'Sarah Chen',requester:'David Martinez',createdAt:new Date(now-8*86400000).toISOString(),updatedAt:new Date(now-8*86400000+7200000).toISOString(),comments:[{author:'Sarah Chen',text:'Password reset and account unlocked. Please change your password on first login.',timestamp:new Date(now-8*86400000+3600000).toISOString()}]},
+    {id:'TKT-008',title:'Monitor flickering and random black screens',description:'My secondary monitor has been flickering intermittently for 3 days. Sometimes it goes black for 2-3 seconds then comes back.',category:'Hardware',priority:'Medium',status:'Open',assignee:'',requester:'Karen White',createdAt:new Date(now-86400000).toISOString(),updatedAt:new Date(now-86400000).toISOString(),comments:[]},
+    {id:'TKT-009',title:'Computer running very slow — high CPU usage',description:'My PC has been extremely slow for the past week. Task Manager shows CPU at 90-100% even with no apps open.',category:'Software',priority:'Low',status:'In Progress',assignee:'James Wilson',requester:'Tom Anderson',createdAt:new Date(now-10*86400000).toISOString(),updatedAt:new Date(now-9*86400000).toISOString(),comments:[{author:'James Wilson',text:'Found malware running in the background. Running a full scan now.',timestamp:new Date(now-9*86400000).toISOString()}]},
+    {id:'TKT-010',title:'Request to install Adobe Acrobat Pro',description:'I need Adobe Acrobat Pro installed for editing PDF contracts. Manager approval attached to this request.',category:'Software',priority:'Low',status:'Closed',assignee:'Maria Garcia',requester:'Susan Clark',createdAt:new Date(now-14*86400000).toISOString(),updatedAt:new Date(now-12*86400000).toISOString(),comments:[{author:'Maria Garcia',text:'Adobe Acrobat Pro has been installed and licensed to your account.',timestamp:new Date(now-12*86400000).toISOString()}]},
+  ];
+  saveTickets(seed);
+  localStorage.setItem('hd_seeded','1');
+}
+
+// ── View routing ──
+let currentView='dashboard';
+let currentTicketId=null;
+
+function showView(view, ticketId=null){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  const navMap={dashboard:0,tickets:1,new:2};
+  if(navMap[view]!==undefined) document.querySelectorAll('.nav-item')[navMap[view]].classList.add('active');
+  currentView=view;
+  if(view==='dashboard') renderDashboard();
+  if(view==='tickets') renderTicketTable();
+  if(view==='detail' && ticketId){ currentTicketId=ticketId; renderDetail(ticketId); }
+  updateSidebarStats();
+}
+
+// ── Badge helpers ──
+function statusBadge(s){
+  const map={Open:'open','In Progress':'inprogress',Resolved:'resolved',Closed:'closed'};
+  return `<span class="badge badge-${map[s]||'closed'}">${s}</span>`;
+}
+function priorityBadge(p){
+  const map={Critical:'critical',High:'high',Medium:'medium',Low:'low'};
+  return `<span class="badge badge-${map[p]||'low'}"><span class="priority-dot dot-${(map[p]||'low')}"></span>${p}</span>`;
+}
+function assigneeCell(name){
+  if(!name) return '<span style="color:var(--muted);font-size:0.78rem">Unassigned</span>';
+  return `<div class="assignee-cell"><div class="assignee-avatar" style="background:${avatarColor(name)}">${initials(name)}</div>${name}</div>`;
+}
+
+// ── Sidebar stats ──
+function updateSidebarStats(){
+  const t=getTickets();
+  document.getElementById('sb-open').textContent=t.filter(x=>x.status==='Open').length;
+  document.getElementById('sb-inprogress').textContent=t.filter(x=>x.status==='In Progress').length;
+  document.getElementById('sb-resolved').textContent=t.filter(x=>x.status==='Resolved').length;
+  document.getElementById('sb-total').textContent=t.length;
+}
+
+// ── Dashboard ──
+function renderDashboard(){
+  const t=getTickets();
+  const open=t.filter(x=>x.status==='Open').length;
+  const inp=t.filter(x=>x.status==='In Progress').length;
+  const res=t.filter(x=>x.status==='Resolved').length;
+  const cls=t.filter(x=>x.status==='Closed').length;
+
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card open"><div class="stat-num">${open}</div><div class="stat-label">Open</div></div>
+    <div class="stat-card inprogress"><div class="stat-num">${inp}</div><div class="stat-label">In Progress</div></div>
+    <div class="stat-card resolved"><div class="stat-num">${res}</div><div class="stat-label">Resolved</div></div>
+    <div class="stat-card closed"><div class="stat-num">${cls}</div><div class="stat-label">Closed</div></div>
+  `;
+
+  // Priority chart
+  const prios=['Critical','High','Medium','Low'];
+  const pColors={'Critical':'#d13438','High':'#ff8c00','Medium':'#c19c00','Low':'#107c10'};
+  const maxP=Math.max(...prios.map(p=>t.filter(x=>x.priority===p).length),1);
+  document.getElementById('chart-priority').innerHTML=prios.map(p=>{
+    const n=t.filter(x=>x.priority===p).length;
+    return `<div class="bar-item">
+      <div class="bar-label-row"><span class="bar-label">${p}</span><span class="bar-count">${n}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(n/maxP)*100}%;background:${pColors[p]}"></div></div>
+    </div>`;
+  }).join('');
+
+  // Category chart
+  const cats=['Hardware','Software','Network','Access','Other'];
+  const maxC=Math.max(...cats.map(c=>t.filter(x=>x.category===c).length),1);
+  document.getElementById('chart-category').innerHTML=cats.map(c=>{
+    const n=t.filter(x=>x.category===c).length;
+    return `<div class="bar-item">
+      <div class="bar-label-row"><span class="bar-label">${c}</span><span class="bar-count">${n}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(n/maxC)*100}%;background:var(--pp-blue)"></div></div>
+    </div>`;
+  }).join('');
+
+  // Recent tickets
+  const recent=[...t].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+  document.getElementById('recent-list').innerHTML=recent.length?recent.map(tk=>`
+    <div class="recent-item" onclick="showView('detail','${tk.id}')">
+      <div style="flex-shrink:0">${statusBadge(tk.status)}</div>
+      <div class="recent-info">
+        <div class="recent-title">${tk.title}</div>
+        <div class="recent-meta">${tk.id} · ${tk.category} · ${fmtDate(tk.createdAt)}</div>
+      </div>
+      ${priorityBadge(tk.priority)}
+    </div>
+  `).join(''):'<div class="empty"><div class="empty-icon">🎫</div><div class="empty-text">No tickets yet</div></div>';
+}
+
+// ── Ticket table ──
+function renderTicketTable(){
+  let t=getTickets();
+  const search=document.getElementById('search-input').value.toLowerCase();
+  const fStatus=document.getElementById('filter-status').value;
+  const fPriority=document.getElementById('filter-priority').value;
+  const fCategory=document.getElementById('filter-category').value;
+
+  if(search) t=t.filter(x=>x.title.toLowerCase().includes(search)||x.id.toLowerCase().includes(search)||x.requester.toLowerCase().includes(search));
+  if(fStatus) t=t.filter(x=>x.status===fStatus);
+  if(fPriority) t=t.filter(x=>x.priority===fPriority);
+  if(fCategory) t=t.filter(x=>x.category===fCategory);
+
+  document.getElementById('tickets-count-label').textContent=`${t.length} ticket${t.length!==1?'s':''} found`;
+
+  const tbody=document.getElementById('ticket-tbody');
+  if(!t.length){
+    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted)">No tickets match the current filters</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=t.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).map(tk=>`
+    <tr onclick="showView('detail','${tk.id}')">
+      <td><span class="ticket-id">${tk.id}</span></td>
+      <td><div class="ticket-title-cell" title="${tk.title}">${tk.title}</div></td>
+      <td>${priorityBadge(tk.priority)}</td>
+      <td>${statusBadge(tk.status)}</td>
+      <td><span style="font-size:0.78rem">${tk.category}</span></td>
+      <td>${assigneeCell(tk.assignee)}</td>
+      <td><span style="font-size:0.78rem;color:var(--muted)">${fmtDate(tk.createdAt)}</span></td>
+    </tr>
+  `).join('');
+}
+
+function clearFilters(){
+  document.getElementById('search-input').value='';
+  document.getElementById('filter-status').value='';
+  document.getElementById('filter-priority').value='';
+  document.getElementById('filter-category').value='';
+  renderTicketTable();
+}
+
+// ── New ticket ──
+function submitTicket(e){
+  e.preventDefault();
+  const title=document.getElementById('f-title').value.trim();
+  const desc=document.getElementById('f-desc').value.trim();
+  const cat=document.getElementById('f-category').value;
+  const pri=document.getElementById('f-priority').value;
+  const assignee=document.getElementById('f-assignee').value || ASSIGNEES[Math.floor(Math.random()*ASSIGNEES.length)];
+  const req=document.getElementById('f-requester').value.trim();
+
+  const ticket={
+    id:genId(), title, description:desc, category:cat, priority:pri,
+    status:'Open', assignee, requester:req,
+    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString(), comments:[]
+  };
+  const tickets=getTickets();
+  tickets.push(ticket);
+  saveTickets(tickets);
+  showToast('Ticket '+ticket.id+' created successfully','success');
+  resetForm();
+  showView('detail', ticket.id);
+}
+
+function resetForm(){
+  document.getElementById('new-ticket-form').reset();
+}
+
+// ── Detail ──
+function renderDetail(id){
+  const t=getTickets();
+  const tk=t.find(x=>x.id===id);
+  if(!tk){ showView('tickets'); return; }
+
+  document.getElementById('detail-title-header').textContent=tk.title;
+  document.getElementById('detail-id-header').textContent=tk.id+' · Created '+fmtDate(tk.createdAt)+' by '+tk.requester;
+  document.getElementById('detail-desc').textContent=tk.description;
+
+  // Status select
+  const statusSel=document.getElementById('detail-status-select');
+  const statuses=['Open','In Progress','Resolved','Closed'];
+  statusSel.innerHTML=statuses.map(s=>`<option${s===tk.status?' selected':''}>${s}</option>`).join('');
+
+  // Meta
+  document.getElementById('detail-meta').innerHTML=`
+    <div class="meta-row"><span class="meta-key">Status</span><span class="meta-val">${statusBadge(tk.status)}</span></div>
+    <div class="meta-row"><span class="meta-key">Priority</span><span class="meta-val">${priorityBadge(tk.priority)}</span></div>
+    <div class="meta-row"><span class="meta-key">Category</span><span class="meta-val">${tk.category}</span></div>
+    <div class="meta-row"><span class="meta-key">Assignee</span><span class="meta-val">${assigneeCell(tk.assignee)}</span></div>
+    <div class="meta-row"><span class="meta-key">Requester</span><span class="meta-val">${tk.requester}</span></div>
+    <div class="meta-row"><span class="meta-key">Created</span><span class="meta-val" style="font-size:0.8rem;color:var(--muted)">${fmtDateTime(tk.createdAt)}</span></div>
+    <div class="meta-row"><span class="meta-key">Updated</span><span class="meta-val" style="font-size:0.8rem;color:var(--muted)">${fmtDateTime(tk.updatedAt)}</span></div>
+  `;
+
+  // Comments
+  document.getElementById('comment-count').textContent=tk.comments.length;
+  document.getElementById('comments-list').innerHTML=tk.comments.length?tk.comments.map(c=>`
+    <div class="comment">
+      <div class="comment-avatar" style="background:${avatarColor(c.author)}">${initials(c.author)}</div>
+      <div class="comment-body">
+        <span class="comment-author">${c.author}</span>
+        <span class="comment-time">${fmtDateTime(c.timestamp)}</span>
+        <div class="comment-text">${c.text}</div>
+      </div>
+    </div>
+  `).join(''):'<div style="padding:0.8rem 0;color:var(--muted);font-size:0.83rem">No comments yet. Be the first to comment.</div>';
+  document.getElementById('new-comment').value='';
+}
+
+function updateStatus(){
+  const newStatus=document.getElementById('detail-status-select').value;
+  const t=getTickets();
+  const idx=t.findIndex(x=>x.id===currentTicketId);
+  if(idx===-1) return;
+  t[idx].status=newStatus;
+  t[idx].updatedAt=new Date().toISOString();
+  saveTickets(t);
+  renderDetail(currentTicketId);
+  updateSidebarStats();
+  showToast('Status updated to '+newStatus,'success');
+}
+
+function addComment(){
+  const text=document.getElementById('new-comment').value.trim();
+  if(!text){ showToast('Please enter a comment','error'); return; }
+  const t=getTickets();
+  const idx=t.findIndex(x=>x.id===currentTicketId);
+  if(idx===-1) return;
+  t[idx].comments.push({author:'Gursel Olca',text,timestamp:new Date().toISOString()});
+  t[idx].updatedAt=new Date().toISOString();
+  saveTickets(t);
+  renderDetail(currentTicketId);
+  updateSidebarStats();
+  showToast('Comment added');
+}
+
+function deleteTicket(){
+  if(!confirm('Delete this ticket? This action cannot be undone.')) return;
+  let t=getTickets();
+  t=t.filter(x=>x.id!==currentTicketId);
+  saveTickets(t);
+  showToast('Ticket deleted');
+  showView('tickets');
+}
+
+// ── Toast ──
+function showToast(msg, type=''){
+  const el=document.getElementById('toast');
+  el.textContent=(type==='success'?'✓ ':type==='error'?'✕ ':'')+ msg;
+  el.className='toast'+(type?' '+type:'');
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ── Init ──
+seedData();
+renderDashboard();
+updateSidebarStats();
+</script>
+</body>
+</html>
