@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Onboarding Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--sidebar-bg:#0a0d14;--surface:#161b27;--surface2:#1e2535;
+  --border:#252d3d;--text:#e8eaf0;--muted:#6b7a99;--muted2:#8892a8;
+  --accent:#0078d4;--accent-dim:#004e8c;--accent-glow:rgba(0,120,212,0.18);
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.12);--green-border:rgba(34,197,94,0.25);
+  --yellow:#f59e0b;--yellow-bg:rgba(245,158,11,0.12);--yellow-border:rgba(245,158,11,0.25);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.12);--red-border:rgba(239,68,68,0.25);
+  --purple:#9b2d8a;--purple-bg:rgba(155,45,138,0.12);--purple-border:rgba(155,45,138,0.25);
+  --sidebar-w:230px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  color:var(--text);font-size:14px;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--sidebar-bg);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-brand{padding:1rem 1.2rem 0.8rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.6rem;}
+.brand-icon{width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,#15803d,var(--accent));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.brand-name{font-size:0.82rem;font-weight:700;color:var(--text);line-height:1.2;}
+.brand-sub{font-size:0.65rem;color:var(--muted);margin-top:0.1rem;}
+.sidebar-section{padding:0.6rem 0.6rem 0;}
+.sidebar-label{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);padding:0.4rem 0.6rem 0.3rem;}
+.nav-item{display:flex;align-items:center;gap:0.65rem;padding:0.55rem 0.75rem;
+  border-radius:8px;cursor:pointer;color:var(--muted2);font-size:0.82rem;font-weight:500;
+  transition:background 0.15s,color 0.15s;margin-bottom:2px;
+  background:none;border:none;width:100%;text-align:left;font-family:inherit;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(0,120,212,0.14);color:var(--accent);}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:0.8;}
+.nav-item.active svg{opacity:1;}
+.nav-badge{margin-left:auto;min-width:18px;height:18px;border-radius:9px;
+  background:var(--accent);color:#fff;font-size:0.65rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.sidebar-divider{height:1px;background:var(--border);margin:0.6rem 0.8rem;}
+.sidebar-user{margin-top:auto;padding:0.8rem 1rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:0.6rem;}
+.user-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#15803d,var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;color:#fff;}
+.user-name{font-size:0.78rem;font-weight:600;color:var(--text);}
+.user-role{font-size:0.65rem;color:var(--muted);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{flex-shrink:0;height:48px;background:var(--surface);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  padding:0 1.5rem;gap:1rem;}
+.topbar-title{font-size:0.9rem;font-weight:700;color:var(--text);}
+.topbar-sep{color:var(--border);font-size:1.1rem;}
+.topbar-page{font-size:0.82rem;color:var(--muted2);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:0.6rem;}
+.role-toggle{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.role-btn{padding:0.28rem 0.75rem;font-size:0.72rem;font-weight:600;
+  background:transparent;border:none;cursor:pointer;font-family:inherit;
+  color:var(--muted);transition:background 0.15s,color 0.15s;}
+.role-btn.active{background:var(--accent);color:#fff;}
+
+.content{flex:1;overflow-y:auto;padding:1.5rem;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+/* VIEWS */
+.view{display:none;}
+.view.active{display:block;}
+
+/* SECTION HEADER */
+.section-header{margin-bottom:1.4rem;}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.section-sub{font-size:0.8rem;color:var(--muted);}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:0.3rem;}
+.stat-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.06em;font-weight:600;}
+.stat-val{font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1;margin-top:0.2rem;}
+.stat-sub{font-size:0.74rem;color:var(--muted);}
+
+/* EMPLOYEE CARDS */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.emp-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.2rem;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s,transform 0.15s;}
+.emp-card:hover{border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent-dim),0 8px 24px rgba(0,120,212,0.12);
+  transform:translateY(-1px);}
+.emp-card-top{display:flex;align-items:flex-start;gap:0.8rem;margin-bottom:0.8rem;}
+.emp-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:700;color:#fff;}
+.emp-name{font-size:0.92rem;font-weight:700;color:var(--text);line-height:1.3;}
+.emp-role{font-size:0.74rem;color:var(--muted);margin-top:0.1rem;}
+.emp-dept{font-size:0.68rem;font-weight:600;padding:0.12rem 0.45rem;border-radius:12px;
+  margin-top:0.25rem;display:inline-block;}
+.emp-progress-label{display:flex;justify-content:space-between;
+  font-size:0.74rem;color:var(--muted2);margin-bottom:0.35rem;}
+.progress-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;transition:width 0.5s ease;}
+.emp-footer{display:flex;align-items:center;justify-content:space-between;margin-top:0.8rem;}
+.emp-start{font-size:0.72rem;color:var(--muted);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.18rem 0.6rem;
+  border-radius:20px;font-size:0.68rem;font-weight:700;letter-spacing:0.02em;}
+.badge-completed{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.badge-inprogress{background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.3);color:#60a5fa;}
+.badge-notstarted{background:var(--surface2);border:1px solid var(--border);color:var(--muted);}
+.badge-hr{background:var(--purple-bg);border:1px solid var(--purple-border);color:#d479c4;}
+.badge-it{background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.25);color:#60a5fa;}
+.badge-manager{background:var(--yellow-bg);border:1px solid var(--yellow-border);color:var(--yellow);}
+.badge-newhire{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+
+/* DETAIL VIEW */
+.detail-header-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.2rem 1.4rem;margin-bottom:1.2rem;
+  display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
+.detail-avatar{width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:700;color:#fff;}
+.detail-name{font-size:1.1rem;font-weight:700;color:var(--text);}
+.detail-meta{font-size:0.8rem;color:var(--muted2);margin-top:0.2rem;line-height:1.6;}
+.detail-progress-wrap{margin-left:auto;min-width:180px;}
+.detail-pct{font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1;}
+.detail-pct-sub{font-size:0.74rem;color:var(--muted);margin-bottom:0.4rem;}
+.detail-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.detail-fill{height:100%;border-radius:4px;transition:width 0.5s ease;}
+
+/* MILESTONES */
+.milestone-block{margin-bottom:1.5rem;}
+.milestone-header{
+  display:flex;align-items:center;gap:0.7rem;margin-bottom:0.7rem;
+  padding:0.5rem 0.8rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;}
+.milestone-icon{font-size:1rem;}
+.milestone-name{font-size:0.82rem;font-weight:700;color:var(--text);}
+.milestone-stats{margin-left:auto;font-size:0.74rem;color:var(--muted);}
+.milestone-done{color:var(--green);}
+
+/* TASK ITEMS */
+.task-item{
+  display:flex;align-items:flex-start;gap:0.8rem;
+  padding:0.65rem 0.9rem;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);
+  margin-bottom:0.4rem;transition:border-color 0.15s;}
+.task-item.done-task{opacity:0.6;}
+.task-cb{width:18px;height:18px;border-radius:4px;flex-shrink:0;
+  border:2px solid var(--border);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;margin-top:1px;}
+.task-cb.checked{background:var(--green);border-color:var(--green);}
+.task-cb.checked::after{content:'✓';font-size:0.65rem;color:#fff;font-weight:700;}
+.task-info{flex:1;}
+.task-title{font-size:0.82rem;color:var(--text);font-weight:500;line-height:1.3;}
+.task-title.struck{text-decoration:line-through;color:var(--muted);}
+.task-meta{display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;flex-wrap:wrap;}
+.task-category{font-size:0.68rem;color:var(--muted);}
+.task-actions-inline{margin-left:auto;flex-shrink:0;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;}
+.filter-btn{padding:0.35rem 0.85rem;border-radius:20px;font-size:0.75rem;font-weight:600;
+  background:var(--surface);border:1px solid var(--border);color:var(--muted2);
+  cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.filter-btn:hover:not(.active){border-color:var(--accent);color:var(--accent);}
+
+/* FORM */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.5rem;max-width:680px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:0.75rem;font-weight:600;color:var(--muted2);}
+.form-input,.form-select{padding:0.55rem 0.75rem;border-radius:8px;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:0.82rem;outline:none;
+  transition:border-color 0.15s;}
+.form-input:focus,.form-select:focus{border-color:var(--accent);
+  box-shadow:0 0 0 2px var(--accent-glow);}
+.form-select option{background:var(--surface2);}
+.form-section-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.08em;color:var(--muted);margin-bottom:1rem;
+  padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 1.1rem;
+  border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;
+  border:none;font-family:inherit;transition:opacity 0.2s,background 0.2s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dim);}
+.btn-ghost{background:var(--surface2);border:1px solid var(--border);color:var(--muted2);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:0.28rem 0.65rem;font-size:0.72rem;}
+
+/* ACTIVITY FEED */
+.activity-item{display:flex;align-items:flex-start;gap:0.7rem;
+  padding:0.6rem 0;border-bottom:1px solid rgba(37,45,61,0.5);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:var(--accent);margin-top:4px;}
+.activity-dot.green{background:var(--green);}
+.activity-dot.yellow{background:var(--yellow);}
+.activity-text{font-size:0.8rem;color:var(--muted2);line-height:1.4;}
+.activity-time{font-size:0.7rem;color:var(--muted);margin-top:0.1rem;}
+
+/* PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.panel-header{padding:0.8rem 1.1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-size:0.82rem;font-weight:700;color:var(--text);}
+.panel-body{padding:0.8rem 1.1rem;}
+.cards-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:0.75rem 1.1rem;font-size:0.82rem;color:var(--text);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:240px;
+  animation:toastIn 0.3s ease;}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.toast.success{border-color:var(--green-border);}
+.toast.info{border-color:rgba(0,120,212,0.4);}
+
+/* HOME FAB */
+.home-fab{position:fixed;top:0.75rem;right:1rem;z-index:9999;
+  display:inline-flex;align-items:center;gap:0.4rem;
+  background:linear-gradient(135deg,var(--accent-dim),var(--accent));
+  color:#fff;text-decoration:none;border-radius:10px;
+  padding:0.38rem 0.85rem 0.38rem 0.65rem;
+  font-size:0.75rem;font-weight:700;font-family:inherit;
+  box-shadow:0 4px 16px rgba(0,120,212,0.3);transition:opacity 0.2s,transform 0.2s;}
+.home-fab:hover{opacity:0.85;transform:translateY(-1px);}
+
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-icon{font-size:2.5rem;margin-bottom:0.8rem;}
+
+@media(max-width:900px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .cards-row{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+}
+</style>
+</head>
+<body>
+
+<a href="/" class="home-fab">
+  <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px;height:13px"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+  Home
+</a>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🧑‍💼</div>
+      <div>
+        <div class="brand-name">Onboarding</div>
+        <div class="brand-sub">HR Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Menu</div>
+      <button class="nav-item active" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="navigate('employees')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+        All Employees
+        <span class="nav-badge" id="activeCount">0</span>
+      </button>
+      <button class="nav-item" onclick="navigate('newEmployee')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+        New Employee
+      </button>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Tasks</div>
+      <button class="nav-item" onclick="navigate('myTasks')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+        My Checklist
+        <span class="nav-badge" id="myTaskCount" style="background:var(--yellow)">0</span>
+      </button>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">HR</div>
+      <div>
+        <div class="user-name" id="userName">HR Admin</div>
+        <div class="user-role" id="userRoleLabel">Human Resources</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Employee Onboarding Tracker</span>
+      <span class="topbar-sep">›</span>
+      <span class="topbar-page" id="topbarPage">Dashboard</span>
+      <div class="topbar-right">
+        <div class="role-toggle">
+          <button class="role-btn active" id="roleHR" onclick="setRole('HR')">HR</button>
+          <button class="role-btn" id="roleIT" onclick="setRole('IT')">IT</button>
+          <button class="role-btn" id="roleManager" onclick="setRole('Manager')">Manager</button>
+          <button class="role-btn" id="roleHire" onclick="setRole('New Hire')">New Hire</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="section-header">
+          <div class="section-title">Dashboard</div>
+          <div class="section-sub" id="dashSub">Onboarding overview for all active employees</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">Active Onboarding</div>
+            <div class="stat-val" id="stat-active">0</div>
+            <div class="stat-sub">employees in progress</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Completed</div>
+            <div class="stat-val" id="stat-completed" style="color:var(--green)">0</div>
+            <div class="stat-sub">this period</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Tasks Pending</div>
+            <div class="stat-val" id="stat-pending" style="color:var(--yellow)">0</div>
+            <div class="stat-sub">across all employees</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg. Progress</div>
+            <div class="stat-val" id="stat-avg">0%</div>
+            <div class="stat-sub">overall completion</div>
+          </div>
+        </div>
+
+        <div class="cards-row">
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Active Employees</span>
+              <button class="btn btn-sm btn-ghost" onclick="navigate('employees')">View all →</button>
+            </div>
+            <div class="panel-body" id="dashEmpList"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Recent Activity</span>
+            </div>
+            <div class="panel-body" id="activityFeed"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALL EMPLOYEES -->
+      <div class="view" id="view-employees">
+        <div class="section-header">
+          <div class="section-title">All Employees</div>
+          <div class="section-sub">Click a card to view and manage the onboarding checklist</div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterEmp('All',this)">All</button>
+          <button class="filter-btn" onclick="filterEmp('In Progress',this)">In Progress</button>
+          <button class="filter-btn" onclick="filterEmp('Completed',this)">Completed</button>
+          <button class="filter-btn" onclick="filterEmp('Not Started',this)">Not Started</button>
+        </div>
+        <div class="emp-grid" id="empGrid"></div>
+      </div>
+
+      <!-- EMPLOYEE DETAIL -->
+      <div class="view" id="view-detail">
+        <div style="margin-bottom:1rem">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('employees')">← Back to employees</button>
+        </div>
+        <div class="detail-header-card" id="detailHeader"></div>
+
+        <div class="filter-bar">
+          <button class="filter-btn active" id="taskFilterAll" onclick="filterTasks('All',this)">All Tasks</button>
+          <button class="filter-btn" onclick="filterTasks('HR',this)">HR</button>
+          <button class="filter-btn" onclick="filterTasks('IT',this)">IT</button>
+          <button class="filter-btn" onclick="filterTasks('Manager',this)">Manager</button>
+          <button class="filter-btn" onclick="filterTasks('New Hire',this)">New Hire</button>
+        </div>
+
+        <div id="milestoneBlocks"></div>
+      </div>
+
+      <!-- MY TASKS -->
+      <div class="view" id="view-myTasks">
+        <div class="section-header">
+          <div class="section-title">My Checklist</div>
+          <div class="section-sub" id="myTasksSub">Tasks assigned to your role</div>
+        </div>
+        <div id="myTasksList"></div>
+      </div>
+
+      <!-- NEW EMPLOYEE -->
+      <div class="view" id="view-newEmployee">
+        <div class="section-header">
+          <div class="section-title">Add New Employee</div>
+          <div class="section-sub">Create an onboarding checklist for a new hire</div>
+        </div>
+        <div class="form-card">
+          <div class="form-section-title">Employee Information</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input class="form-input" id="fName" placeholder="e.g. Jane Smith">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Job Title *</label>
+              <input class="form-input" id="fTitle" placeholder="e.g. Power Platform Developer">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department *</label>
+              <select class="form-select" id="fDept">
+                <option value="">Select...</option>
+                <option>IT</option>
+                <option>HR</option>
+                <option>Finance</option>
+                <option>Operations</option>
+                <option>Sales</option>
+                <option>Marketing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Start Date *</label>
+              <input type="date" class="form-input" id="fStart">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Manager</label>
+              <input class="form-input" id="fManager" placeholder="Manager name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Work Location</label>
+              <select class="form-select" id="fLocation">
+                <option>Office</option>
+                <option>Remote</option>
+                <option>Hybrid</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.8rem;margin-top:1.2rem">
+            <button class="btn btn-primary" onclick="addEmployee()">Create Onboarding Plan</button>
+            <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+const STORAGE_KEY = 'ob_employees_v1';
+const ACTIVITY_KEY = 'ob_activity_v1';
+
+// Standard task templates per milestone
+const TASK_TEMPLATES = [
+  // DAY 1
+  {milestone:'Day 1',category:'IT Setup',title:'Laptop provisioned and configured',assignee:'IT'},
+  {milestone:'Day 1',category:'IT Setup',title:'Email account created',assignee:'IT'},
+  {milestone:'Day 1',category:'IT Setup',title:'Badge / building access granted',assignee:'IT'},
+  {milestone:'Day 1',category:'HR',title:'Welcome packet delivered',assignee:'HR'},
+  {milestone:'Day 1',category:'HR',title:'Signed offer letter on file',assignee:'HR'},
+  {milestone:'Day 1',category:'Manager',title:'Manager intro & team welcome meeting',assignee:'Manager'},
+  {milestone:'Day 1',category:'New Hire',title:'Complete emergency contact form',assignee:'New Hire'},
+  // WEEK 1
+  {milestone:'Week 1',category:'IT Setup',title:'Microsoft 365 licenses assigned',assignee:'IT'},
+  {milestone:'Week 1',category:'IT Setup',title:'VPN and system access configured',assignee:'IT'},
+  {milestone:'Week 1',category:'IT Setup',title:'Required software installed',assignee:'IT'},
+  {milestone:'Week 1',category:'HR',title:'Benefits enrollment completed',assignee:'HR'},
+  {milestone:'Week 1',category:'HR',title:'Direct deposit / payroll setup',assignee:'HR'},
+  {milestone:'Week 1',category:'HR',title:'Company policy acknowledgment signed',assignee:'HR'},
+  {milestone:'Week 1',category:'Manager',title:'Role & responsibilities walkthrough',assignee:'Manager'},
+  {milestone:'Week 1',category:'Manager',title:'Team introductions completed',assignee:'Manager'},
+  {milestone:'Week 1',category:'New Hire',title:'Read employee handbook',assignee:'New Hire'},
+  {milestone:'Week 1',category:'New Hire',title:'Complete security & compliance training',assignee:'New Hire'},
+  // MONTH 1
+  {milestone:'Month 1',category:'Manager',title:'30-day check-in meeting',assignee:'Manager'},
+  {milestone:'Manager',category:'Manager',title:'Performance goals set for Q1',assignee:'Manager'},
+  {milestone:'Month 1',category:'HR',title:'Confirm benefits are active',assignee:'HR'},
+  {milestone:'Month 1',category:'New Hire',title:'Complete role-specific training',assignee:'New Hire'},
+  {milestone:'Month 1',category:'New Hire',title:'First project assignment accepted',assignee:'New Hire'},
+];
+
+const AVATAR_COLORS = ['#1d4ed8','#7c3aed','#0369a1','#047857','#be123c','#b45309','#0e7490'];
+
+const SEED = [
+  {id:'OB-001',name:'Alex Martinez',title:'Power Platform Developer',dept:'IT',
+   start:'2026-05-05',manager:'Michael Chen',location:'Hybrid',
+   color:'#1d4ed8',
+   tasks: makeTasks('OB-001',[0,1,2,3,4,5,6,7,8,9,10,11,12,13])},
+  {id:'OB-002',name:'Jessica Lee',title:'Business Analyst',dept:'Operations',
+   start:'2026-04-21',manager:'Sarah Johnson',location:'Office',
+   color:'#7c3aed',
+   tasks: makeTasks('OB-002',[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])},
+  {id:'OB-003',name:'David Kim',title:'SharePoint Developer',dept:'IT',
+   start:'2026-05-19',manager:'Michael Chen',location:'Remote',
+   color:'#0369a1',
+   tasks: makeTasks('OB-003',[0,1,2,3])},
+  {id:'OB-004',name:'Emma Thompson',title:'Project Manager',dept:'Operations',
+   start:'2026-03-10',manager:'Sarah Johnson',location:'Office',
+   color:'#047857',
+   tasks: makeTasks('OB-004', Array.from({length:TASK_TEMPLATES.length},(_,i)=>i))},
+];
+
+function makeTasks(empId, doneIdxs){
+  return TASK_TEMPLATES.map((t,i)=>({
+    id: empId+'-t'+i,
+    milestone: t.milestone,
+    category: t.category,
+    title: t.title,
+    assignee: t.assignee,
+    done: doneIdxs.includes(i),
+  }));
+}
+
+function calcProgress(emp){
+  if(!emp.tasks||!emp.tasks.length) return 0;
+  return Math.round(emp.tasks.filter(t=>t.done).length/emp.tasks.length*100);
+}
+function getStatus(emp){
+  const p=calcProgress(emp);
+  if(p===0) return 'Not Started';
+  if(p===100) return 'Completed';
+  return 'In Progress';
+}
+function initials(name){ return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+function fmtDate(str){
+  if(!str) return '—';
+  const [y,m,d]=str.split('-');
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[parseInt(m)-1]+' '+parseInt(d)+', '+y;
+}
+
+function loadData(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw){ localStorage.setItem(STORAGE_KEY,JSON.stringify(SEED)); return JSON.parse(JSON.stringify(SEED)); }
+  return JSON.parse(raw);
+}
+function saveData(d){ localStorage.setItem(STORAGE_KEY,JSON.stringify(d)); }
+
+function loadActivity(){
+  const raw=localStorage.getItem(ACTIVITY_KEY);
+  if(!raw) return [
+    {text:'Alex Martinez completed IT Setup tasks',time:'2 hours ago',type:'green'},
+    {text:'Jessica Lee: Benefits enrollment completed',time:'Yesterday',type:'green'},
+    {text:'David Kim started onboarding',time:'2 days ago',type:'blue'},
+    {text:'Emma Thompson fully onboarded',time:'1 week ago',type:'green'},
+  ];
+  return JSON.parse(raw);
+}
+function addActivity(text,type='blue'){
+  const acts=loadActivity();
+  acts.unshift({text,time:'Just now',type});
+  localStorage.setItem(ACTIVITY_KEY,JSON.stringify(acts.slice(0,20)));
+}
+
+let employees = loadData();
+let currentView = 'dashboard';
+let currentRole = 'HR';
+let currentEmpId = null;
+let currentTaskFilter = 'All';
+let currentEmpFilter = 'All';
+
+// ── NAVIGATION ──
+function navigate(view, empId=null){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap={dashboard:0,employees:1,newEmployee:2,myTasks:3};
+  const items=document.querySelectorAll('.nav-item');
+  if(navMap[view]!==undefined&&items[navMap[view]]) items[navMap[view]].classList.add('active');
+  const titles={dashboard:'Dashboard',employees:'All Employees',detail:'Employee Detail',myTasks:'My Checklist',newEmployee:'New Employee'};
+  document.getElementById('topbarPage').textContent=titles[view]||view;
+  currentView=view;
+  if(empId) currentEmpId=empId;
+  if(view==='dashboard') renderDashboard();
+  if(view==='employees') renderEmployees();
+  if(view==='detail'&&currentEmpId) renderDetail(currentEmpId);
+  if(view==='myTasks') renderMyTasks();
+  if(view==='newEmployee') initNewForm();
+  updateCounts();
+}
+
+// ── ROLE ──
+function setRole(role){
+  currentRole=role;
+  ['HR','IT','Manager','New Hire'].forEach(r=>{
+    const el=document.getElementById('role'+r.replace(' ',''));
+    if(el) el.classList.toggle('active',r===role);
+  });
+  const roleMap={HR:{name:'HR Admin',avatar:'HR',sub:'Human Resources'},
+    IT:{name:'IT Support',avatar:'IT',sub:'Information Technology'},
+    Manager:{name:'Michael Chen',avatar:'MC',sub:'Engineering Manager'},
+    'New Hire':{name:'Alex Martinez',avatar:'AM',sub:'New Employee'}};
+  const r=roleMap[role]||roleMap['HR'];
+  document.getElementById('userAvatar').textContent=r.avatar;
+  document.getElementById('userName').textContent=r.name;
+  document.getElementById('userRoleLabel').textContent=r.sub;
+  if(currentView==='myTasks') renderMyTasks();
+  if(currentView==='dashboard') renderDashboard();
+  updateCounts();
+}
+
+// ── COUNTS ──
+function updateCounts(){
+  const active=employees.filter(e=>getStatus(e)==='In Progress').length;
+  document.getElementById('activeCount').textContent=active;
+  const myPending=employees.flatMap(e=>e.tasks).filter(t=>t.assignee===currentRole&&!t.done).length;
+  document.getElementById('myTaskCount').textContent=myPending;
+}
+
+// ── DASHBOARD ──
+function renderDashboard(){
+  employees=loadData();
+  const active=employees.filter(e=>getStatus(e)==='In Progress');
+  const completed=employees.filter(e=>getStatus(e)==='Completed');
+  const allPending=employees.flatMap(e=>e.tasks).filter(t=>!t.done).length;
+  const avgProg=employees.length?Math.round(employees.reduce((a,e)=>a+calcProgress(e),0)/employees.length):0;
+  document.getElementById('stat-active').textContent=active.length;
+  document.getElementById('stat-completed').textContent=completed.length;
+  document.getElementById('stat-pending').textContent=allPending;
+  document.getElementById('stat-avg').textContent=avgProg+'%';
+
+  // Employee mini list
+  const list=document.getElementById('dashEmpList');
+  list.innerHTML=employees.slice(0,4).map(e=>{
+    const p=calcProgress(e);
+    const color=p===100?'var(--green)':p>50?'var(--accent)':'var(--yellow)';
+    return `<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0;
+      border-bottom:1px solid rgba(37,45,61,0.5);cursor:pointer"
+      onclick="navigate('detail','${e.id}')">
+      <div style="width:28px;height:28px;border-radius:50%;background:${e.color};
+        display:flex;align-items:center;justify-content:center;font-size:0.65rem;
+        font-weight:700;color:#fff;flex-shrink:0">${initials(e.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text)">${e.name}</div>
+        <div style="height:4px;background:var(--surface2);border-radius:2px;margin-top:4px;overflow:hidden">
+          <div style="height:100%;width:${p}%;background:${color};border-radius:2px"></div>
+        </div>
+      </div>
+      <div style="font-size:0.8rem;font-weight:700;color:${color};flex-shrink:0">${p}%</div>
+    </div>`;
+  }).join('');
+
+  // Activity
+  const acts=loadActivity();
+  document.getElementById('activityFeed').innerHTML=acts.slice(0,6).map(a=>`
+    <div class="activity-item">
+      <div class="activity-dot ${a.type==='green'?'green':a.type==='yellow'?'yellow':''}"></div>
+      <div>
+        <div class="activity-text">${a.text}</div>
+        <div class="activity-time">${a.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── EMPLOYEES ──
+function filterEmp(filter,btn){
+  currentEmpFilter=filter;
+  if(btn){document.querySelectorAll('#view-employees .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  renderEmployees();
+}
+
+function renderEmployees(){
+  employees=loadData();
+  const filtered=employees.filter(e=>currentEmpFilter==='All'||getStatus(e)===currentEmpFilter);
+  const grid=document.getElementById('empGrid');
+  if(!filtered.length){
+    grid.innerHTML='<div class="empty"><div class="empty-icon">🧑‍💼</div><div class="empty-text">No employees found</div></div>';
+    return;
+  }
+  grid.innerHTML=filtered.map(e=>{
+    const p=calcProgress(e);
+    const s=getStatus(e);
+    const color=p===100?'#22c55e':p>50?'#0078d4':'#f59e0b';
+    const done=e.tasks.filter(t=>t.done).length;
+    return `<div class="emp-card" onclick="navigate('detail','${e.id}')">
+      <div class="emp-card-top">
+        <div class="emp-avatar" style="background:${e.color}">${initials(e.name)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="emp-name">${e.name}</div>
+          <div class="emp-role">${e.title}</div>
+          <span class="badge badge-${s.replace(' ','').toLowerCase()}">${s}</span>
+        </div>
+      </div>
+      <div class="emp-progress-label">
+        <span>${done} / ${e.tasks.length} tasks</span>
+        <span style="color:${color};font-weight:700">${p}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${p}%;background:${color}"></div>
+      </div>
+      <div class="emp-footer">
+        <span class="emp-start">📅 ${fmtDate(e.start)}</span>
+        <span style="font-size:0.72rem;color:var(--muted)">${e.dept} · ${e.location}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETAIL ──
+function renderDetail(empId){
+  employees=loadData();
+  const emp=employees.find(e=>e.id===empId);
+  if(!emp){navigate('employees');return;}
+  const p=calcProgress(emp);
+  const color=p===100?'#22c55e':p>50?'#0078d4':'#f59e0b';
+  const s=getStatus(emp);
+  document.getElementById('detailHeader').innerHTML=`
+    <div class="detail-avatar" style="background:${emp.color}">${initials(emp.name)}</div>
+    <div style="flex:1">
+      <div class="detail-name">${emp.name}</div>
+      <div class="detail-meta">
+        ${emp.title} &nbsp;·&nbsp; ${emp.dept} &nbsp;·&nbsp; ${emp.location}<br>
+        Manager: ${emp.manager} &nbsp;·&nbsp; Start: ${fmtDate(emp.start)}
+      </div>
+      <span class="badge badge-${s.replace(' ','').toLowerCase()}" style="margin-top:0.4rem">${s}</span>
+    </div>
+    <div class="detail-progress-wrap">
+      <div class="detail-pct" style="color:${color}">${p}%</div>
+      <div class="detail-pct-sub">${emp.tasks.filter(t=>t.done).length} of ${emp.tasks.length} tasks done</div>
+      <div class="detail-bar">
+        <div class="detail-fill" style="width:${p}%;background:${color}"></div>
+      </div>
+    </div>`;
+
+  renderMilestones(emp);
+}
+
+function filterTasks(filter,btn){
+  currentTaskFilter=filter;
+  if(btn){document.querySelectorAll('#view-detail .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  if(currentEmpId){
+    employees=loadData();
+    const emp=employees.find(e=>e.id===currentEmpId);
+    if(emp) renderMilestones(emp);
+  }
+}
+
+function renderMilestones(emp){
+  const milestones=['Day 1','Week 1','Month 1'];
+  const filtered=currentTaskFilter==='All'?emp.tasks:emp.tasks.filter(t=>t.assignee===currentTaskFilter);
+  const container=document.getElementById('milestoneBlocks');
+  container.innerHTML=milestones.map(ms=>{
+    const tasks=filtered.filter(t=>t.milestone===ms);
+    if(!tasks.length) return '';
+    const done=tasks.filter(t=>t.done).length;
+    const msIcons={'Day 1':'🌅','Week 1':'📅','Month 1':'🏆'};
+    return `<div class="milestone-block">
+      <div class="milestone-header">
+        <span class="milestone-icon">${msIcons[ms]||'📌'}</span>
+        <span class="milestone-name">${ms}</span>
+        <span class="milestone-stats">
+          <span class="${done===tasks.length?'milestone-done':''}">${done}</span> / ${tasks.length} done
+        </span>
+      </div>
+      ${tasks.map(t=>`
+        <div class="task-item ${t.done?'done-task':''}">
+          <div class="task-cb ${t.done?'checked':''}" onclick="toggleTask('${emp.id}','${t.id}')"></div>
+          <div class="task-info">
+            <div class="task-title ${t.done?'struck':''}">${t.title}</div>
+            <div class="task-meta">
+              <span class="badge badge-${t.assignee.replace(' ','').toLowerCase()}">${t.assignee}</span>
+              <span class="task-category">${t.category}</span>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function toggleTask(empId,taskId){
+  employees=loadData();
+  const emp=employees.find(e=>e.id===empId);
+  if(!emp) return;
+  const task=emp.tasks.find(t=>t.id===taskId);
+  if(!task) return;
+  task.done=!task.done;
+  saveData(employees);
+  if(task.done) addActivity(`${emp.name}: "${task.title}"`, 'green');
+  renderDetail(empId);
+  updateCounts();
+  showToast(task.done?'Task completed!':'Task marked incomplete','info');
+}
+
+// ── MY TASKS ──
+function renderMyTasks(){
+  employees=loadData();
+  document.getElementById('myTasksSub').textContent=`Tasks assigned to ${currentRole}`;
+  const myTasks=[];
+  employees.forEach(emp=>{
+    emp.tasks.filter(t=>t.assignee===currentRole&&!t.done).forEach(t=>{
+      myTasks.push({...t,empId:emp.id,empName:emp.name,empColor:emp.color});
+    });
+  });
+  const el=document.getElementById('myTasksList');
+  if(!myTasks.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">All tasks for your role are complete!</div></div>';
+    return;
+  }
+  const byMilestone={};
+  myTasks.forEach(t=>{
+    if(!byMilestone[t.milestone]) byMilestone[t.milestone]={};
+    if(!byMilestone[t.milestone][t.empName]) byMilestone[t.milestone][t.empName]=[];
+    byMilestone[t.milestone][t.empName].push(t);
+  });
+  const msIcons={'Day 1':'🌅','Week 1':'📅','Month 1':'🏆'};
+  el.innerHTML=Object.entries(byMilestone).map(([ms,byEmp])=>`
+    <div class="milestone-block">
+      <div class="milestone-header">
+        <span class="milestone-icon">${msIcons[ms]||'📌'}</span>
+        <span class="milestone-name">${ms}</span>
+      </div>
+      ${Object.entries(byEmp).map(([empName,tasks])=>`
+        <div style="margin-bottom:0.8rem">
+          <div style="font-size:0.74rem;font-weight:700;color:var(--muted2);
+            padding:0.3rem 0.5rem;margin-bottom:0.3rem">👤 ${empName}</div>
+          ${tasks.map(t=>`
+            <div class="task-item">
+              <div class="task-cb" onclick="toggleTask('${t.empId}','${t.id}')"></div>
+              <div class="task-info">
+                <div class="task-title">${t.title}</div>
+                <div class="task-meta"><span class="task-category">${t.category}</span></div>
+              </div>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── NEW EMPLOYEE ──
+function initNewForm(){
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('fStart').value=today;
+}
+function clearForm(){
+  ['fName','fTitle','fManager'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fDept').value='';
+  document.getElementById('fLocation').value='Office';
+  initNewForm();
+}
+function addEmployee(){
+  const name=document.getElementById('fName').value.trim();
+  const title=document.getElementById('fTitle').value.trim();
+  const dept=document.getElementById('fDept').value;
+  const start=document.getElementById('fStart').value;
+  const manager=document.getElementById('fManager').value.trim()||'—';
+  const location=document.getElementById('fLocation').value;
+  if(!name||!title||!dept||!start){showToast('Please fill in all required fields.','error');return;}
+  const id='OB-'+String(employees.length+1).padStart(3,'0');
+  const color=AVATAR_COLORS[employees.length%AVATAR_COLORS.length];
+  employees=loadData();
+  employees.push({id,name,title,dept,start,manager,location,color,
+    tasks:TASK_TEMPLATES.map((t,i)=>({id:id+'-t'+i,milestone:t.milestone,
+      category:t.category,title:t.title,assignee:t.assignee,done:false}))});
+  saveData(employees);
+  addActivity(`${name} added to onboarding`,'blue');
+  showToast(`Onboarding plan created for ${name}!`,'success');
+  clearForm();
+  navigate('detail',id);
+}
+
+function showToast(msg,type='info'){
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// ── INIT ──
+renderDashboard();
+updateCounts();
+</script>
+</body>
+</html>

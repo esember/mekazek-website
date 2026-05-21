@@ -1,8 +1,8 @@
 export const metadata = {
-  title: 'Employee Onboarding Tracker — Apps Showcase',
+  title: 'Employee Onboarding Tracker — Mekazek',
 }
 
-export default function OnboardingShowcase() {
+export default function OnboardingPage() {
   return (
     <iframe
       src="/onboarding/index.html"
