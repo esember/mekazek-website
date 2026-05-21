@@ -272,6 +272,38 @@ ul.rlist li::before{
 .tool-link.gh{ background:var(--surface2);border:1px solid var(--border);color:var(--primary); }
 .tool-link.gh:hover{ background:var(--tag-bg); }
 
+/* ════ DEMO SLIDES ════ */
+.demo-slide{ background:#0e0b1e;display:flex;flex-direction:column;overflow:hidden; }
+.demo-bar{
+  flex-shrink:0;padding:0.7rem 2rem;
+  background:linear-gradient(90deg,#1b0d30,#0a1628);
+  border-bottom:1px solid #2e2550;
+  display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;
+}
+.demo-bar-title{
+  font-size:1rem;font-weight:700;color:#ede8f5;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.demo-bar-badge{
+  font-size:0.68rem;font-weight:600;padding:0.18rem 0.6rem;border-radius:20px;
+  background:linear-gradient(90deg,#9b2d8a,#0078d4);color:#fff;letter-spacing:0.04em;
+}
+.demo-bar-tags{ display:flex;gap:0.4rem;flex-wrap:wrap;margin-left:auto; }
+.demo-bar-tag{
+  font-size:0.7rem;color:#8077a8;border:1px solid #2e2550;
+  padding:0.12rem 0.45rem;border-radius:12px;background:#1b1630;
+}
+.demo-bar-fullscreen{
+  font-size:0.75rem;font-weight:600;padding:0.3rem 0.75rem;border-radius:6px;
+  background:rgba(155,45,138,0.15);border:1px solid #9b2d8a;color:#c97bbf;
+  text-decoration:none;white-space:nowrap;transition:background 0.2s;
+}
+.demo-bar-fullscreen:hover{ background:rgba(155,45,138,0.3); }
+.demo-frame{
+  flex:1;border:none;width:100%;display:block;
+  background:#fff;
+}
+
 /* ════ CLOSING SLIDE ════ */
 .closing{
   justify-content:center;align-items:center;
@@ -381,6 +413,7 @@ ul.rlist li::before{
         <button class="toc-btn" onclick="goTo(5)"><span class="pnum">05</span>B2B Inventory &amp; Order System</button>
         <button class="toc-btn" onclick="goTo(6)"><span class="pnum">06</span>Job Search Agent</button>
         <button class="toc-btn" onclick="goTo(7)"><span class="pnum">🛠</span>Tools &amp; Side Projects</button>
+        <button class="toc-btn" onclick="goTo(8)"><span class="pnum">🎫</span>IT Help Desk Demo</button>
       </div>
     </div>
   </div>
@@ -856,8 +889,32 @@ ul.rlist li::before{
     </div>
   </div>
 
-  <!-- SLIDE 8 — CLOSING -->
-  <div class="slide closing next" data-index="8">
+  <!-- SLIDE 8 — IT HELP DESK DEMO -->
+  <div class="slide demo-slide next" data-index="8">
+    <div class="demo-bar">
+      <div class="demo-bar-title">
+        🎫 IT Help Desk Ticket System
+        <span class="demo-bar-badge">Power Platform Prototype</span>
+      </div>
+      <div class="demo-bar-tags">
+        <span class="demo-bar-tag">Canvas App style</span>
+        <span class="demo-bar-tag">localStorage</span>
+        <span class="demo-bar-tag">Vanilla JS</span>
+        <span class="demo-bar-tag">Dashboard</span>
+        <span class="demo-bar-tag">CRUD</span>
+      </div>
+      <a href="/helpdesk" target="_blank" class="demo-bar-fullscreen">⛶ Full Screen</a>
+    </div>
+    <iframe
+      class="demo-frame"
+      src="/helpdesk/index.html"
+      title="IT Help Desk Ticket System"
+      loading="lazy"
+    ></iframe>
+  </div>
+
+  <!-- SLIDE 9 — CLOSING -->
+  <div class="slide closing next" data-index="9">
     <div class="closing-inner">
       <div class="cover-name" style="font-size:clamp(2rem,5vw,3.5rem)">GURSEL OLCA</div>
       <div class="closing-lines">
@@ -878,7 +935,7 @@ ul.rlist li::before{
 </div><!-- /slides-wrap -->
 
 <script>
-const TOTAL = 9;
+const TOTAL = 10;
 let current = 0;
 let isAnimating = false;
 
@@ -894,7 +951,7 @@ const dotEls = [];
 for(let i=0;i<TOTAL;i++){
   const d=document.createElement('div');
   d.className='dot'+(i===0?' active':'');
-  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Project 6','Tools & Side Projects','Contact'][i];
+  d.title=['Cover','Project 1','Project 2','Project 3','Project 4','Project 5','Project 6','Tools & Side Projects','IT Help Desk Demo','Contact'][i];
   d.onclick=()=>goTo(i);
   dotsEl.appendChild(d);
   dotEls.push(d);
@@ -953,7 +1010,8 @@ function goTo(index){
 function getTypeClass(i){
   if(i===0) return 'cover';
   if(i===TOTAL-1) return 'closing';
-  if(i===TOTAL-2) return 'tools-slide';
+  if(i===TOTAL-2) return 'demo-slide';
+  if(i===TOTAL-3) return 'tools-slide';
   return 'proj-slide';
 }
 
