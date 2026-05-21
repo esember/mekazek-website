@@ -214,32 +214,32 @@
                 <span id="gosterilen-kelime-ana"></span>
                 <span id="gosterilen-kelime-detay" class="kelime-ek-bilgi"></span>
             </div>
-            <button id="ana-sesi-cal-btn" class="play-icon-btn" title="Kelimeyi Seslendir" disabled>
+            <button id="ana-sesi-cal-btn" class="play-icon-btn" title="Read Word" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
             </button>
         </div>
 
         <div class="detail-section bg-blue-50">
-            <p class="text-sm text-blue-800"><strong class="font-semibold">Türkçe Anlamı:</strong> <span id="turkce-anlam"></span></p>
-            <button id="turkce-sesi-cal-btn" class="play-icon-btn" title="Türkçe Anlamı Seslendir" disabled>
+            <p class="text-sm text-blue-800"><strong class="font-semibold">Turkish Meaning:</strong> <span id="turkce-anlam"></span></p>
+            <button id="turkce-sesi-cal-btn" class="play-icon-btn" title="Read Turkish Meaning" disabled>
                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
             </button>
         </div>
 
         <div class="detail-section bg-green-50">
             <p class="text-sm text-green-800"><strong class="font-semibold">English Definition:</strong> <span id="ingilizce-tanim"></span></p>
-            <button id="ingilizce-sesi-cal-btn" class="play-icon-btn" title="İngilizce Tanımı Seslendir" disabled>
+            <button id="ingilizce-sesi-cal-btn" class="play-icon-btn" title="Read English Definition" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
             </button>
         </div>
 
         <div class="bg-purple-50 rounded-lg p-3 mb-3 text-left min-h-[70px]"> 
-             <p class="text-sm text-purple-800 mb-1"><strong class="font-semibold">Örnek Cümleler:</strong></p>
+             <p class="text-sm text-purple-800 mb-1"><strong class="font-semibold">Example Sentences:</strong></p>
              <div id="ornek-cumleler" class="text-purple-700 text-xs"></div> 
         </div>
         
         <div class="timer-setting-container">
-            <label for="zamanlayici-suresi-slider" class="font-semibold text-xs">Zamanlayıcı Süresi:</label>
+            <label for="zamanlayici-suresi-slider" class="font-semibold text-xs">Timer Duration:</label>
             <input type="range" id="zamanlayici-suresi-slider" min="5" max="60" value="15" class="cursor-pointer">
             <span id="secili-sure-gosterge" class="text-xs font-semibold w-10 text-left">15 sn</span>
         </div>
@@ -249,27 +249,27 @@
         </div>
 
         <div class="button-container">
-             <button id="onceki-kelime-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs"> &lt; Önceki </button>
-             <button id="rastgele-kelime-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-4 rounded-lg shadow-md text-xs"> Rastgele Kelime </button>
-             <button id="sonraki-kelime-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs"> Sonraki &gt; </button>
+             <button id="onceki-kelime-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs"> &lt; Previous </button>
+             <button id="rastgele-kelime-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-4 rounded-lg shadow-md text-xs"> Random Word </button>
+             <button id="sonraki-kelime-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs"> Next &gt; </button>
         </div>
         <div class="button-container mt-1">
-            <button id="pause-resume-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs">Zamanlayıcıyı Durdur</button>
-            <button id="otomatik-ses-modu-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs">Oku: Kelime+Anlam</button>
+            <button id="pause-resume-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs">Pause Timer</button>
+            <button id="otomatik-ses-modu-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-1.5 px-3 rounded-lg shadow-md text-xs">Read: Word+Meaning</button>
         </div>
 
         <div id="alfabe-index" class="mt-3"></div>
         
         <div class="filter-container mt-3">
-            <h3>Seviyeye Göre Filtrele</h3>
+            <h3>Filter by Level</h3>
             <div id="seviye-filtre-btn-container" class="filter-buttons">
                 </div>
         </div>
 
         <div class="mt-3 text-left">
-            <h2 class="text-md font-semibold text-gray-700 mb-1">Kelime Listesi (<span id="secili-harf-ve-seviye">Tümü</span>)</h2>
+            <h2 class="text-md font-semibold text-gray-700 mb-1">Word List (<span id="secili-harf-ve-seviye">All</span>)</h2>
             <div id="kelime-listesi-alani" class="rounded-lg"> <ul id="kelime-listesi"></ul> </div>
-            <button id="filtreleri-temizle-btn" class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-2 rounded-lg text-xs"> Filtreleri Temizle </button>
+            <button id="filtreleri-temizle-btn" class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-2 rounded-lg text-xs"> Clear Filters </button>
         </div>
     </div>
 
@@ -310,7 +310,7 @@
         let zamanlayiciDuraklatildi = false;
         let zamanlayiciKalanSure = ZAMANLAYICI_SURESI;
         let otomatikSesModu = 0; 
-        const sesModuMetinleri = ["Oku: Kelime+Anlam", "Oku: Tanım", "Sessiz Mod", "Oku: Hepsi Sırayla"];
+        const sesModuMetinleri = ["Read: Word+Meaning", "Read: Definition", "Silent Mode", "Read: Everything"];
 
         // --- SESLENDİRME FONKSİYONLARI ---
         function metniSeslendir(text, lang, callback) {
@@ -395,7 +395,7 @@
             const tumSesCalBtnleri = [anaSesiCalBtn, turkceSesiCalBtn, ingilizceSesiCalBtn];
 
             if (index < 0 || index >= kelimeListesi.length) {
-                gosterilenKelimeAna.textContent = "Başlamak için bir düğmeye basın veya listeden seçin!";
+                gosterilenKelimeAna.textContent = "Press a button or select a word from the list!";
                 gosterilenKelimeDetay.textContent = "";
                 turkceAnlamSpan.textContent = "";
                 ingilizceTanimSpan.textContent = "";
@@ -437,7 +437,7 @@
                 });
                 ornekCumlelerDiv.appendChild(ul);
             } else {
-                ornekCumlelerDiv.textContent = "Örnek cümle bulunamadı.";
+                ornekCumlelerDiv.textContent = "No example sentences found.";
             }
         }
 
@@ -451,13 +451,13 @@
             const filtrelenmisListe = filtreUygula();
             if (filtrelenmisListe.length === 0) {
                 kelimeBilgileriniGoster(-1); 
-                seciliHarfVeSeviyeSpan.textContent = `(${aktifHarf || 'Tümü'}, ${aktifSeviye || 'Tümü'}) - Bulunamadı`;
+                seciliHarfVeSeviyeSpan.textContent = `(${aktifHarf || 'All'}, ${aktifSeviye || 'All'}) - Not found`;
                 return;
             }
             const rastgeleIndexInFiltered = Math.floor(Math.random() * filtrelenmisListe.length);
             const secilenKelimeObj = filtrelenmisListe[rastgeleIndexInFiltered];
             const orijinalIndex = kelimeListesi.findIndex(item => item.word === secilenKelimeObj.word);
-            seciliHarfVeSeviyeSpan.textContent = `Rastgele (${aktifSeviye || 'Tümü'})`;
+            seciliHarfVeSeviyeSpan.textContent = `Random (${aktifSeviye || 'All'})`;
             kelimeBilgileriniGoster(orijinalIndex);
         }
 
@@ -471,7 +471,7 @@
             }
             const secilenKelimeObj = filtrelenmisListe[sonrakiFiltrelenmisIndex];
             const orijinalIndex = kelimeListesi.findIndex(item => item.word === secilenKelimeObj.word);
-            seciliHarfVeSeviyeSpan.textContent = `Sıralı (${aktifHarf || 'Tümü'}, ${aktifSeviye || 'Tümü'})`;
+            seciliHarfVeSeviyeSpan.textContent = `Sequential (${aktifHarf || 'All'}, ${aktifSeviye || 'All'})`;
             kelimeBilgileriniGoster(orijinalIndex);
         }
 
@@ -485,7 +485,7 @@
             }
             const secilenKelimeObj = filtrelenmisListe[oncekiFiltrelenmisIndex];
             const orijinalIndex = kelimeListesi.findIndex(item => item.word === secilenKelimeObj.word);
-            seciliHarfVeSeviyeSpan.textContent = `Sıralı (${aktifHarf || 'Tümü'}, ${aktifSeviye || 'Tümü'})`;
+            seciliHarfVeSeviyeSpan.textContent = `Sequential (${aktifHarf || 'All'}, ${aktifSeviye || 'All'})`;
             kelimeBilgileriniGoster(orijinalIndex);
         }
         
@@ -494,7 +494,7 @@
             if (aktifHarf) {
                 sonuc = sonuc.filter(k => k.word.toLowerCase().startsWith(aktifHarf.toLowerCase()));
             }
-            if (aktifSeviye && aktifSeviye !== "Tüm Seviyeler") { 
+            if (aktifSeviye && aktifSeviye !== "All Levels") { 
                 sonuc = sonuc.filter(k => k.level === aktifSeviye);
             }
             return sonuc;
@@ -504,7 +504,7 @@
             kelimeListesiUl.innerHTML = '';
             const filtrelenmisListe = filtreUygula();
             
-            seciliHarfVeSeviyeSpan.textContent = `${aktifHarf || 'Tümü'} | ${aktifSeviye || 'Tüm Seviyeler'}`;
+            seciliHarfVeSeviyeSpan.textContent = `${aktifHarf || 'All'} | ${aktifSeviye || 'All Levels'}`;
 
             document.querySelectorAll('#alfabe-index button, #seviye-filtre-btn-container button').forEach(btn => btn.classList.remove('active'));
             if (aktifHarf) document.getElementById(`harf-${aktifHarf}`)?.classList.add('active');
@@ -512,7 +512,7 @@
 
             if (filtrelenmisListe.length === 0) {
                  const li = document.createElement('li');
-                 li.textContent = `Filtreye uygun kelime bulunamadı.`;
+                 li.textContent = `No words match the selected filters.`;
                  li.classList.add('text-gray-500', 'italic');
                  kelimeListesiUl.appendChild(li);
                  kelimeBilgileriniGoster(-1); 
@@ -572,14 +572,14 @@
 
         function seviyeFiltreOlustur() {
             seviyeFiltreBtnContainer.innerHTML = '';
-            const seviyeler = ["Tüm Seviyeler", "B2", "C1"];
+            const seviyeler = ["All Levels", "B2", "C1"];
 
             seviyeler.forEach(seviye => {
                 const btn = document.createElement('button');
                 btn.textContent = seviye;
                 btn.id = `seviye-${seviye}`; 
                 btn.addEventListener('click', () => {
-                    aktifSeviye = (aktifSeviye === seviye || seviye === "Tüm Seviyeler") ? null : seviye;
+                    aktifSeviye = (aktifSeviye === seviye || seviye === "All Levels") ? null : seviye;
                     listeyiGoster();
                     kullaniciEtkilesimi();
                 });
@@ -627,11 +627,11 @@
                 if(zamanlayiciBaslangicZamani) {
                     zamanlayiciKalanSure -= (Date.now() - zamanlayiciBaslangicZamani);
                 }
-                pauseResumeBtn.textContent = "Zamanlayıcıyı Başlat";
+                pauseResumeBtn.textContent = "Resume Timer";
                 pauseResumeBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
                 pauseResumeBtn.classList.add('bg-green-500', 'hover:bg-green-600');
             } else {
-                pauseResumeBtn.textContent = "Zamanlayıcıyı Durdur";
+                pauseResumeBtn.textContent = "Pause Timer";
                 pauseResumeBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
                 pauseResumeBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
                 if (gecerliIndex !== -1) { 
