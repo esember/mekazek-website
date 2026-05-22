@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinical Supervision & Audit — Power Apps Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0b7a75;--teal-dark:#075650;--teal-light:#e6f4f3;
+  --pp:#742774;--pp-light:#f3e8f3;
+  --bg:#f5f6f8;--surface:#ffffff;--border:#e3e6ea;
+  --text:#1f2937;--muted:#6b7280;--muted2:#9aa3af;
+  --green:#107c10;--green-bg:#dff6dd;
+  --yellow:#b8860b;--yellow-bg:#fff8e1;
+  --red:#c62828;--red-bg:#fdecea;
+  --blue:#0078d4;--blue-bg:#e6f2fb;
+}
+html,body{height:100%;overflow:hidden;background:#3a3a3a;
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  color:var(--text);font-size:14px;}
+
+/* ── POWER APPS PLAYER CHROME ── */
+.pa-player{height:44px;background:#742774;
+  display:flex;align-items:center;padding:0 0.8rem;gap:0.6rem;flex-shrink:0;}
+.pa-back{color:#fff;font-size:1rem;cursor:pointer;opacity:0.9;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:4px;}
+.pa-back:hover{background:rgba(255,255,255,0.15);}
+.pa-app-icon{width:26px;height:26px;border-radius:5px;
+  background:linear-gradient(135deg,#0b7a75,#742774);
+  display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
+.pa-app-name{color:#fff;font-size:0.85rem;font-weight:600;}
+.pa-player-right{margin-left:auto;display:flex;align-items:center;gap:0.3rem;}
+.pa-picon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,0.85);cursor:pointer;border-radius:4px;font-size:0.9rem;}
+.pa-picon:hover{background:rgba(255,255,255,0.15);}
+.pa-avatar{width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#0b7a75,#0078d4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.65rem;font-weight:700;color:#fff;}
+
+/* BACK BAR */
+.back-bar{height:34px;background:#2d2d2d;display:flex;align-items:center;
+  padding:0 0.8rem;gap:0.8rem;flex-shrink:0;}
+.back-link{color:#7cc3ff;text-decoration:none;font-size:0.76rem;font-weight:600;
+  display:inline-flex;align-items:center;gap:0.3rem;}
+.back-link:hover{text-decoration:underline;}
+.demo-tag{font-size:0.68rem;background:rgba(116,39,116,0.4);border:1px solid #742774;
+  color:#d9a9d9;border-radius:10px;padding:0.1rem 0.55rem;font-weight:600;}
+
+/* ── APP CANVAS ── */
+.canvas{height:calc(100vh - 78px);background:var(--bg);
+  display:flex;overflow:hidden;}
+
+/* APP HEADER inside canvas — left rail */
+.rail{width:72px;flex-shrink:0;background:linear-gradient(180deg,#0b7a75,#075650);
+  display:flex;flex-direction:column;align-items:center;padding:0.8rem 0;gap:0.3rem;}
+.rail-logo{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:0.8rem;}
+.rail-item{width:52px;padding:0.5rem 0;border-radius:8px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:0.2rem;
+  color:rgba(255,255,255,0.7);transition:background 0.15s,color 0.15s;}
+.rail-item:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.rail-item.active{background:rgba(255,255,255,0.2);color:#fff;}
+.rail-icon{font-size:1.15rem;}
+.rail-label{font-size:0.58rem;font-weight:600;}
+
+/* MAIN AREA */
+.app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.app-topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 1.5rem;gap:1rem;flex-shrink:0;}
+.app-title{font-size:1.1rem;font-weight:700;color:var(--teal-dark);}
+.app-title-sub{font-size:0.74rem;color:var(--muted);}
+.app-topbar-right{margin-left:auto;display:flex;align-items:center;gap:0.7rem;}
+.month-pill{background:var(--teal-light);color:var(--teal-dark);
+  border-radius:16px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:600;
+  display:flex;align-items:center;gap:0.4rem;}
+.app-btn{background:var(--teal);color:#fff;border:none;border-radius:6px;
+  padding:0.45rem 1rem;font-size:0.82rem;font-weight:600;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;gap:0.4rem;transition:background 0.15s;}
+.app-btn:hover{background:var(--teal-dark);}
+
+.app-content{flex:1;overflow-y:auto;padding:1.4rem 1.5rem;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+.view{display:none;}
+.view.active{display:block;}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.4rem;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem 1.2rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;}
+.kpi-icon{width:34px;height:34px;border-radius:9px;display:flex;
+  align-items:center;justify-content:center;font-size:1rem;}
+.kpi-val{font-size:1.7rem;font-weight:700;line-height:1;margin-top:0.6rem;}
+.kpi-label{font-size:0.74rem;color:var(--muted);margin-top:0.2rem;}
+.kpi-trend{font-size:0.7rem;font-weight:600;}
+
+/* SECTION */
+.sect{margin-bottom:1.4rem;}
+.sect-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;}
+.sect-title{font-size:0.95rem;font-weight:700;color:var(--text);}
+.sect-link{font-size:0.78rem;color:var(--teal);cursor:pointer;font-weight:600;}
+.sect-link:hover{text-decoration:underline;}
+
+/* CARD GRID */
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:1.2rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.card-head{padding:0.8rem 1.1rem;border-bottom:1px solid var(--border);
+  font-size:0.84rem;font-weight:700;color:var(--text);
+  display:flex;align-items:center;justify-content:space-between;}
+
+/* SUPERVISEE COMPLIANCE */
+.svee-row{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1.1rem;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.12s;}
+.svee-row:hover{background:var(--teal-light);}
+.svee-row:last-child{border-bottom:none;}
+.svee-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:0.72rem;
+  font-weight:700;color:#fff;}
+.svee-info{flex:1;min-width:0;}
+.svee-name{font-size:0.84rem;font-weight:600;color:var(--text);}
+.svee-meta{font-size:0.72rem;color:var(--muted);}
+.svee-prog{width:120px;flex-shrink:0;}
+.svee-prog-label{display:flex;justify-content:space-between;font-size:0.7rem;
+  color:var(--muted);margin-bottom:0.25rem;}
+.prog-bar{height:6px;background:#eef0f2;border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+
+/* SESSION GALLERY */
+.sess-list{display:flex;flex-direction:column;}
+.sess-item{display:flex;align-items:center;gap:0.9rem;padding:0.8rem 1.1rem;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.12s;}
+.sess-item:hover{background:#f8f9fa;}
+.sess-item:last-child{border-bottom:none;}
+.sess-type-icon{width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.type-individual{background:var(--blue-bg);}
+.type-group{background:var(--pp-light);}
+.type-peer{background:var(--teal-light);}
+.sess-body{flex:1;min-width:0;}
+.sess-title{font-size:0.84rem;font-weight:600;color:var(--text);}
+.sess-sub{font-size:0.73rem;color:var(--muted);margin-top:0.1rem;}
+.sess-right{text-align:right;flex-shrink:0;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.18rem 0.6rem;
+  border-radius:20px;font-size:0.68rem;font-weight:700;}
+.badge-approved{background:var(--green-bg);color:var(--green);}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow);}
+.badge-progress{background:var(--blue-bg);color:var(--blue);}
+.badge-overdue{background:var(--red-bg);color:var(--red);}
+.badge-draft{background:#eef0f2;color:var(--muted);}
+.tag-type{display:inline-block;padding:0.1rem 0.5rem;border-radius:10px;
+  font-size:0.68rem;font-weight:600;}
+.tt-individual{background:var(--blue-bg);color:var(--blue);}
+.tt-group{background:var(--pp-light);color:var(--pp);}
+.tt-peer{background:var(--teal-light);color:var(--teal-dark);}
+
+/* FILTER TABS */
+.ftabs{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+.ftab{padding:0.4rem 0.9rem;border-radius:20px;font-size:0.78rem;font-weight:600;
+  background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.ftab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ftab:hover:not(.active){border-color:var(--teal);color:var(--teal);}
+
+/* DETAIL MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.45);
+  display:flex;align-items:center;justify-content:center;padding:2rem;}
+.modal{width:700px;max-width:100%;max-height:90vh;background:var(--surface);
+  border-radius:14px;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:modalIn 0.25s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.modal-head{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:1rem;
+  background:linear-gradient(135deg,var(--teal-light),#fff);}
+.modal-title{font-size:1.05rem;font-weight:700;color:var(--teal-dark);}
+.modal-sub{font-size:0.76rem;color:var(--muted);margin-top:0.2rem;}
+.modal-close{margin-left:auto;background:none;border:none;font-size:1.2rem;
+  cursor:pointer;color:var(--muted);padding:0.2rem;border-radius:4px;}
+.modal-close:hover{background:rgba(0,0,0,0.05);}
+.modal-body{flex:1;overflow-y:auto;padding:1.3rem 1.4rem;}
+.modal-foot{padding:0.9rem 1.4rem;border-top:1px solid var(--border);
+  display:flex;gap:0.6rem;background:#fafbfc;}
+
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem 1.4rem;margin-bottom:1.3rem;}
+.field-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.04em;font-weight:600;margin-bottom:0.15rem;}
+.field-val{font-size:0.86rem;color:var(--text);font-weight:500;}
+
+.modal-sect-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.06em;color:var(--teal);margin-bottom:0.8rem;
+  padding-bottom:0.4rem;border-bottom:2px solid var(--teal-light);}
+
+/* CONCURRENT APPROVAL VISUALIZATION */
+.quorum-banner{background:linear-gradient(135deg,var(--teal),#0b6e69);
+  border-radius:10px;padding:1rem 1.2rem;color:#fff;margin-bottom:1rem;
+  display:flex;align-items:center;gap:1.2rem;}
+.quorum-ring{width:64px;height:64px;border-radius:50%;flex-shrink:0;position:relative;
+  background:conic-gradient(#fff 0% 70%, rgba(255,255,255,0.25) 70% 100%);
+  display:flex;align-items:center;justify-content:center;}
+.quorum-ring::after{content:'';position:absolute;width:48px;height:48px;
+  border-radius:50%;background:#0b7a75;}
+.quorum-pct{position:relative;z-index:1;font-size:0.95rem;font-weight:700;}
+.quorum-text{flex:1;}
+.quorum-title{font-size:0.92rem;font-weight:700;}
+.quorum-sub{font-size:0.76rem;opacity:0.9;margin-top:0.2rem;}
+
+.approver-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.5rem;}
+.approver{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.7rem;
+  border:1px solid var(--border);border-radius:8px;background:#fafbfc;}
+.approver-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:0.62rem;
+  font-weight:700;color:#fff;}
+.approver-info{flex:1;min-width:0;}
+.approver-name{font-size:0.76rem;font-weight:600;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.approver-status{font-size:0.66rem;}
+.appr-yes{color:var(--green);}
+.appr-wait{color:var(--yellow);}
+.appr-icon{font-size:0.85rem;flex-shrink:0;}
+
+/* PDF DOSSIER */
+.pdf-box{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;
+  background:var(--red-bg);border:1px solid #f5c6c0;border-radius:10px;}
+.pdf-icon{width:44px;height:44px;border-radius:8px;background:var(--red);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;flex-shrink:0;}
+.pdf-info{flex:1;}
+.pdf-name{font-size:0.84rem;font-weight:700;color:var(--text);}
+.pdf-meta{font-size:0.72rem;color:var(--muted);margin-top:0.15rem;}
+.pdf-btn{background:var(--red);color:#fff;border:none;border-radius:6px;
+  padding:0.4rem 0.9rem;font-size:0.76rem;font-weight:600;cursor:pointer;font-family:inherit;}
+
+.btn-primary{background:var(--teal);color:#fff;border:none;border-radius:6px;
+  padding:0.5rem 1.1rem;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-primary:hover{background:var(--teal-dark);}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:0.5rem 1.1rem;font-size:0.82rem;font-weight:600;
+  cursor:pointer;font-family:inherit;}
+.btn-ghost:hover{background:#f5f6f8;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;
+  background:var(--text);color:#fff;border-radius:8px;padding:0.7rem 1.1rem;
+  font-size:0.82rem;box-shadow:0 8px 24px rgba(0,0,0,0.25);animation:tin 0.3s ease;}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:860px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .two-col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- POWER APPS PLAYER CHROME -->
+<div class="pa-player">
+  <div class="pa-back">←</div>
+  <div class="pa-app-icon">🩺</div>
+  <div class="pa-app-name">Clinical Supervision Portal</div>
+  <div class="pa-player-right">
+    <div class="pa-picon">⟳</div>
+    <div class="pa-picon">ⓘ</div>
+    <div class="pa-avatar">GO</div>
+  </div>
+</div>
+
+<!-- BACK BAR -->
+<div class="back-bar">
+  <a href="/portfolio/showcase" class="back-link">← Apps Showcase</a>
+  <span class="demo-tag">📐 Power Apps Canvas Mockup — Enterprise Project 02</span>
+</div>
+
+<!-- APP CANVAS -->
+<div class="canvas">
+
+  <!-- LEFT RAIL -->
+  <nav class="rail">
+    <div class="rail-logo">🩺</div>
+    <div class="rail-item active" onclick="navigate('dashboard',this)">
+      <span class="rail-icon">📊</span><span class="rail-label">Home</span>
+    </div>
+    <div class="rail-item" onclick="navigate('sessions',this)">
+      <span class="rail-icon">📋</span><span class="rail-label">Sessions</span>
+    </div>
+    <div class="rail-item" onclick="navigate('supervisees',this)">
+      <span class="rail-icon">👥</span><span class="rail-label">Clinicians</span>
+    </div>
+    <div class="rail-item" onclick="navigate('audit',this)">
+      <span class="rail-icon">🗄️</span><span class="rail-label">Audit</span>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="app-title" id="viewTitle">Compliance Dashboard</div>
+        <div class="app-title-sub" id="viewSub">Behavioral Health Division — Child Welfare Supervision</div>
+      </div>
+      <div class="app-topbar-right">
+        <div class="month-pill">📅 May 2026</div>
+        <button class="app-btn" onclick="toast('Power Apps form with conditional visibility (individual/group/peer) would open')">+ New Session</button>
+      </div>
+    </div>
+
+    <div class="app-content">
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-top">
+              <span style="font-size:0.74rem;color:var(--muted);font-weight:600">SESSIONS THIS MONTH</span>
+              <div class="kpi-icon" style="background:var(--blue-bg)">📋</div>
+            </div>
+            <div class="kpi-val" style="color:var(--blue)">47</div>
+            <div class="kpi-label">of 52 required · <span style="color:var(--green);font-weight:600">90%</span></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top">
+              <span style="font-size:0.74rem;color:var(--muted);font-weight:600">COMPLIANCE RATE</span>
+              <div class="kpi-icon" style="background:var(--green-bg)">✅</div>
+            </div>
+            <div class="kpi-val" style="color:var(--green)">94%</div>
+            <div class="kpi-label">division average <span style="color:var(--green);font-weight:600">▲ 6%</span></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top">
+              <span style="font-size:0.74rem;color:var(--muted);font-weight:600">PENDING APPROVAL</span>
+              <div class="kpi-icon" style="background:var(--yellow-bg)">⏳</div>
+            </div>
+            <div class="kpi-val" style="color:var(--yellow)">8</div>
+            <div class="kpi-label">awaiting supervisor quorum</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top">
+              <span style="font-size:0.74rem;color:var(--muted);font-weight:600">OVERDUE</span>
+              <div class="kpi-icon" style="background:var(--red-bg)">⚠️</div>
+            </div>
+            <div class="kpi-val" style="color:var(--red)">3</div>
+            <div class="kpi-label">past regulatory deadline</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- Recent Sessions -->
+          <div class="card">
+            <div class="card-head">
+              Recent Supervision Sessions
+              <span class="sect-link" onclick="navigate('sessions',document.querySelectorAll('.rail-item')[1])">View all →</span>
+            </div>
+            <div class="sess-list" id="dashSessList"></div>
+          </div>
+
+          <!-- Supervisee Compliance -->
+          <div class="card">
+            <div class="card-head">Clinician Compliance</div>
+            <div id="dashSveeList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SESSIONS -->
+      <div class="view" id="view-sessions">
+        <div class="ftabs">
+          <button class="ftab active" onclick="filterSess('All',this)">All Sessions</button>
+          <button class="ftab" onclick="filterSess('Pending',this)">Pending Approval</button>
+          <button class="ftab" onclick="filterSess('Approved',this)">Approved</button>
+          <button class="ftab" onclick="filterSess('Overdue',this)">Overdue</button>
+        </div>
+        <div class="card">
+          <div class="sess-list" id="sessList"></div>
+        </div>
+      </div>
+
+      <!-- SUPERVISEES -->
+      <div class="view" id="view-supervisees">
+        <div class="card">
+          <div class="card-head">Clinician Registry — Certification & Compliance Tracking</div>
+          <div id="sveeFullList"></div>
+        </div>
+      </div>
+
+      <!-- AUDIT -->
+      <div class="view" id="view-audit">
+        <div class="card">
+          <div class="card-head">
+            Audit Evidence Library
+            <span style="font-size:0.72rem;color:var(--muted);font-weight:400">🔒 Read-only auditor view · Compliance Library</span>
+          </div>
+          <div id="auditList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SESSION DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="mTitle">—</div>
+        <div class="modal-sub" id="mSub">—</div>
+      </div>
+      <span id="mBadge"></span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-sect-title">Session Details</div>
+      <div class="field-grid">
+        <div><div class="field-label">Session Date</div><div class="field-val" id="m-date">—</div></div>
+        <div><div class="field-label">Supervision Type</div><div class="field-val" id="m-type">—</div></div>
+        <div><div class="field-label">Supervisor</div><div class="field-val" id="m-supervisor">—</div></div>
+        <div><div class="field-label">Supervisee</div><div class="field-val" id="m-supervisee">—</div></div>
+        <div><div class="field-label">Focus Area</div><div class="field-val" id="m-focus">—</div></div>
+        <div><div class="field-label">Duration</div><div class="field-val" id="m-hours">—</div></div>
+      </div>
+
+      <div class="modal-sect-title">Concurrent Approval — Quorum Status</div>
+      <div class="quorum-banner">
+        <div class="quorum-ring" id="quorumRing"><span class="quorum-pct" id="quorumPct">7/10</span></div>
+        <div class="quorum-text">
+          <div class="quorum-title" id="quorumTitle">Quorum reached — 7 of 10 supervisors</div>
+          <div class="quorum-sub" id="quorumSub">Power Automate collected concurrent responses · Threshold: 70%</div>
+        </div>
+      </div>
+      <div class="approver-grid" id="approverGrid"></div>
+
+      <div class="modal-sect-title" style="margin-top:1.3rem">Generated Audit Dossier</div>
+      <div class="pdf-box" id="pdfBox">
+        <div class="pdf-icon">📄</div>
+        <div class="pdf-info">
+          <div class="pdf-name" id="pdfName">—</div>
+          <div class="pdf-meta" id="pdfMeta">—</div>
+        </div>
+        <button class="pdf-btn" onclick="toast('PDF dossier: e-signed, watermarked, encrypted, archived to Compliance Library')">Open PDF</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-primary" onclick="toast('Approval routed via Teams Adaptive Card')">Send Reminder</button>
+      <button class="btn-ghost" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SESSIONS=[
+  {id:'CS-2026-047',date:'May 18, 2026',type:'Individual',supervisor:'Dr. Karen Holt',supervisee:'Marcus Reed, LMSW',focus:'Child welfare case review — high-risk family',hours:'1.5 hrs',status:'Approved',quorum:'10/10',qpct:100,pdf:true},
+  {id:'CS-2026-046',date:'May 17, 2026',type:'Group',supervisor:'Dr. Karen Holt',supervisee:'BH Team Alpha (6 clinicians)',focus:'Trauma-informed care methodology',hours:'2.0 hrs',status:'Pending',quorum:'7/10',qpct:70,pdf:false},
+  {id:'CS-2026-045',date:'May 15, 2026',type:'Individual',supervisor:'Dr. Alan Reyes',supervisee:'Sofia Vega, LPC',focus:'Treatment plan compliance audit',hours:'1.0 hrs',status:'Approved',quorum:'9/10',qpct:90,pdf:true},
+  {id:'CS-2026-044',date:'May 14, 2026',type:'Peer',supervisee:'Peer Group — Crisis Unit',supervisor:'Dr. Alan Reyes',focus:'Peer consultation — ethical dilemmas',hours:'1.5 hrs',status:'Pending',quorum:'5/10',qpct:50,pdf:false},
+  {id:'CS-2026-043',date:'May 12, 2026',type:'Individual',supervisor:'Dr. Karen Holt',supervisee:'James Cole, LMSW',focus:'Documentation quality review',hours:'1.0 hrs',status:'Overdue',quorum:'3/10',qpct:30,pdf:false},
+  {id:'CS-2026-042',date:'May 10, 2026',type:'Group',supervisor:'Dr. Maria Santos',supervisee:'BH Team Beta (5 clinicians)',focus:'Caseload management strategies',hours:'2.0 hrs',status:'Approved',quorum:'10/10',qpct:100,pdf:true},
+  {id:'CS-2026-041',date:'May 8, 2026',type:'Individual',supervisor:'Dr. Maria Santos',supervisee:'Aisha Khan, LPC',focus:'Clinical skill development',hours:'1.5 hrs',status:'Approved',quorum:'8/10',qpct:80,pdf:true},
+  {id:'CS-2026-040',date:'May 6, 2026',type:'Individual',supervisor:'Dr. Alan Reyes',supervisee:'Tom Bradley, LMSW',focus:'Supervision plan mid-point review',hours:'1.0 hrs',status:'Pending',quorum:'6/10',qpct:60,pdf:false},
+];
+
+const SUPERVISEES=[
+  {name:'Marcus Reed, LMSW',role:'Child Welfare Specialist',pct:100,sessions:'12/12',color:'#0078d4'},
+  {name:'Sofia Vega, LPC',role:'Behavioral Therapist',pct:92,sessions:'11/12',color:'#742774'},
+  {name:'James Cole, LMSW',role:'Case Manager',pct:75,sessions:'9/12',color:'#0b7a75'},
+  {name:'Aisha Khan, LPC',role:'Clinical Counselor',pct:100,sessions:'12/12',color:'#c2410c'},
+  {name:'Tom Bradley, LMSW',role:'Family Services',pct:83,sessions:'10/12',color:'#15803d'},
+  {name:'Elena Cruz, LPC',role:'Crisis Counselor',pct:67,sessions:'8/12',color:'#9333ea'},
+];
+
+const APPROVERS=['Dr. K. Holt','Dr. A. Reyes','Dr. M. Santos','L. Foster','R. Nguyen','P. Adams','S. Klein','D. Owusu','J. Park','M. Ali'];
+const APPR_COLORS=['#0078d4','#742774','#0b7a75','#c2410c','#15803d','#9333ea','#0369a1','#be123c','#7c3aed','#0891b2'];
+
+const TYPE_ICON={Individual:'👤',Group:'👥',Peer:'🤝'};
+const TYPE_CLASS={Individual:'type-individual',Group:'type-group',Peer:'type-peer'};
+const TT_CLASS={Individual:'tt-individual',Group:'tt-group',Peer:'tt-peer'};
+const BADGE={Approved:'badge-approved',Pending:'badge-pending',Overdue:'badge-overdue',Progress:'badge-progress'};
+const BADGE_TEXT={Approved:'✓ Approved',Pending:'⏳ Pending',Overdue:'⚠ Overdue'};
+
+let currentSessFilter='All';
+
+function initials(name){return name.replace(/,.*/,'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+
+function navigate(view,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.rail-item').forEach(r=>r.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const titles={dashboard:['Compliance Dashboard','Behavioral Health Division — Child Welfare Supervision'],
+    sessions:['Supervision Sessions','All documented supervision sessions'],
+    supervisees:['Clinician Registry','Certification & compliance tracking'],
+    audit:['Audit Evidence Library','Tamper-evident PDF records for regulatory review']};
+  document.getElementById('viewTitle').textContent=titles[view][0];
+  document.getElementById('viewSub').textContent=titles[view][1];
+  if(view==='sessions') renderSessions();
+  if(view==='supervisees') renderSuperviseesFull();
+  if(view==='audit') renderAudit();
+}
+
+function sessRow(s){
+  return `<div class="sess-item" onclick="openSession('${s.id}')">
+    <div class="sess-type-icon ${TYPE_CLASS[s.type]}">${TYPE_ICON[s.type]}</div>
+    <div class="sess-body">
+      <div class="sess-title">${s.supervisee}</div>
+      <div class="sess-sub">${s.id} · ${s.focus}</div>
+    </div>
+    <div class="sess-right">
+      <span class="badge ${BADGE[s.status]}">${BADGE_TEXT[s.status]}</span>
+      <div style="font-size:0.7rem;color:var(--muted);margin-top:0.3rem">${s.date} · ${s.quorum}</div>
+    </div>
+  </div>`;
+}
+
+function renderDashboard(){
+  document.getElementById('dashSessList').innerHTML=SESSIONS.slice(0,5).map(sessRow).join('');
+  document.getElementById('dashSveeList').innerHTML=SUPERVISEES.slice(0,5).map(sveeRow).join('');
+}
+
+function sveeRow(s){
+  const color=s.pct===100?'#107c10':s.pct>=80?'#0078d4':s.pct>=70?'#b8860b':'#c62828';
+  return `<div class="svee-row">
+    <div class="svee-avatar" style="background:${s.color}">${initials(s.name)}</div>
+    <div class="svee-info">
+      <div class="svee-name">${s.name}</div>
+      <div class="svee-meta">${s.role}</div>
+    </div>
+    <div class="svee-prog">
+      <div class="svee-prog-label"><span>${s.sessions}</span><span style="color:${color};font-weight:700">${s.pct}%</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${s.pct}%;background:${color}"></div></div>
+    </div>
+  </div>`;
+}
+
+function filterSess(f,el){
+  currentSessFilter=f;
+  document.querySelectorAll('#view-sessions .ftab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderSessions();
+}
+
+function renderSessions(){
+  const list=currentSessFilter==='All'?SESSIONS:SESSIONS.filter(s=>s.status===currentSessFilter);
+  document.getElementById('sessList').innerHTML=list.length?list.map(sessRow).join(''):
+    '<div style="padding:2rem;text-align:center;color:var(--muted)">No sessions in this category</div>';
+}
+
+function renderSuperviseesFull(){
+  document.getElementById('sveeFullList').innerHTML=SUPERVISEES.map(sveeRow).join('');
+}
+
+function renderAudit(){
+  const approved=SESSIONS.filter(s=>s.pdf);
+  document.getElementById('auditList').innerHTML=approved.map(s=>`
+    <div class="sess-item" onclick="openSession('${s.id}')">
+      <div class="sess-type-icon" style="background:var(--red-bg)">📄</div>
+      <div class="sess-body">
+        <div class="sess-title">Dossier_${s.id}.pdf</div>
+        <div class="sess-sub">${s.supervisee} · ${s.date} · 🔒 Encrypted · Watermarked</div>
+      </div>
+      <div class="sess-right">
+        <span class="badge badge-approved">✓ Archived</span>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:0.3rem">e-signed · ${s.quorum} quorum</div>
+      </div>
+    </div>`).join('');
+}
+
+function openSession(id){
+  const s=SESSIONS.find(x=>x.id===id);
+  if(!s) return;
+  document.getElementById('mTitle').textContent=s.supervisee;
+  document.getElementById('mSub').textContent=s.id+' · Supervised by '+s.supervisor;
+  document.getElementById('mBadge').innerHTML=`<span class="badge ${BADGE[s.status]}">${BADGE_TEXT[s.status]}</span>`;
+  document.getElementById('m-date').textContent=s.date;
+  document.getElementById('m-type').innerHTML=`<span class="tag-type ${TT_CLASS[s.type]}">${s.type}</span>`;
+  document.getElementById('m-supervisor').textContent=s.supervisor;
+  document.getElementById('m-supervisee').textContent=s.supervisee;
+  document.getElementById('m-focus').textContent=s.focus;
+  document.getElementById('m-hours').textContent=s.hours;
+
+  // Quorum
+  const approved=Math.round(s.qpct/10);
+  document.getElementById('quorumPct').textContent=approved+'/10';
+  document.getElementById('quorumRing').style.background=
+    `conic-gradient(#fff 0% ${s.qpct}%, rgba(255,255,255,0.25) ${s.qpct}% 100%)`;
+  const reached=s.qpct>=70;
+  document.getElementById('quorumTitle').textContent=reached?
+    `Quorum reached — ${approved} of 10 supervisors`:`Awaiting quorum — ${approved} of 10 supervisors`;
+  document.getElementById('quorumSub').textContent=reached?
+    'Power Automate collected concurrent responses · Threshold: 70% met':
+    'Power Automate awaiting responses · Threshold: 70% required';
+
+  // Approvers
+  document.getElementById('approverGrid').innerHTML=APPROVERS.map((a,i)=>{
+    const yes=i<approved;
+    return `<div class="approver">
+      <div class="approver-avatar" style="background:${APPR_COLORS[i]}">${a.replace(/Dr\. /,'').split(' ').map(w=>w[0]).join('')}</div>
+      <div class="approver-info">
+        <div class="approver-name">${a}</div>
+        <div class="approver-status ${yes?'appr-yes':'appr-wait'}">${yes?'Approved':'Awaiting'}</div>
+      </div>
+      <span class="appr-icon">${yes?'✅':'⏳'}</span>
+    </div>`;
+  }).join('');
+
+  // PDF
+  const pdfBox=document.getElementById('pdfBox');
+  if(s.pdf){
+    pdfBox.style.opacity='1';
+    document.getElementById('pdfName').textContent='Dossier_'+s.id+'.pdf';
+    document.getElementById('pdfMeta').textContent='e-signed · watermarked · encrypted · archived to Compliance Library';
+  } else {
+    pdfBox.style.opacity='0.5';
+    document.getElementById('pdfName').textContent='PDF dossier not yet generated';
+    document.getElementById('pdfMeta').textContent='Auto-generates when quorum reached (70%)';
+  }
+
+  document.getElementById('modalOverlay').style.display='flex';
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').style.display='none';
+}
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3200);
+}
+
+renderDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B Inventory & Order Management — Power Apps Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pp:#742774;--mda:#0078d4;
+  --bg:#f5f6f8;--surface:#fff;--border:#e3e6ea;
+  --text:#1f2937;--muted:#6b7280;
+  --green:#107c10;--green-bg:#dff6dd;
+  --yellow:#b8860b;--yellow-bg:#fff8e1;
+  --red:#c62828;--red-bg:#fdecea;
+  --blue:#0078d4;--blue-bg:#e6f2fb;
+  --canvas-bg:#1a1a2e;
+}
+html,body{height:100%;overflow:hidden;background:#2d2d2d;
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  color:var(--text);font-size:14px;}
+
+/* CHROME */
+.pa-player{height:44px;background:#1a1a2e;display:flex;align-items:center;padding:0 0.8rem;gap:0.6rem;flex-shrink:0;}
+.pa-app-icon{width:26px;height:26px;border-radius:5px;background:linear-gradient(135deg,#0078d4,#742774);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
+.pa-app-name{color:#fff;font-size:0.85rem;font-weight:600;}
+.pa-mode-toggle{display:flex;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;margin-left:1rem;}
+.pa-mode-btn{padding:0.25rem 0.9rem;font-size:0.75rem;font-weight:600;cursor:pointer;color:rgba(255,255,255,0.6);background:none;border:none;font-family:inherit;}
+.pa-mode-btn.active{background:rgba(255,255,255,0.2);color:#fff;}
+.pa-player-right{margin-left:auto;display:flex;align-items:center;gap:0.3rem;}
+.pa-picon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.85);cursor:pointer;border-radius:4px;font-size:0.9rem;}
+.pa-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0078d4,#742774);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:#fff;}
+
+.back-bar{height:34px;background:#2d2d2d;display:flex;align-items:center;padding:0 0.8rem;gap:0.8rem;flex-shrink:0;}
+.back-link{color:#7cc3ff;text-decoration:none;font-size:0.76rem;font-weight:600;}
+.back-link:hover{text-decoration:underline;}
+.demo-tag{font-size:0.68rem;background:rgba(116,39,116,0.4);border:1px solid #742774;color:#d9a9d9;border-radius:10px;padding:0.1rem 0.55rem;font-weight:600;}
+
+/* SPLIT VIEW */
+.split-view{height:calc(100vh - 78px);display:flex;background:#2d2d2d;gap:1px;}
+
+/* CANVAS APP PANEL (mobile) */
+.canvas-panel{width:390px;flex-shrink:0;background:var(--canvas-bg);display:flex;flex-direction:column;border-radius:0;overflow:hidden;}
+.mobile-frame{flex:1;background:#0f1123;display:flex;flex-direction:column;overflow:hidden;}
+.mobile-status{height:28px;background:#0078d4;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;font-size:0.68rem;color:#fff;font-weight:600;}
+.mobile-header{background:linear-gradient(135deg,#0078d4,#742774);padding:0.8rem 1rem 0.7rem;flex-shrink:0;}
+.mobile-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
+.mobile-app-name{color:#fff;font-size:0.88rem;font-weight:700;}
+.mobile-user{color:rgba(255,255,255,0.85);font-size:0.72rem;}
+.mobile-greeting{color:rgba(255,255,255,0.9);font-size:0.78rem;margin-bottom:0.5rem;}
+.mobile-search{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:0.4rem 0.9rem;font-size:0.78rem;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:0.4rem;}
+.mobile-tabs{display:flex;background:#0a0a1a;flex-shrink:0;}
+.mobile-tab{flex:1;padding:0.55rem 0;text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.5);cursor:pointer;border-bottom:2px solid transparent;}
+.mobile-tab.active{color:#7cc3ff;border-bottom-color:#0078d4;font-weight:600;}
+.mobile-scroll{flex:1;overflow-y:auto;padding:0.8rem;background:#0f1123;scrollbar-width:none;}
+.mobile-scroll::-webkit-scrollbar{display:none;}
+
+/* PRODUCT CARDS */
+.prod-card{background:#1e2235;border:1px solid #2e3456;border-radius:8px;margin-bottom:0.6rem;padding:0.75rem;cursor:pointer;transition:border-color 0.15s;}
+.prod-card:hover{border-color:#0078d4;}
+.prod-card.selected{border-color:#0078d4;background:#1a2840;}
+.prod-top{display:flex;align-items:flex-start;gap:0.6rem;}
+.prod-icon{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,#0078d4,#742774);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.prod-name{font-size:0.82rem;font-weight:700;color:#e8eaf6;}
+.prod-sku{font-size:0.68rem;color:#8893b8;margin-top:0.1rem;}
+.prod-right{margin-left:auto;text-align:right;}
+.prod-price{font-size:0.88rem;font-weight:700;color:#7cc3ff;}
+.prod-stock{font-size:0.68rem;margin-top:0.2rem;}
+.prod-stock.ok{color:#4ade80;}
+.prod-stock.low{color:#fbbf24;}
+.prod-stock.out{color:#f87171;}
+.prod-tags{display:flex;gap:0.3rem;margin-top:0.5rem;flex-wrap:wrap;}
+.prod-tag{font-size:0.64rem;background:rgba(0,120,212,0.2);border:1px solid rgba(0,120,212,0.3);color:#7cc3ff;border-radius:8px;padding:0.1rem 0.4rem;}
+.prod-add-btn{background:linear-gradient(135deg,#0078d4,#742774);border:none;color:#fff;border-radius:6px;padding:0.3rem 0.8rem;font-size:0.74rem;font-weight:600;cursor:pointer;width:100%;margin-top:0.5rem;font-family:inherit;}
+.prod-add-btn:hover{opacity:0.85;}
+
+/* ORDER SUMMARY */
+.order-summary{background:#0a0a1a;border-top:1px solid #2e3456;padding:0.7rem;flex-shrink:0;}
+.order-sum-title{font-size:0.72rem;color:#8893b8;margin-bottom:0.4rem;}
+.order-items{font-size:0.75rem;color:#c5cae9;margin-bottom:0.4rem;}
+.order-total{display:flex;justify-content:space-between;align-items:center;}
+.order-total-label{font-size:0.78rem;color:#8893b8;}
+.order-total-val{font-size:1rem;font-weight:700;color:#7cc3ff;}
+.order-submit-btn{background:linear-gradient(135deg,#107c10,#0078d4);border:none;color:#fff;border-radius:8px;padding:0.5rem;font-size:0.78rem;font-weight:700;cursor:pointer;width:100%;margin-top:0.5rem;font-family:inherit;}
+
+/* PANEL LABEL */
+.panel-label{padding:0.5rem 1rem;font-size:0.68rem;font-weight:700;color:#8893b8;text-transform:uppercase;letter-spacing:0.08em;background:#1a1a2e;flex-shrink:0;}
+
+/* MODEL-DRIVEN PANEL */
+.mda-panel{flex:1;min-width:0;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+.mda-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0.8rem 1.2rem;flex-shrink:0;}
+.mda-title{font-size:1.1rem;font-weight:700;color:var(--blue);}
+.mda-subtitle{font-size:0.75rem;color:var(--muted);margin-top:0.15rem;}
+.mda-topbar{display:flex;align-items:center;gap:0.5rem;padding:0.4rem 1.2rem;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.mda-btn{padding:0.3rem 0.8rem;border-radius:4px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--surface);color:var(--text);}
+.mda-btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+.mda-btn.primary:hover{background:#106ebe;}
+.mda-content{flex:1;overflow-y:auto;padding:1rem 1.2rem;}
+
+/* STATS */
+.mda-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;margin-bottom:1.2rem;}
+.mda-stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.8rem;text-align:center;}
+.mda-stat-val{font-size:1.5rem;font-weight:700;line-height:1;}
+.mda-stat-label{font-size:0.68rem;color:var(--muted);margin-top:0.2rem;}
+
+/* ORDER TABLE */
+.orders-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.orders-table thead th{padding:0.5rem 0.8rem;text-align:left;font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;background:var(--bg);border-bottom:1px solid var(--border);}
+.orders-table tbody tr{border-bottom:1px solid var(--border);cursor:pointer;}
+.orders-table tbody tr:last-child{border-bottom:none;}
+.orders-table tbody tr:hover{background:#f9fafb;}
+.orders-table td{padding:0.55rem 0.8rem;font-size:0.78rem;color:var(--text);}
+.order-status{display:inline-flex;align-items:center;gap:0.25rem;padding:0.15rem 0.5rem;border-radius:10px;font-size:0.7rem;font-weight:600;}
+.order-status.pending{background:var(--yellow-bg);color:var(--yellow);}
+.order-status.fulfilled{background:var(--green-bg);color:var(--green);}
+.order-status.processing{background:var(--blue-bg);color:var(--blue);}
+.order-status.flagged{background:var(--red-bg);color:var(--red);}
+
+/* COPILOT CHAT */
+.copilot-bar{background:#0f1123;border-top:1px solid #2e3456;padding:0.6rem;display:flex;gap:0.4rem;flex-shrink:0;}
+.copilot-input{flex:1;background:#1e2235;border:1px solid #2e3456;border-radius:8px;padding:0.4rem 0.8rem;font-size:0.78rem;color:#e8eaf6;font-family:inherit;outline:none;}
+.copilot-input:focus{border-color:#0078d4;}
+.copilot-send{background:linear-gradient(135deg,#0078d4,#742774);border:none;color:#fff;border-radius:8px;padding:0.4rem 0.8rem;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.ai-label{padding:0.4rem 0.8rem 0;display:flex;align-items:center;gap:0.4rem;font-size:0.68rem;color:#8893b8;background:#0f1123;flex-shrink:0;}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#0078d4,#742774);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* AI RESPONSE */
+.ai-response{background:#1e2235;border:1px solid #2e3456;border-radius:8px;padding:0.7rem;margin:0.4rem 0.8rem;font-size:0.78rem;color:#c5cae9;line-height:1.6;}
+.ai-response-hidden{display:none;}
+</style>
+</head>
+<body>
+
+<!-- PLAYER CHROME -->
+<div class="pa-player">
+  <div class="pa-app-icon">📦</div>
+  <span class="pa-app-name">B2B Inventory & Order Management — Power Platform</span>
+  <div class="pa-mode-toggle">
+    <button class="pa-mode-btn active" id="modeCanvas" onclick="switchMode('canvas')">📱 Canvas App</button>
+    <button class="pa-mode-btn" id="modeMDA" onclick="switchMode('mda')">🖥 Model-Driven</button>
+  </div>
+  <div class="pa-player-right">
+    <div class="pa-picon">⟳</div>
+    <div class="pa-picon">⚙</div>
+    <div class="pa-avatar">GO</div>
+  </div>
+</div>
+
+<!-- BACK BAR -->
+<div class="back-bar">
+  <a href="/portfolio" class="back-link" target="_top">← Portfolio</a>
+  <span class="demo-tag">🎭 Interactive Demo</span>
+  <span style="font-size:0.72rem;color:#aaa;margin-left:0.5rem;">Switch between Canvas App (field sales) and Model-Driven App (back-office admin) · Click products to add to cart</span>
+</div>
+
+<!-- SPLIT VIEW -->
+<div class="split-view" id="splitView">
+
+  <!-- CANVAS APP - MOBILE -->
+  <div class="canvas-panel" id="canvasPanel">
+    <div class="panel-label">📱 Canvas App — Field Sales Rep View</div>
+    <div class="mobile-frame">
+      <div class="mobile-status">
+        <span>9:41 AM</span><span>📶 5G</span><span>🔋 78%</span>
+      </div>
+      <div class="mobile-header">
+        <div class="mobile-header-top">
+          <div class="mobile-app-name">📦 B2B Orders</div>
+          <div class="mobile-user">👤 Sarah K.</div>
+        </div>
+        <div class="mobile-greeting">Good morning, Sarah · 3 pending orders today</div>
+        <div class="mobile-search">🔍 <span>Search products…</span></div>
+      </div>
+      <div class="mobile-tabs">
+        <div class="mobile-tab active" onclick="setMobileTab(0,this)">Catalog</div>
+        <div class="mobile-tab" onclick="setMobileTab(1,this)">My Orders</div>
+        <div class="mobile-tab" onclick="setMobileTab(2,this)">Customers</div>
+      </div>
+      <div class="mobile-scroll" id="mobileContent"></div>
+      <div id="orderSummaryBar" style="display:none">
+        <div class="order-summary">
+          <div class="order-sum-title">🛒 Current Order</div>
+          <div class="order-items" id="orderItemsText"></div>
+          <div class="order-total">
+            <span class="order-total-label">Total</span>
+            <span class="order-total-val" id="orderTotalVal">$0.00</span>
+          </div>
+          <button class="order-submit-btn" onclick="submitOrder()">✓ Submit Order</button>
+        </div>
+      </div>
+      <div class="ai-label"><div class="ai-dot"></div> Copilot AI — Natural Language Queries</div>
+      <div id="aiResponse" class="ai-response ai-response-hidden"></div>
+      <div class="copilot-bar">
+        <input class="copilot-input" id="copilotInput" placeholder='Ask: "Show low stock items" or "Order history for Acme"…' onkeydown="if(event.key==='Enter')sendAI()">
+        <button class="copilot-send" onclick="sendAI()">Ask AI →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODEL-DRIVEN PANEL -->
+  <div class="mda-panel" id="mdaPanel">
+    <div class="mda-header">
+      <div class="mda-title">📊 Order Management — Admin View</div>
+      <div class="mda-subtitle">Model-Driven App · Dataverse · Real-time inventory &amp; fulfillment</div>
+    </div>
+    <div class="mda-topbar">
+      <button class="mda-btn primary">+ New Order</button>
+      <button class="mda-btn">📦 Fulfill Selected</button>
+      <button class="mda-btn">📤 Export</button>
+      <button class="mda-btn">🔄 Sync Inventory</button>
+      <span style="margin-left:auto;font-size:0.72rem;color:var(--muted)">Last sync: just now · CI/CD: Production ✓</span>
+    </div>
+    <div class="mda-content">
+      <div class="mda-stats">
+        <div class="mda-stat"><div class="mda-stat-val" style="color:var(--blue)">47</div><div class="mda-stat-label">Orders Today</div></div>
+        <div class="mda-stat"><div class="mda-stat-val" style="color:var(--yellow)">8</div><div class="mda-stat-label">Pending</div></div>
+        <div class="mda-stat"><div class="mda-stat-val" style="color:var(--green)">$24,850</div><div class="mda-stat-label">Revenue Today</div></div>
+        <div class="mda-stat"><div class="mda-stat-val" style="color:var(--red)">3</div><div class="mda-stat-label">Low Stock</div></div>
+      </div>
+      <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:0.6rem;">Recent Orders</div>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order #</th><th>Customer</th><th>Rep</th><th>Items</th><th>Total</th><th>Status</th><th>Submitted</th><th>Dataverse Plugin</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+      <div style="margin-top:1rem;padding:0.8rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:0.78rem;color:var(--muted)">
+        <strong style="color:var(--text)">⚡ C# Server-Side Plugin Active</strong> — Credit limit validation runs synchronously at Dataverse layer before any order submission. Orders exceeding customer credit limit are blocked with real-time error.
+        &nbsp;·&nbsp; <strong style="color:var(--text)">🔄 CI/CD</strong>: Azure DevOps pipeline · Managed solution · Dev → Test → Prod
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const products = [
+  {icon:'💊',name:'ProHealth Vitamins B-Complex',sku:'VIT-B100',price:24.99,stock:340,tier:'Standard',tags:['Vitamins','Top Seller']},
+  {icon:'🧴',name:'OrganicCare Hand Sanitizer 500ml',sku:'SANIT-500',price:8.99,stock:12,tier:'Volume',tags:['Hygiene','Low Stock']},
+  {icon:'🩺',name:'MediPlus Blood Pressure Monitor',sku:'BP-M200',price:89.99,stock:0,tier:'Standard',tags:['Medical','Premium']},
+  {icon:'🌿',name:'NaturePath Omega-3 Fish Oil',sku:'OMG-180',price:32.50,stock:215,tier:'Standard',tags:['Supplements']},
+  {icon:'🧪',name:'ClearSkin Cleanser Pro 200ml',sku:'SKIN-200',price:18.75,stock:88,tier:'Volume',tags:['Skincare','New']},
+  {icon:'💪',name:'MaxFit Protein Powder 1kg',sku:'PROT-1K',price:54.99,stock:7,tier:'Volume',tags:['Fitness','Low Stock']},
+];
+
+const orders = [
+  {num:'ORD-2847',cust:'Acme Health Co.',rep:'Sarah K.',items:4,total:'$1,240',status:'fulfilled',time:'09:15 AM',plugin:'✓ Credit OK'},
+  {num:'ORD-2846',cust:'Metro Pharmacy',rep:'Carlos M.',items:2,total:'$540',status:'processing',time:'09:02 AM',plugin:'✓ Credit OK'},
+  {num:'ORD-2845',cust:'SunCare Clinics',rep:'Sarah K.',items:7,total:'$3,180',status:'pending',time:'08:47 AM',plugin:'✓ Credit OK'},
+  {num:'ORD-2844',cust:'Westside Wellness',rep:'Amy T.',items:1,total:'$89',status:'fulfilled',time:'08:30 AM',plugin:'✓ Credit OK'},
+  {num:'ORD-2843',cust:'Greenway Hospital',rep:'Carlos M.',items:12,total:'$8,920',status:'flagged',time:'08:15 AM',plugin:'⛔ Credit limit exceeded'},
+  {num:'ORD-2842',cust:'FitLife Stores',rep:'Amy T.',items:3,total:'$650',status:'fulfilled',time:'07:58 AM',plugin:'✓ Credit OK'},
+];
+
+let cart = {};
+let mobileTab = 0;
+
+function setMobileTab(idx, el){
+  mobileTab = idx;
+  document.querySelectorAll('.mobile-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  renderMobileContent();
+}
+
+function renderMobileContent(){
+  const el = document.getElementById('mobileContent');
+  if(mobileTab===0){
+    el.innerHTML = products.map((p,i)=>{
+      const inCart = cart[i]||0;
+      const stockCls=p.stock===0?'out':p.stock<15?'low':'ok';
+      const stockTxt=p.stock===0?'Out of Stock':p.stock<15?`⚠ Low: ${p.stock} left`:`In Stock: ${p.stock}`;
+      return `<div class="prod-card ${inCart?'selected':''}" id="pc-${i}">
+        <div class="prod-top">
+          <div class="prod-icon">${p.icon}</div>
+          <div style="flex:1">
+            <div class="prod-name">${p.name}</div>
+            <div class="prod-sku">SKU: ${p.sku} · ${p.tier} pricing</div>
+          </div>
+          <div class="prod-right">
+            <div class="prod-price">$${p.price.toFixed(2)}</div>
+            <div class="prod-stock ${stockCls}">${stockTxt}</div>
+          </div>
+        </div>
+        <div class="prod-tags">${p.tags.map(t=>`<span class="prod-tag">${t}</span>`).join('')}</div>
+        <button class="prod-add-btn" onclick="addToCart(${i})" ${p.stock===0?'disabled style="opacity:0.4"':''}>
+          ${inCart?`✓ In Cart (${inCart}) — Add More`:'+ Add to Order'}
+        </button>
+      </div>`;
+    }).join('');
+  } else if(mobileTab===1){
+    el.innerHTML = `
+      <div style="color:#8893b8;font-size:0.8rem;margin-bottom:0.6rem">My Recent Orders</div>
+      ${orders.filter((_,i)=>i!==4).slice(0,4).map(o=>`
+        <div style="background:#1e2235;border:1px solid #2e3456;border-radius:8px;margin-bottom:0.6rem;padding:0.75rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+            <span style="font-size:0.82rem;font-weight:700;color:#7cc3ff">${o.num}</span>
+            <span style="font-size:0.7rem;padding:0.12rem 0.5rem;border-radius:10px;background:${o.status==='fulfilled'?'rgba(16,124,16,0.2)':'rgba(0,120,212,0.2)'};color:${o.status==='fulfilled'?'#4ade80':'#7cc3ff'}">${o.status}</span>
+          </div>
+          <div style="font-size:0.75rem;color:#c5cae9">${o.cust} · ${o.items} items · ${o.total}</div>
+          <div style="font-size:0.68rem;color:#8893b8;margin-top:0.2rem">${o.time}</div>
+        </div>`).join('')}`;
+  } else {
+    el.innerHTML = `
+      <div style="color:#8893b8;font-size:0.8rem;margin-bottom:0.6rem">My Customer Accounts</div>
+      ${['Acme Health Co.','SunCare Clinics','Metro Pharmacy'].map(c=>`
+        <div style="background:#1e2235;border:1px solid #2e3456;border-radius:8px;margin-bottom:0.6rem;padding:0.75rem;cursor:pointer">
+          <div style="font-size:0.82rem;font-weight:700;color:#e8eaf6;margin-bottom:0.25rem">🏢 ${c}</div>
+          <div style="font-size:0.72rem;color:#8893b8">Tier: Volume · Credit: $50,000 · 12 orders this month</div>
+        </div>`).join('')}`;
+  }
+}
+
+function addToCart(i){
+  if(products[i].stock===0) return;
+  cart[i]=(cart[i]||0)+1;
+  updateOrderSummary();
+  renderMobileContent();
+}
+
+function updateOrderSummary(){
+  const keys=Object.keys(cart).filter(k=>cart[k]>0);
+  if(keys.length===0){document.getElementById('orderSummaryBar').style.display='none';return;}
+  document.getElementById('orderSummaryBar').style.display='block';
+  let total=0,items=[];
+  keys.forEach(k=>{total+=products[k].price*cart[k];items.push(`${cart[k]}× ${products[k].sku}`);});
+  document.getElementById('orderItemsText').textContent=items.join(' · ');
+  document.getElementById('orderTotalVal').textContent='$'+total.toFixed(2);
+}
+
+function submitOrder(){
+  const keys=Object.keys(cart).filter(k=>cart[k]>0);
+  if(!keys.length)return;
+  cart={};
+  updateOrderSummary();
+  const orderNum='ORD-'+(2848+Math.floor(Math.random()*10));
+  document.getElementById('aiResponse').style.display='block';
+  document.getElementById('aiResponse').className='ai-response';
+  document.getElementById('aiResponse').innerHTML=`✅ <strong>${orderNum}</strong> submitted! Power Automate pipeline triggered: availability check → pricing rule applied → inventory decremented → confirmation sent. Dataverse C# plugin validated credit limit — approved.`;
+  setTimeout(()=>{document.getElementById('aiResponse').style.display='none';},6000);
+  renderMobileContent();
+}
+
+const aiResponses = {
+  'low stock':()=>`📦 <strong>Low Stock Alert:</strong> OrganicCare Hand Sanitizer 500ml (12 units), MaxFit Protein Powder 1kg (7 units). Reorder recommended. Want me to generate a purchase requisition?`,
+  'order history':()=>`📋 <strong>Acme Health Co.</strong> — 12 orders this month · $18,400 total · Average order: $1,533. Top products: VIT-B100, SANIT-500. Credit utilization: 37%.`,
+  'inventory':()=>`📊 <strong>Inventory Summary:</strong> 6 products tracked · 340 VIT-B100 · 215 OMG-180 · 88 SKIN-200 · 12 SANIT-500 (low) · 7 PROT-1K (low) · 0 BP-M200 (out of stock)`,
+  'default':()=>`🤖 <strong>Copilot AI:</strong> I can query Dataverse in real-time for inventory levels, order history, customer credit status, and more. Try: "Show low stock items", "Order history for Acme", or "Total revenue this week".`
+};
+
+function sendAI(){
+  const val=document.getElementById('copilotInput').value.trim().toLowerCase();
+  if(!val)return;
+  let fn=aiResponses.default;
+  if(val.includes('low stock')||val.includes('stock'))fn=aiResponses['low stock'];
+  else if(val.includes('order hist')||val.includes('acme'))fn=aiResponses['order history'];
+  else if(val.includes('inventor'))fn=aiResponses['inventory'];
+  document.getElementById('copilotInput').value='';
+  const el=document.getElementById('aiResponse');
+  el.style.display='block';
+  el.className='ai-response';
+  el.innerHTML=fn();
+  setTimeout(()=>{el.style.display='none';},8000);
+}
+
+function buildOrdersTable(){
+  document.getElementById('ordersBody').innerHTML=orders.map(o=>`
+    <tr>
+      <td style="font-weight:700;color:var(--blue)">${o.num}</td>
+      <td>${o.cust}</td>
+      <td style="color:var(--muted)">${o.rep}</td>
+      <td style="text-align:center">${o.items}</td>
+      <td style="font-weight:600">${o.total}</td>
+      <td><span class="order-status ${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+      <td style="color:var(--muted)">${o.time}</td>
+      <td style="font-size:0.72rem;color:${o.plugin.startsWith('⛔')?'var(--red)':'var(--green)'}">${o.plugin}</td>
+    </tr>`).join('');
+}
+
+function switchMode(mode){
+  document.getElementById('modeCanvas').classList.toggle('active',mode==='canvas');
+  document.getElementById('modeMDA').classList.toggle('active',mode==='mda');
+  // On narrow screens could toggle visibility, but both always show in split
+}
+
+renderMobileContent();
+buildOrdersTable();
+</script>
+</body>
+</html>

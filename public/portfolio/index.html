@@ -96,7 +96,7 @@ html,body{
 }
 .cover-inner{
   position:relative;z-index:1;text-align:center;
-  max-width:900px;padding:3rem 2rem;
+  max-width:1020px;padding:2.5rem 2rem;
   animation:fadeUp 0.8s ease both;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
@@ -127,17 +127,71 @@ html,body{
 .impact-num{font-size:2rem;font-weight:700;color:#fff;line-height:1.1}
 .impact-label{font-size:0.72rem;color:#93c5fd;letter-spacing:0.05em;text-transform:uppercase;margin-top:0.3rem}
 
-.toc-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;
+/* ════ TOC SPLIT LAYOUT ════ */
+.toc-split{
+  display:grid;grid-template-columns:1.65fr 1fr;gap:1rem;
+  margin-top:0.2rem;align-items:start;
 }
-.toc-btn{
-  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
-  border-radius:8px;padding:0.65rem 0.5rem;cursor:pointer;
-  color:#dbeafe;font-size:0.78rem;text-align:center;line-height:1.3;
-  transition:background 0.2s,border-color 0.2s;font-family:inherit;
+.toc-col-label{
+  font-size:0.6rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.11em;margin-bottom:0.5rem;padding-bottom:0.35rem;
+  border-bottom:1px solid;
 }
-.toc-btn:hover{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.4);color:#fff}
-.toc-btn .pnum{font-size:1.1rem;font-weight:700;color:#93c5fd;display:block;margin-bottom:0.2rem}
+/* PRIMARY — enterprise projects (blue) */
+.toc-col-label.primary{color:#93c5fd;border-color:rgba(147,197,253,0.4);font-size:0.65rem;}
+.toc-primary-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.45rem;}
+.toc-btn-p{
+  background:rgba(37,99,235,0.28);
+  border:1px solid rgba(96,165,250,0.5);
+  border-radius:9px;padding:0.7rem 0.8rem;cursor:pointer;
+  color:#fff;text-align:left;line-height:1.3;
+  transition:background 0.2s,border-color 0.2s,transform 0.15s,box-shadow 0.2s;
+  font-family:inherit;
+}
+.toc-btn-p:hover{
+  background:rgba(37,99,235,0.48);
+  border-color:rgba(147,197,253,0.8);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(37,99,235,0.35);
+}
+.toc-btn-p .pnum{
+  font-size:0.72rem;font-weight:700;color:#93c5fd;
+  display:block;margin-bottom:0.2rem;letter-spacing:0.04em;
+}
+.toc-btn-p .ptitle{
+  display:block;font-weight:700;color:#fff;
+  margin-bottom:0.22rem;font-size:0.82rem;line-height:1.25;
+}
+.toc-btn-p .pdesc{
+  display:block;font-size:0.66rem;color:rgba(191,219,254,0.72);
+  font-style:italic;line-height:1.4;
+}
+
+/* SECONDARY — tools & showcase (green) */
+.toc-col-label.secondary{color:#6ee7b7;border-color:rgba(110,231,183,0.3);font-size:0.65rem;}
+.toc-secondary-grid{display:flex;flex-direction:column;gap:0.45rem;}
+.toc-btn-s{
+  background:rgba(16,124,16,0.22);
+  border:1px solid rgba(74,222,128,0.4);
+  border-radius:9px;padding:0.7rem 0.85rem;cursor:pointer;
+  text-align:left;line-height:1.3;
+  transition:background 0.2s,border-color 0.2s,transform 0.15s,box-shadow 0.2s;
+  font-family:inherit;text-decoration:none;display:block;
+}
+.toc-btn-s:hover{
+  background:rgba(16,124,16,0.38);
+  border-color:rgba(74,222,128,0.7);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(16,124,16,0.3);
+}
+.toc-btn-s .stitle{
+  display:block;font-weight:700;font-size:0.82rem;
+  color:#bbf7d0;margin-bottom:0.22rem;
+}
+.toc-btn-s .sdesc{
+  display:block;font-size:0.66rem;
+  color:rgba(187,247,208,0.65);font-style:italic;line-height:1.4;
+}
 
 /* ════ PROJECT SLIDES ════ */
 .proj-slide{
@@ -236,6 +290,17 @@ ul.rlist li::before{
   transition:background 0.2s;
 }
 .demo-link:hover{background:var(--primary)}
+
+/* Showcase link */
+.showcase-link{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  background:transparent;border:2px solid var(--accent);
+  color:var(--accent);font-size:0.82rem;
+  padding:0.45rem 1rem;border-radius:6px;text-decoration:none;
+  font-weight:600;margin-top:0.8rem;letter-spacing:0.02em;
+  transition:background 0.2s,color 0.2s;margin-left:0.5rem;
+}
+.showcase-link:hover{background:var(--accent);color:#fff}
 
 /* ════ TOOLS SLIDE ════ */
 .tools-slide{ background:var(--bg); overflow:hidden; }
@@ -498,18 +563,61 @@ ul.rlist li::before{
         </div>
       </div>
 
-      <div class="toc-grid">
-        <button class="toc-btn" onclick="goTo(1)"><span class="pnum">01</span>Vendor Lifecycle &amp; Contract Mgmt</button>
-        <button class="toc-btn" onclick="goTo(2)"><span class="pnum">02</span>Clinical Supervision &amp; Audit</button>
-        <button class="toc-btn" onclick="goTo(3)"><span class="pnum">03</span>Facilities Audit &amp; Compliance</button>
-        <button class="toc-btn" onclick="goTo(4)"><span class="pnum">04</span>HR Certification Rules Engine</button>
-        <button class="toc-btn" onclick="goTo(5)"><span class="pnum">05</span>B2B Inventory &amp; Order System</button>
-        <button class="toc-btn" onclick="goTo(6)"><span class="pnum">06</span>Job Search Agent</button>
-        <button class="toc-btn" onclick="goTo(7)"><span class="pnum">🛠</span>Tools &amp; Side Projects</button>
+      <div class="toc-split">
+
+        <!-- LEFT — Primary: Enterprise Projects -->
+        <div>
+          <div class="toc-col-label primary">Enterprise Projects</div>
+          <div class="toc-primary-grid">
+            <button class="toc-btn-p" onclick="goTo(1)">
+              <span class="pnum">01</span>
+              <span class="ptitle">Vendor Lifecycle &amp; Contract Mgmt</span>
+              <span class="pdesc">380+ vendors, 5 depts, auto folder provisioning, SLA tracking</span>
+            </button>
+            <button class="toc-btn-p" onclick="goTo(2)">
+              <span class="pnum">02</span>
+              <span class="ptitle">Clinical Supervision &amp; Audit</span>
+              <span class="pdesc">10 concurrent approvals, PDF dossier, compliance archival</span>
+            </button>
+            <button class="toc-btn-p" onclick="goTo(3)">
+              <span class="pnum">03</span>
+              <span class="ptitle">Facilities Audit &amp; Compliance</span>
+              <span class="pdesc">Mobile inspection forms, JSON parsing, Power BI dashboard</span>
+            </button>
+            <button class="toc-btn-p" onclick="goTo(4)">
+              <span class="pnum">04</span>
+              <span class="ptitle">HR Certification Rules Engine</span>
+              <span class="pdesc">Dynamic rules, auto module assignment, LMS integration</span>
+            </button>
+            <button class="toc-btn-p" onclick="goTo(5)">
+              <span class="pnum">05</span>
+              <span class="ptitle">B2B Inventory &amp; Order System</span>
+              <span class="pdesc">Canvas App · Dataverse · Copilot Studio Agentic AI</span>
+            </button>
+            <button class="toc-btn-p" onclick="goTo(6)">
+              <span class="pnum">06</span>
+              <span class="ptitle">Job Search Agent</span>
+              <span class="pdesc">Python · LangChain · Groq · Multi-tool Agentic AI</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT — Secondary: Tools & Showcase -->
+        <div>
+          <div class="toc-col-label secondary">More</div>
+          <div class="toc-secondary-grid">
+            <button class="toc-btn-s" onclick="goTo(7)">
+              <span class="stitle">🛠 Tools &amp; Side Projects</span>
+              <span class="sdesc">Vocab learning tool, open-source experiments &amp; side builds</span>
+            </button>
+            <a href="/portfolio/showcase" class="toc-btn-s" target="_top">
+              <span class="stitle">🎫 Power Platform Apps Showcase</span>
+              <span class="sdesc">5 interactive app prototypes — Canvas App &amp; SharePoint demos</span>
+            </a>
+          </div>
+        </div>
+
       </div>
-      <a href="/portfolio/showcase" class="apps-showcase-btn" target="_top">
-        🎫 Power Platform Apps Showcase
-      </a>
     </div>
   </div>
 
@@ -565,6 +673,9 @@ ul.rlist li::before{
                 <li>Zero missed SLA expiration deadlines post-deployment</li>
                 <li>60% faster approval turnaround through structured Teams approval routing</li>
               </ul>
+              <div style="margin-bottom:0.8rem">
+                <a class="demo-link" href="/portfolio/showcase/vendor-lifecycle" target="_top">🎯 View Interactive Showcase</a>
+              </div>
               <div class="tech-label">Tech Stack</div>
               <div class="tags">
                 <span class="tag">SharePoint Online</span>
@@ -630,6 +741,9 @@ ul.rlist li::before{
                 <li>Zero compliance incidents related to missing documentation post-deployment</li>
                 <li>Full digital audit trail for every supervision session with tamper-evident PDF records</li>
               </ul>
+              <div style="margin-bottom:0.8rem">
+                <a class="demo-link" href="/portfolio/showcase/clinical-supervision" target="_top">🎯 View Interactive Showcase</a>
+              </div>
               <div class="tech-label">Tech Stack</div>
               <div class="tags">
                 <span class="tag">SharePoint Online</span>
@@ -696,6 +810,9 @@ ul.rlist li::before{
                 <li>Zero missed monthly regulatory compliance deadlines post-deployment</li>
                 <li>Complete photographic evidence archive linked to every inspection record</li>
               </ul>
+              <div style="margin-bottom:0.8rem">
+                <a class="demo-link" href="/portfolio/showcase/facilities-audit" target="_top">🎯 View Interactive Showcase</a>
+              </div>
               <div class="tech-label">Tech Stack</div>
               <div class="tags">
                 <span class="tag">Microsoft Lists</span>
@@ -762,6 +879,9 @@ ul.rlist li::before{
                 <li>Complete auditable history for every certification event with timestamps and assigned modules</li>
                 <li>HR managers able to update scoring thresholds independently without IT involvement</li>
               </ul>
+              <div style="margin-bottom:0.8rem">
+                <a class="demo-link" href="/portfolio/showcase/hr-certification" target="_top">🎯 View Interactive Showcase</a>
+              </div>
               <div class="tech-label">Tech Stack</div>
               <div class="tags">
                 <span class="tag">Microsoft Lists</span>
@@ -821,7 +941,10 @@ ul.rlist li::before{
                 <li>Mobile-first Canvas App enabling field reps to place orders without back-office involvement</li>
                 <li>Complete inventory audit trail with automated transaction logging for every order event</li>
               </ul>
-              <a class="demo-link" href="https://youtu.be/lfo9UmtAYcA" target="_blank">▶ Watch Demo Video</a>
+              <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.8rem">
+                <a class="demo-link" href="/portfolio/showcase/b2b-inventory" target="_top" style="margin-top:0">🎯 View Interactive Showcase</a>
+                <a class="demo-link" href="https://youtu.be/lfo9UmtAYcA" target="_blank" style="margin-top:0;background:var(--muted)">▶ Demo Video</a>
+              </div>
               <div style="margin-top:1.2rem">
                 <div class="tech-label">Tech Stack</div>
                 <div class="tags">
@@ -953,29 +1076,6 @@ ul.rlist li::before{
               <svg viewBox="0 0 16 16" fill="currentColor" style="width:13px;height:13px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
               GitHub
             </a>
-          </div>
-        </div>
-
-        <!-- PP Prototypes callout -->
-        <div class="tool-card" style="border-color:rgba(155,45,138,0.4);background:linear-gradient(135deg,rgba(155,45,138,0.06),rgba(0,120,212,0.06))">
-          <div class="tool-card-top">
-            <span class="tool-icon">🎫</span>
-            <div>
-              <div class="tool-name">Power Platform App Prototypes</div>
-              <div class="tool-type">Canvas App-style · Vanilla JS · localStorage</div>
-            </div>
-            <span class="tool-badge" style="background:linear-gradient(90deg,#9b2d8a,#0078d4);color:#fff;border:none">3 Apps</span>
-          </div>
-          <p class="tool-desc">
-            Interactive web prototypes simulating real Power Platform Canvas App solutions — Help Desk, Leave Request, and Employee Onboarding Tracker.
-          </p>
-          <div class="tool-stats">
-            <span class="tool-stat">IT Help Desk</span>
-            <span class="tool-stat">Leave Request</span>
-            <span class="tool-stat">Onboarding</span>
-          </div>
-          <div class="tool-links">
-            <a href="/portfolio/showcase" target="_top" class="tool-link live">🛠 Browse Apps</a>
           </div>
         </div>
 
