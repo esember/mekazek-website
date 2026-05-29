@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Job Search Agent — AI Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;display:flex;flex-direction:column}
+
+/* Header */
+.header{background:#161b22;border-bottom:1px solid #30363d;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.header-icon{font-size:1.5rem}
+.header-title{font-size:1rem;font-weight:700;color:#58a6ff}
+.header-sub{font-size:0.78rem;color:#8b949e;margin-left:auto}
+.badge{background:rgba(35,134,54,0.2);border:1px solid rgba(35,134,54,0.5);color:#3fb950;font-size:0.72rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:20px}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:1fr 360px;flex:1;min-height:0;overflow:hidden}
+
+/* Agent Terminal */
+.terminal{display:flex;flex-direction:column;border-right:1px solid #30363d;overflow:hidden}
+.term-bar{background:#21262d;border-bottom:1px solid #30363d;padding:0.5rem 1rem;display:flex;align-items:center;gap:0.5rem}
+.term-dot{width:12px;height:12px;border-radius:50%}
+.term-dot.r{background:#ff5f57}.term-dot.y{background:#febc2e}.term-dot.g{background:#28c840}
+.term-label{font-size:0.75rem;color:#8b949e;margin-left:0.5rem;font-family:monospace}
+.term-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem}
+
+/* Messages */
+.msg{display:flex;flex-direction:column;gap:0.25rem}
+.msg-header{display:flex;align-items:center;gap:0.5rem;font-size:0.72rem;color:#8b949e}
+.msg-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0}
+.avatar-user{background:rgba(88,166,255,0.2);color:#58a6ff}
+.avatar-agent{background:rgba(63,185,80,0.2);color:#3fb950}
+.msg-bubble{background:#21262d;border:1px solid #30363d;border-radius:8px;padding:0.6rem 0.9rem;font-size:0.82rem;line-height:1.6;max-width:100%}
+.msg.user .msg-bubble{background:rgba(88,166,255,0.08);border-color:rgba(88,166,255,0.25)}
+.msg.agent .msg-bubble{background:#21262d}
+
+/* Tool calls */
+.tool-call{background:#0d1117;border:1px solid #30363d;border-left:3px solid #58a6ff;border-radius:6px;padding:0.5rem 0.75rem;font-family:monospace;font-size:0.75rem;color:#8b949e;margin:0.25rem 0}
+.tool-call .tc-name{color:#58a6ff;font-weight:700}
+.tool-call .tc-arg{color:#e6edf3}
+.tool-result{background:#0d1117;border:1px solid #30363d;border-left:3px solid #3fb950;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.75rem;color:#8b949e;margin:0.25rem 0}
+.tool-result .tr-label{color:#3fb950;font-weight:600;font-family:monospace;font-size:0.72rem;margin-bottom:0.3rem}
+
+.thinking{color:#8b949e;font-style:italic;font-size:0.78rem;display:flex;align-items:center;gap:0.4rem}
+.thinking::before{content:'';width:6px;height:6px;background:#8b949e;border-radius:50%;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Input bar */
+.input-bar{border-top:1px solid #30363d;padding:0.75rem 1rem;display:flex;gap:0.5rem;background:#161b22}
+.input-bar input{flex:1;background:#21262d;border:1px solid #30363d;border-radius:8px;padding:0.5rem 0.75rem;color:#e6edf3;font-size:0.82rem;outline:none}
+.input-bar input:focus{border-color:#58a6ff}
+.send-btn{background:#238636;border:none;color:#fff;padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;transition:background 0.2s}
+.send-btn:hover{background:#2ea043}
+
+/* Right panel */
+.panel{display:flex;flex-direction:column;overflow:hidden}
+.panel-tabs{display:flex;border-bottom:1px solid #30363d;background:#161b22}
+.ptab{padding:0.6rem 1rem;font-size:0.78rem;color:#8b949e;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.ptab.active{color:#58a6ff;border-bottom-color:#58a6ff}
+.panel-body{flex:1;overflow-y:auto;padding:1rem}
+
+/* Job cards */
+.job-card{background:#21262d;border:1px solid #30363d;border-radius:8px;padding:0.75rem;margin-bottom:0.75rem;cursor:pointer;transition:all 0.2s}
+.job-card:hover{border-color:#58a6ff;transform:translateY(-1px)}
+.job-card.selected{border-color:#3fb950;background:rgba(63,185,80,0.05)}
+.job-company{font-size:0.72rem;color:#8b949e;margin-bottom:0.2rem}
+.job-title{font-size:0.88rem;font-weight:600;color:#e6edf3;margin-bottom:0.3rem}
+.job-meta{display:flex;gap:0.5rem;flex-wrap:wrap}
+.job-tag{font-size:0.68rem;background:#0d1117;border:1px solid #30363d;color:#8b949e;padding:0.15rem 0.45rem;border-radius:4px}
+.fit-bar{margin-top:0.5rem}
+.fit-label{font-size:0.7rem;color:#8b949e;display:flex;justify-content:space-between;margin-bottom:0.2rem}
+.fit-track{background:#0d1117;border-radius:4px;height:5px;overflow:hidden}
+.fit-fill{height:100%;border-radius:4px;transition:width 0.8s ease}
+.fit-high{background:linear-gradient(90deg,#238636,#3fb950)}
+.fit-mid{background:linear-gradient(90deg,#9e6a03,#d29922)}
+.fit-low{background:linear-gradient(90deg,#b62324,#f85149)}
+
+/* Cover letter */
+.cover-block{background:#21262d;border:1px solid #30363d;border-radius:8px;padding:1rem;font-size:0.78rem;line-height:1.7;color:#c9d1d9}
+.cover-block h4{color:#58a6ff;margin-bottom:0.75rem;font-size:0.82rem}
+.cover-block p{margin-bottom:0.6rem}
+
+/* Tracker */
+.track-row{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid #21262d;font-size:0.78rem}
+.track-status{padding:0.15rem 0.5rem;border-radius:4px;font-size:0.68rem;font-weight:600;white-space:nowrap}
+.ts-applied{background:rgba(88,166,255,0.15);color:#58a6ff}
+.ts-review{background:rgba(210,153,34,0.15);color:#d29922}
+.ts-interview{background:rgba(63,185,80,0.15);color:#3fb950}
+.ts-saved{background:rgba(139,148,158,0.15);color:#8b949e}
+.track-company{color:#8b949e;font-size:0.72rem}
+.track-title{font-weight:600;flex:1}
+
+/* Stats row */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem}
+.stat{background:#21262d;border:1px solid #30363d;border-radius:8px;padding:0.6rem;text-align:center}
+.stat-num{font-size:1.3rem;font-weight:700;color:#58a6ff}
+.stat-lbl{font-size:0.68rem;color:#8b949e}
+
+@media(max-width:700px){.layout{grid-template-columns:1fr}.panel{display:none}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">🤖</span>
+  <div>
+    <div class="header-title">Job Search Agent</div>
+  </div>
+  <span class="badge">● Live Demo</span>
+  <div class="header-sub">Python · LangChain · Groq · Multi-tool Agentic AI</div>
+</div>
+
+<div class="layout">
+
+  <!-- Agent Terminal -->
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+      <span class="term-label">agent_runner.py — job-search-agent</span>
+    </div>
+    <div class="term-body" id="termBody">
+
+      <div class="msg agent">
+        <div class="msg-header"><div class="msg-avatar avatar-agent">AI</div><span>Job Search Agent</span></div>
+        <div class="msg-bubble">
+          Hi! I'm your AI-powered job search assistant. I can:<br><br>
+          🔍 <strong>Search</strong> live job listings by role, location, and keywords<br>
+          📊 <strong>Evaluate</strong> fit against your profile and skills<br>
+          ✉️ <strong>Draft</strong> tailored cover letters for top matches<br>
+          📋 <strong>Track</strong> your applications automatically<br><br>
+          What kind of role are you looking for?
+        </div>
+      </div>
+
+      <div class="msg user">
+        <div class="msg-header"><div class="msg-avatar avatar-user">U</div><span>You</span></div>
+        <div class="msg-bubble">Find Power Platform developer roles in New York, remote friendly. I have 5 years of experience with Power Apps, Power Automate, and SharePoint.</div>
+      </div>
+
+      <div class="msg agent">
+        <div class="msg-header"><div class="msg-avatar avatar-agent">AI</div><span>Job Search Agent</span></div>
+        <div class="msg-bubble">
+          <div class="thinking">Searching job listings...</div>
+        </div>
+        <div class="tool-call"><span class="tc-name">search_jobs</span>({ query: <span class="tc-arg">"Power Platform Developer"</span>, location: <span class="tc-arg">"New York"</span>, remote: <span class="tc-arg">true</span> })</div>
+        <div class="tool-result"><div class="tr-label">✓ search_jobs returned 12 results</div>Filtered to top 5 by relevance score</div>
+        <div class="tool-call"><span class="tc-name">evaluate_fit</span>({ jobs: <span class="tc-arg">[5 listings]</span>, profile: <span class="tc-arg">{ skills: ["Power Apps", "Power Automate", "SharePoint"], years: 5 }</span> })</div>
+        <div class="tool-result"><div class="tr-label">✓ evaluate_fit scored all 5 jobs</div>3 high fit · 1 medium · 1 low</div>
+        <div class="msg-bubble" style="margin-top:0.5rem">
+          Found <strong>5 strong matches</strong>! Results are loaded in the panel →<br><br>
+          Top pick: <strong>Senior Power Platform Developer @ Deloitte</strong> — 91% fit score. Strong match on Canvas Apps, Power Automate flows, and SharePoint integration.<br><br>
+          Want me to draft a cover letter for this one?
+        </div>
+      </div>
+
+      <div class="msg user">
+        <div class="msg-header"><div class="msg-avatar avatar-user">U</div><span>You</span></div>
+        <div class="msg-bubble">Yes, draft a cover letter for the Deloitte role.</div>
+      </div>
+
+      <div class="msg agent">
+        <div class="msg-header"><div class="msg-avatar avatar-agent">AI</div><span>Job Search Agent</span></div>
+        <div class="tool-call"><span class="tc-name">get_job_details</span>({ job_id: <span class="tc-arg">"deloitte-pp-senior"</span> })</div>
+        <div class="tool-result"><div class="tr-label">✓ Job details retrieved</div>Requirements: Canvas Apps, Model-Driven, Power Automate, Azure AD, CI/CD</div>
+        <div class="tool-call"><span class="tc-name">draft_cover_letter</span>({ job: <span class="tc-arg">"Deloitte Senior PP Dev"</span>, profile: <span class="tc-arg">{ name: "Gursel Olca", exp: 5, skills: [...] }</span> })</div>
+        <div class="tool-result"><div class="tr-label">✓ Cover letter drafted (340 words)</div>Personalized to job requirements · Groq/LLaMA-3 generation</div>
+        <div class="msg-bubble" style="margin-top:0.5rem">
+          Cover letter drafted and loaded in the panel! ✉️ I've highlighted your Canvas App and Power Automate experience, and referenced their digital transformation practice.<br><br>
+          Should I also <strong>track this application</strong> in your tracker?
+        </div>
+      </div>
+
+      <div class="msg user">
+        <div class="msg-header"><div class="msg-avatar avatar-user">U</div><span>You</span></div>
+        <div class="msg-bubble">Yes, add it. Also search for any Microsoft 365 consultant roles.</div>
+      </div>
+
+      <div class="msg agent">
+        <div class="msg-header"><div class="msg-avatar avatar-agent">AI</div><span>Job Search Agent</span></div>
+        <div class="tool-call"><span class="tc-name">add_to_tracker</span>({ company: <span class="tc-arg">"Deloitte"</span>, role: <span class="tc-arg">"Senior Power Platform Developer"</span>, status: <span class="tc-arg">"Applied"</span> })</div>
+        <div class="tool-result"><div class="tr-label">✓ Added to application tracker</div>Status: Applied · Date: today</div>
+        <div class="tool-call"><span class="tc-name">search_jobs</span>({ query: <span class="tc-arg">"Microsoft 365 Consultant"</span>, location: <span class="tc-arg">"New York"</span>, remote: <span class="tc-arg">true</span> })</div>
+        <div class="tool-result"><div class="tr-label">✓ search_jobs returned 8 results</div>Top 4 added to panel</div>
+        <div class="msg-bubble" style="margin-top:0.5rem">
+          Done! Deloitte is now tracked ✅<br><br>
+          Found <strong>4 M365 Consultant roles</strong> too — check the Jobs tab. Best match: <strong>M365 Solutions Architect @ PwC</strong> (84% fit). Want a cover letter for that one too?
+        </div>
+      </div>
+
+    </div>
+    <div class="input-bar">
+      <input type="text" id="userInput" placeholder="Ask the agent anything..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="send-btn" onclick="sendMsg()">Send</button>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="panel">
+    <div class="panel-tabs">
+      <div class="ptab active" onclick="switchTab(this,'jobs')">Jobs (9)</div>
+      <div class="ptab" onclick="switchTab(this,'cover')">Cover Letter</div>
+      <div class="ptab" onclick="switchTab(this,'tracker')">Tracker</div>
+    </div>
+
+    <!-- Jobs Tab -->
+    <div class="panel-body" id="tab-jobs">
+      <div class="stats">
+        <div class="stat"><div class="stat-num">9</div><div class="stat-lbl">Found</div></div>
+        <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">High Fit</div></div>
+        <div class="stat"><div class="stat-num">1</div><div class="stat-lbl">Applied</div></div>
+      </div>
+
+      <div class="job-card selected" onclick="selectJob(this)">
+        <div class="job-company">Deloitte · New York, NY (Hybrid)</div>
+        <div class="job-title">Senior Power Platform Developer</div>
+        <div class="job-meta">
+          <span class="job-tag">Canvas Apps</span><span class="job-tag">Power Automate</span><span class="job-tag">SharePoint</span><span class="job-tag">$130k–155k</span>
+        </div>
+        <div class="fit-bar">
+          <div class="fit-label"><span>Fit Score</span><span>91%</span></div>
+          <div class="fit-track"><div class="fit-fill fit-high" style="width:91%"></div></div>
+        </div>
+      </div>
+
+      <div class="job-card" onclick="selectJob(this)">
+        <div class="job-company">PwC · New York, NY (Remote OK)</div>
+        <div class="job-title">M365 Solutions Architect</div>
+        <div class="job-meta">
+          <span class="job-tag">M365</span><span class="job-tag">SharePoint</span><span class="job-tag">Teams</span><span class="job-tag">$125k–145k</span>
+        </div>
+        <div class="fit-bar">
+          <div class="fit-label"><span>Fit Score</span><span>84%</span></div>
+          <div class="fit-track"><div class="fit-fill fit-high" style="width:84%"></div></div>
+        </div>
+      </div>
+
+      <div class="job-card" onclick="selectJob(this)">
+        <div class="job-company">Accenture · Remote</div>
+        <div class="job-title">Power Platform Lead Consultant</div>
+        <div class="job-meta">
+          <span class="job-tag">Power Apps</span><span class="job-tag">Dataverse</span><span class="job-tag">Azure</span><span class="job-tag">$115k–140k</span>
+        </div>
+        <div class="fit-bar">
+          <div class="fit-label"><span>Fit Score</span><span>79%</span></div>
+          <div class="fit-track"><div class="fit-fill fit-high" style="width:79%"></div></div>
+        </div>
+      </div>
+
+      <div class="job-card" onclick="selectJob(this)">
+        <div class="job-company">KPMG · New York, NY (Hybrid)</div>
+        <div class="job-title">Power Platform Developer</div>
+        <div class="job-meta">
+          <span class="job-tag">Model-Driven</span><span class="job-tag">Power BI</span><span class="job-tag">$105k–125k</span>
+        </div>
+        <div class="fit-bar">
+          <div class="fit-label"><span>Fit Score</span><span>74%</span></div>
+          <div class="fit-track"><div class="fit-fill fit-mid" style="width:74%"></div></div>
+        </div>
+      </div>
+
+      <div class="job-card" onclick="selectJob(this)">
+        <div class="job-company">EY · New York, NY (Hybrid)</div>
+        <div class="job-title">M365 Collaboration Consultant</div>
+        <div class="job-meta">
+          <span class="job-tag">M365</span><span class="job-tag">SharePoint</span><span class="job-tag">$100k–120k</span>
+        </div>
+        <div class="fit-bar">
+          <div class="fit-label"><span>Fit Score</span><span>68%</span></div>
+          <div class="fit-track"><div class="fit-fill fit-mid" style="width:68%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cover Letter Tab -->
+    <div class="panel-body" id="tab-cover" style="display:none">
+      <div class="cover-block">
+        <h4>✉️ Cover Letter — Deloitte: Senior Power Platform Developer</h4>
+        <p>Dear Hiring Manager,</p>
+        <p>I am writing to express my strong interest in the Senior Power Platform Developer position at Deloitte. With five years of hands-on experience building enterprise-grade Canvas Apps, Model-Driven applications, and Power Automate workflows, I am confident I can contribute meaningfully to your digital transformation practice.</p>
+        <p>In my most recent role, I led the development of a B2B inventory management solution using Power Apps Canvas and Model-Driven apps integrated with Dataverse and a C# Azure plugin layer — reducing manual order processing time by 60%. I also architected a multi-stage HR certification tracking platform serving 200+ employees, and a SharePoint-based facilities audit system used across 40 locations.</p>
+        <p>I am particularly drawn to Deloitte's focus on scalable low-code solutions for enterprise clients. My experience aligns directly with your requirement for Dataverse modeling, Azure AD integration, and CI/CD pipelines for ALM — having built and maintained managed solutions deployed across development, UAT, and production environments.</p>
+        <p>I would welcome the opportunity to discuss how my background fits within your team. Thank you for your consideration.</p>
+        <p>Sincerely,<br><strong>Gursel Olca</strong></p>
+      </div>
+    </div>
+
+    <!-- Tracker Tab -->
+    <div class="panel-body" id="tab-tracker" style="display:none">
+      <div class="stats">
+        <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">Total</div></div>
+        <div class="stat"><div class="stat-num">2</div><div class="stat-lbl">Applied</div></div>
+        <div class="stat"><div class="stat-num">1</div><div class="stat-lbl">Interview</div></div>
+      </div>
+
+      <div class="track-row">
+        <div>
+          <div class="track-title">Senior Power Platform Developer</div>
+          <div class="track-company">Deloitte · Applied today</div>
+        </div>
+        <span class="track-status ts-applied">Applied</span>
+      </div>
+      <div class="track-row">
+        <div>
+          <div class="track-title">Power Platform Architect</div>
+          <div class="track-company">Microsoft · Applied 3 days ago</div>
+        </div>
+        <span class="track-status ts-interview">Interview</span>
+      </div>
+      <div class="track-row">
+        <div>
+          <div class="track-title">M365 Solutions Consultant</div>
+          <div class="track-company">Cognizant · Applied 1 week ago</div>
+        </div>
+        <span class="track-status ts-review">In Review</span>
+      </div>
+      <div class="track-row">
+        <div>
+          <div class="track-title">Power Apps Developer</div>
+          <div class="track-company">JPMorgan Chase · Applied 2 weeks ago</div>
+        </div>
+        <span class="track-status ts-applied">Applied</span>
+      </div>
+      <div class="track-row">
+        <div>
+          <div class="track-title">SharePoint Developer</div>
+          <div class="track-company">Citigroup · Saved</div>
+        </div>
+        <span class="track-status ts-saved">Saved</span>
+      </div>
+      <div class="track-row">
+        <div>
+          <div class="track-title">Low-Code Platform Lead</div>
+          <div class="track-company">Goldman Sachs · Saved</div>
+        </div>
+        <span class="track-status ts-saved">Saved</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchTab(el, id){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.panel-body').forEach(p=>p.style.display='none');
+  document.getElementById('tab-'+id).style.display='block';
+}
+function selectJob(el){
+  document.querySelectorAll('.job-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function sendMsg(){
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const body = document.getElementById('termBody');
+
+  const msg = document.createElement('div');
+  msg.className = 'msg user';
+  msg.innerHTML = `<div class="msg-header"><div class="msg-avatar avatar-user">U</div><span>You</span></div><div class="msg-bubble">${text}</div>`;
+  body.appendChild(msg);
+
+  const reply = document.createElement('div');
+  reply.className = 'msg agent';
+  reply.innerHTML = `<div class="msg-header"><div class="msg-avatar avatar-agent">AI</div><span>Job Search Agent</span></div><div class="msg-bubble"><div class="thinking">Processing your request...</div></div>`;
+  body.appendChild(reply);
+
+  body.scrollTop = body.scrollHeight;
+  input.value = '';
+
+  const responses = [
+    "Great question! I can search for more specific roles, evaluate fit against different criteria, or draft additional cover letters. What would you like to do next?",
+    "I've noted that. Would you like me to search for roles matching that criteria, or should I refine the current results?",
+    "On it! Let me search for that now and evaluate the best matches for your profile.",
+    "Your application tracker is up to date. You currently have 2 active applications and 1 interview scheduled. Want me to draft a follow-up email?",
+  ];
+
+  setTimeout(() => {
+    reply.querySelector('.msg-bubble').innerHTML = responses[Math.floor(Math.random()*responses.length)];
+    body.scrollTop = body.scrollHeight;
+  }, 1500);
+}
+</script>
+</body>
+</html>
