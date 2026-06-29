@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered Internal Request Automation — Architecture Design</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0718;--surface:#150f28;--surface2:#1b1630;--surface3:#211943;
+  --border:#2e2550;--text:#ede8f5;--muted:#8077a8;
+  --accent:#9b2d8a;--accent-dim:#611b57;
+  --blue:#0078d4;--blue-dim:#004e8c;
+  --green:#107c10;--green-bg:#0d2b0d;
+  --yellow:#c8a800;--yellow-bg:#2a2200;
+  --red:#d13438;--red-bg:#2d0d0e;
+  --teal:#0097b2;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;font-size:14px;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:var(--surface);
+  border-bottom:1px solid var(--border);padding:0.75rem 2rem;
+  display:flex;align-items:center;gap:1rem;backdrop-filter:blur(8px);}
+.back-link{display:inline-flex;align-items:center;gap:0.4rem;
+  color:var(--muted);text-decoration:none;font-size:0.83rem;font-weight:600;transition:color 0.2s;}
+.back-link:hover{color:var(--text);}
+.topbar-title{font-size:0.95rem;font-weight:700;color:var(--text);}
+.topbar-badge{font-size:0.62rem;font-weight:700;padding:0.12rem 0.55rem;border-radius:20px;
+  background:linear-gradient(90deg,var(--teal),var(--blue));color:#fff;letter-spacing:0.04em;}
+
+/* MAIN */
+.main{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem;}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:2.5rem;}
+.hero-eyebrow{font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;
+  font-weight:700;color:var(--teal);margin-bottom:0.7rem;}
+.hero-title{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:700;color:var(--text);
+  letter-spacing:-0.02em;line-height:1.2;margin-bottom:0.6rem;}
+.hero-sub{font-size:0.93rem;color:var(--muted);line-height:1.7;max-width:620px;margin:0 auto 1.8rem;}
+
+/* STAT PILLS */
+.stats{display:flex;flex-wrap:wrap;justify-content:center;gap:0.8rem;margin-bottom:2.5rem;}
+.stat-pill{background:var(--surface);border:1px solid var(--border);border-radius:30px;
+  padding:0.5rem 1.2rem;display:flex;align-items:center;gap:0.6rem;}
+.stat-num{font-size:1.15rem;font-weight:700;color:var(--text);}
+.stat-lbl{font-size:0.75rem;color:var(--muted);}
+
+/* PIPELINE */
+.pipeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:1.8rem;margin-bottom:2rem;overflow-x:auto;}
+.pipeline-title{font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;color:var(--teal);margin-bottom:1.2rem;}
+.pipeline-flow{display:flex;align-items:stretch;gap:0;min-width:900px;}
+.step-node{
+  flex:1;min-width:80px;
+  display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;padding:0.6rem 0.3rem;border-radius:8px;
+  transition:background 0.2s,transform 0.15s;position:relative;
+}
+.step-node:hover{background:var(--surface2);transform:translateY(-2px);}
+.step-node.active{background:var(--surface3);outline:1.5px solid var(--teal);}
+.step-arrow{
+  width:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:1rem;align-self:center;
+}
+.step-num{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;color:#fff;flex-shrink:0;margin-bottom:0.4rem;
+}
+.step-icon{font-size:1.2rem;margin-bottom:0.3rem;line-height:1;}
+.step-label{font-size:0.66rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.3;}
+.step-node.active .step-label{color:var(--text);}
+
+/* DETAIL PANEL */
+.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:2rem;margin-bottom:2rem;min-height:220px;}
+.detail-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;}
+.detail-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:700;color:#fff;flex-shrink:0;}
+.detail-icon{font-size:1.6rem;line-height:1;}
+.detail-title{font-size:1.1rem;font-weight:700;color:var(--text);}
+.detail-sub{font-size:0.78rem;color:var(--muted);margin-top:0.1rem;}
+.detail-body{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+@media(max-width:700px){.detail-body{grid-template-columns:1fr;}}
+.detail-desc{font-size:0.87rem;color:#a89fd0;line-height:1.7;}
+.detail-points{list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+.detail-points li{font-size:0.83rem;color:var(--muted);padding-left:1.2rem;position:relative;line-height:1.5;}
+.detail-points li::before{content:'→';position:absolute;left:0;color:var(--teal);}
+.detail-tags{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:1rem;}
+.dtag{font-size:0.68rem;color:var(--muted);border:1px solid var(--border);
+  padding:0.13rem 0.5rem;border-radius:12px;background:var(--bg);}
+.route-box{display:flex;flex-direction:column;gap:0.6rem;margin-top:0.6rem;}
+.route-item{display:flex;align-items:center;gap:0.7rem;
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.8rem;}
+.route-badge{font-size:0.68rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:20px;
+  white-space:nowrap;flex-shrink:0;}
+.route-green{background:var(--green-bg);border:1px solid var(--green);color:#4ade80;}
+.route-yellow{background:var(--yellow-bg);border:1px solid var(--yellow);color:#fbbf24;}
+.route-red{background:var(--red-bg);border:1px solid var(--red);color:#f87171;}
+.route-desc{font-size:0.8rem;color:var(--muted);line-height:1.4;}
+
+/* SECTION LABEL */
+.section-label{font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;color:var(--teal);margin-bottom:1.2rem;
+  display:flex;align-items:center;gap:0.6rem;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* DECISIONS */
+.decisions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-bottom:2.5rem;}
+.decision-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.4rem;}
+.dec-icon{font-size:1.5rem;margin-bottom:0.7rem;}
+.dec-title{font-size:0.92rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;}
+.dec-body{font-size:0.82rem;color:var(--muted);line-height:1.65;}
+.dec-highlight{color:var(--teal);font-weight:600;}
+
+/* TECH STACK */
+.tech-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.8rem;}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+.tech-item{display:flex;align-items:center;gap:0.7rem;padding:0.75rem;
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;}
+.tech-icon{font-size:1.3rem;flex-shrink:0;}
+.tech-name{font-size:0.83rem;font-weight:600;color:var(--text);}
+.tech-role{font-size:0.72rem;color:var(--muted);margin-top:0.1rem;}
+
+@media(max-width:600px){
+  .main{padding:1.2rem 1rem 4rem;}
+  .topbar{padding:0.65rem 1rem;}
+  .hero-title{font-size:1.5rem;}
+  .pipeline-wrap{padding:1rem;}
+  .stats{gap:0.5rem;}
+  .stat-pill{padding:0.4rem 0.9rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/portfolio/showcase" class="back-link">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+    Showcase
+  </a>
+  <div class="topbar-title">AI Internal Request Automation</div>
+  <span class="topbar-badge">Architecture Design</span>
+</div>
+
+<div class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Enterprise AI System Design</div>
+    <h1 class="hero-title">AI-Powered Internal Request Automation</h1>
+    <p class="hero-sub">End-to-end pipeline architecture for automating 800–1,000 daily internal employee requests — with risk-based routing, RAG knowledge retrieval, human oversight, and full audit traceability.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-pill"><span class="stat-num">800–1,000</span><span class="stat-lbl">requests/day</span></div>
+    <div class="stat-pill"><span class="stat-num">1,800 hrs</span><span class="stat-lbl">annual savings target</span></div>
+    <div class="stat-pill"><span class="stat-num">10</span><span class="stat-lbl">pipeline steps</span></div>
+    <div class="stat-pill"><span class="stat-num">3</span><span class="stat-lbl">routing paths</span></div>
+    <div class="stat-pill"><span class="stat-num">≥80%</span><span class="stat-lbl">auto-resolve threshold</span></div>
+  </div>
+
+  <!-- PIPELINE FLOW -->
+  <div class="pipeline-wrap">
+    <div class="pipeline-title">Click any step to explore details</div>
+    <div class="pipeline-flow" id="pipelineFlow">
+
+      <div class="step-node active" data-step="0" onclick="selectStep(0)">
+        <div class="step-num" style="background:linear-gradient(135deg,#0097b2,#0078d4)">1</div>
+        <div class="step-icon">🌐</div>
+        <div class="step-label">Request Channels</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="1" onclick="selectStep(1)">
+        <div class="step-num" style="background:linear-gradient(135deg,#0078d4,#004e8c)">2</div>
+        <div class="step-icon">🗄</div>
+        <div class="step-label">Data Central­ization</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="2" onclick="selectStep(2)">
+        <div class="step-num" style="background:linear-gradient(135deg,#5c2d91,#9b2d8a)">3</div>
+        <div class="step-icon">🔒</div>
+        <div class="step-label">Security Gate</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="3" onclick="selectStep(3)">
+        <div class="step-num" style="background:linear-gradient(135deg,#004e8c,#0097b2)">4</div>
+        <div class="step-icon">⚡</div>
+        <div class="step-label">Fast Path Rules</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="4" onclick="selectStep(4)">
+        <div class="step-num" style="background:linear-gradient(135deg,#9b2d8a,#5c2d91)">5</div>
+        <div class="step-icon">🤖</div>
+        <div class="step-label">LLM Analysis</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="5" onclick="selectStep(5)">
+        <div class="step-num" style="background:linear-gradient(135deg,#c8a800,#d17a00)">6</div>
+        <div class="step-icon">⚖</div>
+        <div class="step-label">Decision Engine</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="6" onclick="selectStep(6)">
+        <div class="step-num" style="background:linear-gradient(135deg,#107c10,#0d5e0d)">7A</div>
+        <div class="step-icon">✅</div>
+        <div class="step-label">Action Path</div>
+      </div>
+      <div class="step-arrow">/</div>
+
+      <div class="step-node" data-step="7" onclick="selectStep(7)">
+        <div class="step-num" style="background:linear-gradient(135deg,#0078d4,#9b2d8a)">7B</div>
+        <div class="step-icon">📚</div>
+        <div class="step-label">Knowledge RAG</div>
+      </div>
+      <div class="step-arrow">/</div>
+
+      <div class="step-node" data-step="8" onclick="selectStep(8)">
+        <div class="step-num" style="background:linear-gradient(135deg,#d13438,#9b2d8a)">7C</div>
+        <div class="step-icon">👤</div>
+        <div class="step-label">Human Review</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="9" onclick="selectStep(9)">
+        <div class="step-num" style="background:linear-gradient(135deg,#004e8c,#0097b2)">8</div>
+        <div class="step-icon">📤</div>
+        <div class="step-label">Response Delivery</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="10" onclick="selectStep(10)">
+        <div class="step-num" style="background:linear-gradient(135deg,#5c2d91,#004e8c)">9</div>
+        <div class="step-icon">📊</div>
+        <div class="step-label">Governance & Audit</div>
+      </div>
+      <div class="step-arrow">›</div>
+
+      <div class="step-node" data-step="11" onclick="selectStep(11)">
+        <div class="step-num" style="background:linear-gradient(135deg,#0097b2,#5c2d91)">10</div>
+        <div class="step-icon">🔄</div>
+        <div class="step-label">Feedback Loop</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel"></div>
+
+  <!-- KEY DESIGN DECISIONS -->
+  <div class="section-label">Key Design Decisions</div>
+  <div class="decisions-grid">
+    <div class="decision-card">
+      <div class="dec-icon">⚡</div>
+      <div class="dec-title">Rules Before AI</div>
+      <div class="dec-body">The most important architectural decision: <span class="dec-highlight">Power Automate runs first</span>. Regex, keyword matching, and business rules resolve obvious requests in milliseconds at zero LLM cost. AI only activates when rules cannot match. This separates mature engineering from junior automation.</div>
+    </div>
+    <div class="decision-card">
+      <div class="dec-icon">📚</div>
+      <div class="dec-title">RAG over Fine-Tuning</div>
+      <div class="dec-body">Internal policies change constantly. Fine-tuning embeds knowledge into the model — requiring retraining on every policy change. With RAG, <span class="dec-highlight">update the document, the system immediately answers with the new version</span>. Also enables citable sources for SOX audits.</div>
+    </div>
+    <div class="decision-card">
+      <div class="dec-icon">🏢</div>
+      <div class="dec-title">Microsoft Native Stack</div>
+      <div class="dec-body">Copilot Studio, Power Automate, Dataverse, Azure OpenAI, and Entra ID fit the existing environment — <span class="dec-highlight">governance is built-in</span>, identity and audit come standard. A custom Python stack would require building security and audit from scratch: wrong trade-off in a regulated environment.</div>
+    </div>
+    <div class="decision-card">
+      <div class="dec-icon">⚖</div>
+      <div class="dec-title">Risk Always Overrides Confidence</div>
+      <div class="dec-body">Sensitive categories (financial data access, credentials, compliance requests) <span class="dec-highlight">always route to human review</span> regardless of confidence score. In a regulated environment, confident-and-wrong is the most expensive failure mode.</div>
+    </div>
+    <div class="decision-card">
+      <div class="dec-icon">🔄</div>
+      <div class="dec-title">Reusable Pipeline Pattern</div>
+      <div class="dec-body">This architecture is <span class="dec-highlight">not a one-time bot</span>. The pipeline, governance layers, and logging become a reusable template. Every future agent uses the same foundation — security gate, audit trail, confidence routing — without rebuilding from scratch.</div>
+    </div>
+    <div class="decision-card">
+      <div class="dec-icon">📋</div>
+      <div class="dec-title">Designed for SOX Compliance</div>
+      <div class="dec-body">Every action is tied to a verified Entra ID identity. Every step — who asked, what was retrieved, who approved, when — is logged to Dataverse with timestamps. <span class="dec-highlight">Audit trail begins before any processing</span>, not after. An auditor can answer any question from the log.</div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="section-label">Technology Stack</div>
+  <div class="tech-section">
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-icon">🤖</div>
+        <div><div class="tech-name">Copilot Studio</div><div class="tech-role">LLM orchestration, intent classification, entity extraction</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">⚡</div>
+        <div><div class="tech-name">Power Automate</div><div class="tech-role">Fast Path rules engine, approval flows, action execution</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🗄</div>
+        <div><div class="tech-name">Dataverse</div><div class="tech-role">Central request store, audit log, row-level security</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🧠</div>
+        <div><div class="tech-name">Azure OpenAI</div><div class="tech-role">LLM backbone for reasoning, RAG generation, confidence scoring</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🔒</div>
+        <div><div class="tech-name">Entra ID (Azure AD)</div><div class="tech-role">Authentication, RBAC, permission enforcement, identity audit</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📄</div>
+        <div><div class="tech-name">SharePoint Online</div><div class="tech-role">Knowledge base source for RAG — policies, SOPs, FAQs</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📱</div>
+        <div><div class="tech-name">Power Apps</div><div class="tech-role">Human review queue interface for specialists</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">💬</div>
+        <div><div class="tech-name">Microsoft Teams</div><div class="tech-role">Request channel, notification delivery, approval responses</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const steps = [
+  {
+    num:'1', icon:'🌐', title:'Request Channels',
+    sub:'Multi-channel intake — any format, one pipeline',
+    desc:'Requests arrive from six channels: Teams messages, email, intranet portal, IT service desk tickets, mobile apps, and survey forms. Every channel is a thin capture layer — the heavy logic lives downstream, not in each channel. One pipeline processes everything regardless of source.',
+    points:[
+      'Teams bot or adaptive card submission',
+      'Email parsing via Power Automate trigger',
+      'Intranet portal form (SharePoint/custom)',
+      'IT service desk ticket creation',
+      'Mobile app request (Power Apps)',
+      'Survey / Forms submission'
+    ],
+    tags:['Teams','Email','Intranet','Service Desk','Mobile App','Forms'],
+    numColor:'linear-gradient(135deg,#0097b2,#0078d4)'
+  },
+  {
+    num:'2', icon:'🗄', title:'Data Centralization — Dataverse',
+    sub:'Single source of truth — audit trail begins before any processing',
+    desc:'Every request — regardless of channel — lands in a single Dataverse table. A unique tracking ID is assigned immediately. Request record, metadata, attachments, and additional fields are captured before any routing or analysis happens. This is the foundation of SOX compliance: the audit trail starts at receipt, not at resolution.',
+    points:[
+      'Request record with unique tracking ID',
+      'Metadata extraction (source, timestamp, user ID)',
+      'Attachment storage and indexing',
+      'Immediate audit log entry (pre-processing)',
+      'Native Power Platform integration — no extra layer needed',
+      'Row-level security enforced at the data layer'
+    ],
+    tags:['Dataverse','Tracking ID','Metadata','Audit Log','SOX'],
+    numColor:'linear-gradient(135deg,#0078d4,#004e8c)'
+  },
+  {
+    num:'3', icon:'🔒', title:'Security & Access Control',
+    sub:'Identity verified before anything moves — security designed in, not bolted on',
+    desc:'Before any processing, Entra ID verifies the requestor\'s identity and role. RBAC rules apply from the start. When the system later searches knowledge documents via RAG, it only returns documents the requestor already has access to — security follows the user through every step of the pipeline.',
+    points:[
+      'Entra ID authentication — every request tied to a verified identity',
+      'Role & department mapping via RBAC',
+      'DLP policies enforced at ingest',
+      'Data privacy controls applied',
+      'RAG searches respect individual permission levels',
+      'Prompt injection protection at the LLM layer'
+    ],
+    tags:['Entra ID','RBAC','DLP','Data Privacy','Prompt Injection Protection'],
+    numColor:'linear-gradient(135deg,#5c2d91,#9b2d8a)'
+  },
+  {
+    num:'4', icon:'⚡', title:'Fast Path — Rules Engine (Power Automate)',
+    sub:'The most important architectural decision: AI is NOT the first stop',
+    desc:'A Power Automate flow runs before any LLM is invoked. It applies four layers of deterministic filtering: regex and pattern matching, keyword matching, table and lookup matching, and a business rules engine with conditional branching. If the confidence is ≥80%, the request is resolved instantly — zero LLM cost, milliseconds to response.',
+    points:[
+      'Regex & pattern matching (e.g., ticket number formats)',
+      'Keyword matching against known request types',
+      'Table & lookup matching for catalog items',
+      'Business rules engine with conditional branching',
+      'Password reset, VPN access, equipment requests → auto-resolved',
+      'No match → escalates to LLM layer only'
+    ],
+    tags:['Power Automate','Regex','Keyword Matching','Business Rules','Zero LLM Cost'],
+    numColor:'linear-gradient(135deg,#004e8c,#0097b2)',
+    routing:true
+  },
+  {
+    num:'5', icon:'🤖', title:'LLM Analysis Layer — Copilot Studio',
+    sub:'Activates only when deterministic rules cannot resolve the request',
+    desc:'When a request is ambiguous — "I cannot connect," "something is wrong with the system," "what is the policy on X" — Copilot Studio steps in. It extracts four signals from the request: intent, entities, priority, and risk level. These signals combine into a weighted confidence score that feeds the decision engine.',
+    points:[
+      'Intent classification (IT issue? HR question? Access request?)',
+      'Entity extraction (system name, user role, urgency keywords)',
+      'Semantic understanding — handles noisy, free-form text',
+      'Priority detection (urgent vs. routine)',
+      'Risk scoring (sensitivity of the request type)',
+      'Outputs: Intent 92%, Entity 87%, Context 76% confidence signals'
+    ],
+    tags:['Copilot Studio','Azure OpenAI','Intent Classification','Entity Extraction','Risk Scoring'],
+    numColor:'linear-gradient(135deg,#9b2d8a,#5c2d91)'
+  },
+  {
+    num:'6', icon:'⚖', title:'Decision Engine — Confidence & Risk',
+    sub:'Weighted score determines one of three paths; risk always overrides confidence',
+    desc:'The decision engine combines four weighted components into a Final Confidence score. The score determines routing. Critically, risk level always overrides: sensitive categories (financial access, credentials, compliance data) force human review regardless of how high the confidence score is.',
+    points:[
+      'Intent Score: 40% weight',
+      'Retrieval Score: 30% weight',
+      'Historical Accuracy: 20% weight',
+      'Risk Factor: 10% weight'
+    ],
+    tags:['Confidence Scoring','Risk Override','Weighted Routing','Decision Engine'],
+    numColor:'linear-gradient(135deg,#c8a800,#d17a00)',
+    routes:[
+      {badge:'≥ 80%', cls:'route-green', desc:'Auto Resolve / Route — Action Path or Knowledge Path executes automatically'},
+      {badge:'50–80%', cls:'route-yellow', desc:'Draft + Human Review — AI drafts a response or action for specialist approval'},
+      {badge:'< 50%', cls:'route-red', desc:'Direct Human Escalation — routed to a specialist queue immediately'}
+    ]
+  },
+  {
+    num:'7A', icon:'✅', title:'Action Path — Power Automate Execution',
+    sub:'For action requests: the system never acts autonomously without approval',
+    desc:'When the decision engine routes to the Action Path (high confidence + action type request), Power Automate identifies the request type, applies business rules, and sends an approval request to the correct manager or SME. Only after explicit human sign-off does any system action execute. Every step is logged.',
+    points:[
+      'Identify request type: access request, software install, account unlock',
+      'Apply business rules (who approves what, approval SLA)',
+      'Send approval request via Teams Adaptive Card or email',
+      'Escalate automatically if approver doesn\'t respond (X hrs → Y hrs)',
+      'Execute system action only after approval',
+      'Log action, approver, timestamp in Dataverse'
+    ],
+    tags:['Power Automate','Teams Approvals','Approval Workflow','Action Execution','Audit Log'],
+    numColor:'linear-gradient(135deg,#107c10,#0d5e0d)'
+  },
+  {
+    num:'7B', icon:'📚', title:'Knowledge Path — RAG',
+    sub:'Searches internal documents by meaning, not keywords; cannot fabricate answers',
+    desc:'For knowledge requests (policy questions, leave rules, reimbursement procedures), the RAG pipeline activates. Documents are chunked, embedded, and indexed in a vector store. Semantic search retrieves only documents the requestor already has access to. The LLM then generates an answer grounded entirely in the retrieved context — with citable sources.',
+    points:[
+      'Knowledge sources: SharePoint docs, internal policies, SOPs, FAQs',
+      'Chunking and embedding via Azure OpenAI',
+      'Semantic vector search — finds meaning, not just keywords',
+      'Reranking for highest relevance',
+      'Context builder assembles retrieved chunks for the LLM',
+      'Answer includes source citations — auditable and provable'
+    ],
+    tags:['RAG','Vector Search','Azure OpenAI','SharePoint','Semantic Search','Citations'],
+    numColor:'linear-gradient(135deg,#0078d4,#9b2d8a)'
+  },
+  {
+    num:'7C', icon:'👤', title:'Human Review — Escalation Queue',
+    sub:'Uncertain or sensitive requests always reach a human; nothing disappears silently',
+    desc:'Any request with low confidence (<50%) or flagged risk routes to a human review queue. A specialist sees the full request context, the AI\'s suggested response, and can review, edit, or override before finalizing. The response then goes to the employee after human approval. No request is resolved without a human touch in this path.',
+    points:[
+      'Power Apps interface for specialist review queue',
+      'Full request details visible (context, history, priority)',
+      'AI suggestion displayed alongside for efficiency',
+      'Specialist can accept, edit, or reject AI suggestion',
+      'Final decision and notes logged',
+      'Response delivered to employee after approval'
+    ],
+    tags:['Power Apps','Human-in-the-Loop','Review Queue','Escalation','Specialist Approval'],
+    numColor:'linear-gradient(135deg,#d13438,#9b2d8a)'
+  },
+  {
+    num:'8', icon:'📤', title:'Response Delivery & Communication',
+    sub:'Every request gets a resolution — nothing disappears into the system',
+    desc:'After any of the three paths (Action, RAG, or Human Review) completes, the response is delivered to the requestor. Delivery channels include Teams notification, email, ticket status update, and a resolution summary. A satisfaction rating is optionally collected. Every response includes a reference link to the knowledge article or resolution record.',
+    points:[
+      'Teams notification with resolution summary',
+      'Email delivery for non-Teams users',
+      'Ticket status update in the ticketing system',
+      'Resolution details with source document links (RAG path)',
+      'Optional CSAT satisfaction rating',
+      'All delivery actions logged with timestamps'
+    ],
+    tags:['Teams','Email','Ticket Update','CSAT','Resolution Details'],
+    numColor:'linear-gradient(135deg,#004e8c,#0097b2)'
+  },
+  {
+    num:'9', icon:'📊', title:'Governance, Audit & Observability',
+    sub:'Full audit trail in Dataverse — every action tied to a verified identity and timestamp',
+    desc:'Every step of the pipeline is logged: audit logs of all actions, LLM prompt logs, retrieved document sources, decision history, performance dashboards, and alerts. When an auditor asks what the system did, Dataverse has the complete answer — who asked, what was retrieved, who approved, and when.',
+    points:[
+      'Audit logs: all actions with user ID and timestamp',
+      'Prompt logs: LLM inputs and outputs for compliance review',
+      'Retrieved document log: which sources were used for each RAG answer',
+      'Decision history: confidence scores and routing decisions',
+      'Real-time dashboards: auto-resolution rate, escalation rate, accuracy',
+      'Alerts and monitoring for anomalies or SLA breaches'
+    ],
+    tags:['Dataverse','Audit Log','Prompt Logs','SOX Compliance','Dashboards','Monitoring'],
+    numColor:'linear-gradient(135deg,#5c2d91,#004e8c)'
+  },
+  {
+    num:'10', icon:'🔄', title:'Continuous Improvement Loop',
+    sub:'The system learns from every resolution — accuracy improves without retraining',
+    desc:'Every human correction, approval, and rejection feeds back into the improvement loop. Data enrichment and labeling build a feedback dataset. Model and prompt optimization runs against this data. Rule updates improve the Fast Path. Over time, the auto-resolution rate increases and escalation rate decreases — measurably.',
+    points:[
+      'Human corrections labeled as training signal',
+      'Data enrichment: failed matches tagged for rule updates',
+      'Accuracy monitoring: resolution quality tracked per category',
+      'Model / prompt optimization: thresholds calibrated against real data',
+      'Rule updates: Fast Path expanded based on newly classified patterns',
+      'Success metrics: auto-resolution rate, escalation %, CSAT trend'
+    ],
+    tags:['Feedback Loop','Prompt Optimization','Rule Updates','Accuracy Monitoring','Continuous Learning'],
+    numColor:'linear-gradient(135deg,#0097b2,#5c2d91)'
+  }
+];
+
+function renderDetail(i){
+  const s = steps[i];
+  let routingHtml = '';
+  if(s.routing){
+    routingHtml = `
+      <div class="route-box">
+        <div class="route-item">
+          <span class="route-badge route-green">≥ 80% Match</span>
+          <span class="route-desc">Auto-resolved instantly — password reset, VPN request, equipment order</span>
+        </div>
+        <div class="route-item">
+          <span class="route-badge route-red">No Match</span>
+          <span class="route-desc">Escalates to LLM Analysis Layer (Step 5) for intelligent processing</span>
+        </div>
+      </div>`;
+  }
+  if(s.routes){
+    routingHtml = '<div class="route-box">' + s.routes.map(r=>
+      `<div class="route-item"><span class="route-badge ${r.cls}">${r.badge}</span><span class="route-desc">${r.desc}</span></div>`
+    ).join('') + '</div>';
+  }
+  document.getElementById('detailPanel').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-num" style="background:${s.numColor}">${s.num}</div>
+      <div class="detail-icon">${s.icon}</div>
+      <div>
+        <div class="detail-title">${s.title}</div>
+        <div class="detail-sub">${s.sub}</div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div>
+        <p class="detail-desc">${s.desc}</p>
+        <div class="detail-tags">${s.tags.map(t=>`<span class="dtag">${t}</span>`).join('')}</div>
+      </div>
+      <div>
+        ${routingHtml || `<ul class="detail-points">${s.points.map(p=>`<li>${p}</li>`).join('')}</ul>`}
+        ${routingHtml && s.points.length ? `<ul class="detail-points" style="margin-top:1rem">${s.points.map(p=>`<li>${p}</li>`).join('')}</ul>` : ''}
+      </div>
+    </div>`;
+}
+
+function selectStep(i){
+  document.querySelectorAll('.step-node').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`.step-node[data-step="${i}"]`).classList.add('active');
+  renderDetail(i);
+}
+
+renderDetail(0);
+</script>
+</body>
+</html>

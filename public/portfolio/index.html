@@ -606,6 +606,10 @@ ul.rlist li::before{
               <span class="sdesc">Python · LangChain · Groq · Multi-tool Agentic AI</span>
             </button>
             <button class="toc-btn-s" onclick="goTo(7)">
+              <span class="stitle">🤖 AI Internal Request Automation</span>
+              <span class="sdesc">Copilot Studio · Power Automate · RAG · 10-step pipeline design</span>
+            </button>
+            <button class="toc-btn-s" onclick="goTo(8)">
               <span class="stitle">🛠 Tools &amp; Side Projects</span>
               <span class="sdesc">Vocab learning tool, open-source experiments &amp; side builds</span>
             </button>
@@ -1037,8 +1041,72 @@ ul.rlist li::before{
     </div>
   </div>
 
-  <!-- SLIDE 7 — TOOLS & SIDE PROJECTS -->
-  <div class="slide tools-slide next" data-index="7">
+  <!-- SLIDE 7 — AI INTERNAL REQUEST AUTOMATION -->
+  <div class="slide proj-slide next" data-index="7">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">07</span>
+        <h1 class="proj-title">AI-Powered Internal Request Automation</h1>
+      </div>
+      <div class="proj-meta">Architecture Design &nbsp;·&nbsp; Copilot Studio · Power Automate · Dataverse · Azure OpenAI · RAG &nbsp;·&nbsp; <a href="/portfolio/showcase/ai-request-system" target="_blank" style="color:var(--accent);font-style:normal">View Interactive Showcase →</a></div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Overview</div>
+            <p class="section-text">End-to-end pipeline architecture designed to automate 800–1,000 daily internal employee requests while maintaining SOX compliance, full audit traceability, and risk-based human oversight. The key architectural decision: <strong>rules run before AI</strong> — deterministic filtering resolves obvious requests at zero LLM cost; the AI layer only activates for ambiguous cases.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">10-Step Pipeline Architecture</div>
+            <ul class="blist">
+              <li><strong>Request Channels → Dataverse</strong> — All channels (Teams, email, intranet, service desk) write to a single Dataverse table. Audit trail begins at receipt, before any processing — SOX foundation.</li>
+              <li><strong>Security Gate (Entra ID / RBAC)</strong> — Identity verified before anything moves. RAG searches later respect individual permission levels — security designed in, not bolted on.</li>
+              <li><strong>Fast Path Rules Engine (Power Automate)</strong> — Regex, keyword matching, and business rules resolve password resets, VPN requests, and equipment orders in milliseconds. Zero LLM cost for the majority of volume.</li>
+              <li><strong>LLM Analysis (Copilot Studio)</strong> — Only activates on no-match. Extracts intent, entities, priority, and risk level. Outputs confidence signals that feed the decision engine.</li>
+              <li><strong>Decision Engine</strong> — Weighted score (intent 40%, retrieval 30%, historical 20%, risk 10%) routes to one of three paths. Risk always overrides — sensitive categories go to human regardless of score.</li>
+              <li><strong>Three Routing Paths</strong> — ≥80%: auto-resolve (Action or RAG); 50–80%: AI draft + human review; &lt;50%: direct escalation. Nothing is resolved without an appropriate level of human oversight.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Key Design Decisions</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li><strong>Rules before AI</strong> — Power Automate runs first; LLM only activates when deterministic rules cannot match</li>
+                <li><strong>RAG over fine-tuning</strong> — Policies change constantly; RAG answers from live documents with citable sources for SOX audits</li>
+                <li><strong>Risk always overrides</strong> — Sensitive categories force human approval regardless of confidence score</li>
+                <li><strong>Microsoft native stack</strong> — Governance, identity, and audit built in; no security layer to build from scratch</li>
+                <li><strong>Reusable pipeline pattern</strong> — Not a one-time bot; every future agent uses the same security gate, audit trail, and confidence routing</li>
+              </ul>
+              <a class="demo-link" href="/portfolio/showcase/ai-request-system" target="_blank">
+                🔍 Interactive Architecture Showcase
+              </a>
+              <div style="margin-top:1.2rem">
+                <div class="tech-label">Tech Stack</div>
+                <div class="tags">
+                  <span class="tag">Copilot Studio</span>
+                  <span class="tag">Power Automate</span>
+                  <span class="tag">Dataverse</span>
+                  <span class="tag">Azure OpenAI</span>
+                  <span class="tag">Entra ID</span>
+                  <span class="tag">RAG</span>
+                  <span class="tag">Vector Search</span>
+                  <span class="tag">SharePoint</span>
+                  <span class="tag">Power Apps</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 — TOOLS & SIDE PROJECTS -->
+  <div class="slide tools-slide next" data-index="8">
     <div class="scroll-area">
       <div class="tools-header">
         <div class="tools-eyebrow">Beyond Enterprise</div>
@@ -1083,7 +1151,7 @@ ul.rlist li::before{
   </div>
 
   <!-- SLIDE 8 — CLOSING -->
-  <div class="slide closing next" data-index="8">
+  <div class="slide closing next" data-index="9">
     <div class="closing-inner">
       <div class="cover-name" style="font-size:clamp(2rem,5vw,3.5rem)">GURSEL OLCA</div>
       <div class="closing-lines">
@@ -1200,7 +1268,7 @@ ul.rlist li::before{
 </div>
 
 <script>
-const TOTAL = 9;
+const TOTAL = 10;
 let current = 0;
 let isAnimating = false;
 
