@@ -1,13 +1,7 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
-import PasswordModal from '@/components/PasswordModal'
 import styles from './page.module.css'
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false)
-
   return (
     <main className={styles.main}>
       <h1 className={styles.heading}>Welcome</h1>
@@ -25,12 +19,10 @@ export default function Home() {
         <Link href="/helpdesk" className={styles.navLink}>
           IT Help Desk
         </Link>
-        <button className={styles.navLink} onClick={() => setModalOpen(true)}>
+        <Link href="/portfolio" className={styles.navLink}>
           Portfolio
-        </button>
+        </Link>
       </nav>
-
-      {modalOpen && <PasswordModal onClose={() => setModalOpen(false)} />}
     </main>
   )
 }

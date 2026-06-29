@@ -344,70 +344,70 @@ ul.rlist li::before{
 }
 #appsView{
   position:fixed;inset:0;z-index:500;
-  background:#0a0718;display:flex;flex-direction:column;
+  background:var(--bg);display:flex;flex-direction:column;
   animation:viewSlideUp 0.35s cubic-bezier(0.22,1,0.36,1) both;
 }
 .apps-topbar{
   flex-shrink:0;padding:0.85rem 2rem;
-  background:#150f28;border-bottom:1px solid #2e2550;
+  background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:1.2rem;
 }
 .apps-back-btn{
   display:inline-flex;align-items:center;gap:0.4rem;
-  color:#8077a8;background:none;border:none;cursor:pointer;
+  color:var(--muted);background:none;border:none;cursor:pointer;
   font-size:0.84rem;font-weight:600;font-family:inherit;
   padding:0;transition:color 0.2s;
 }
-.apps-back-btn:hover{color:#ede8f5;}
+.apps-back-btn:hover{color:var(--text);}
 .apps-view-title{
-  font-size:1rem;font-weight:700;color:#ede8f5;
+  font-size:1rem;font-weight:700;color:var(--primary);
   display:flex;align-items:center;gap:0.5rem;
 }
 .apps-view-badge{
   font-size:0.65rem;font-weight:600;padding:0.15rem 0.55rem;border-radius:20px;
-  background:linear-gradient(90deg,#9b2d8a,#0078d4);color:#fff;letter-spacing:0.04em;
+  background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;letter-spacing:0.04em;
 }
 .apps-scroll{
   flex:1;overflow-y:auto;padding:2rem 3rem 4rem;
-  scrollbar-width:thin;scrollbar-color:#2e2550 transparent;
+  scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;
 }
 .apps-section-label{
   font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;
-  font-weight:700;color:#9b2d8a;margin-bottom:1.2rem;
+  font-weight:700;color:var(--accent);margin-bottom:1.2rem;
 }
 .apps-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;
 }
 .app-card{
-  background:#150f28;border:1px solid #2e2550;border-radius:14px;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
   padding:1.5rem;display:flex;flex-direction:column;gap:0.9rem;
   transition:border-color 0.2s,box-shadow 0.2s;
 }
 .app-card:not(.app-coming):hover{
-  border-color:#9b2d8a;
-  box-shadow:0 0 0 1px #611b57,0 8px 32px rgba(155,45,138,0.14);
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent-dim),0 8px 32px rgba(37,99,235,0.12);
 }
 .app-card.app-coming{opacity:0.5;}
 .app-card-top{display:flex;align-items:flex-start;gap:0.9rem;}
 .app-icon{font-size:2rem;flex-shrink:0;line-height:1;}
-.app-name{font-size:1.05rem;font-weight:700;color:#ede8f5;line-height:1.3;}
-.app-type{font-size:0.74rem;color:#8077a8;margin-top:0.15rem;}
+.app-name{font-size:1.05rem;font-weight:700;color:var(--primary);line-height:1.3;}
+.app-type{font-size:0.74rem;color:var(--muted);margin-top:0.15rem;}
 .app-status{
   margin-left:auto;flex-shrink:0;font-size:0.66rem;font-weight:600;
   padding:0.15rem 0.55rem;border-radius:20px;
 }
-.app-status.live{background:linear-gradient(90deg,#9b2d8a,#0078d4);color:#fff;}
-.app-status.soon{background:#2e2550;color:#8077a8;}
-.app-desc{font-size:0.86rem;color:#a89fd0;line-height:1.65;}
+.app-status.live{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;}
+.app-status.soon{background:var(--surface2);border:1px solid var(--border);color:var(--muted);}
+.app-desc{font-size:0.86rem;color:var(--text);line-height:1.65;}
 .app-tags{display:flex;flex-wrap:wrap;gap:0.35rem;}
 .app-tag{
-  font-size:0.69rem;color:#8077a8;border:1px solid #2e2550;
-  padding:0.14rem 0.45rem;border-radius:12px;background:#0a0718;
+  font-size:0.69rem;color:var(--muted);border:1px solid var(--border);
+  padding:0.14rem 0.45rem;border-radius:12px;background:var(--bg);
 }
 .app-actions{display:flex;gap:0.6rem;margin-top:auto;}
 .app-launch{
   display:inline-flex;align-items:center;gap:0.4rem;
-  background:linear-gradient(135deg,#9b2d8a,#0078d4);
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;border:none;border-radius:7px;
   padding:0.48rem 1.1rem;font-size:0.82rem;font-weight:700;
   cursor:pointer;font-family:inherit;transition:opacity 0.2s;
@@ -416,12 +416,12 @@ ul.rlist li::before{
 .app-launch:disabled{opacity:0.35;cursor:not-allowed;}
 .app-ext{
   display:inline-flex;align-items:center;gap:0.35rem;
-  background:transparent;border:1px solid #2e2550;color:#8077a8;
+  background:transparent;border:1px solid var(--border);color:var(--muted);
   border-radius:7px;padding:0.48rem 0.9rem;font-size:0.82rem;font-weight:600;
   cursor:pointer;font-family:inherit;text-decoration:none;
   transition:border-color 0.2s,color 0.2s;
 }
-.app-ext:hover{border-color:#9b2d8a;color:#c97bbf;}
+.app-ext:hover{border-color:var(--accent);color:var(--accent);}
 
 /* ════ DEMO VIEW ════ */
 #demoView{
@@ -431,24 +431,24 @@ ul.rlist li::before{
 }
 .demo-topbar{
   flex-shrink:0;padding:0.6rem 1.5rem;
-  background:#150f28;border-bottom:1px solid #2e2550;
+  background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:1rem;
 }
 .demo-back-btn{
   display:inline-flex;align-items:center;gap:0.4rem;
-  color:#8077a8;background:none;border:none;cursor:pointer;
+  color:var(--muted);background:none;border:none;cursor:pointer;
   font-size:0.82rem;font-weight:600;font-family:inherit;
   padding:0;transition:color 0.2s;white-space:nowrap;
 }
-.demo-back-btn:hover{color:#ede8f5;}
-.demo-name{font-size:0.95rem;font-weight:700;color:#ede8f5;}
+.demo-back-btn:hover{color:var(--primary);}
+.demo-name{font-size:0.95rem;font-weight:700;color:var(--primary);}
 .demo-ext{
   margin-left:auto;font-size:0.73rem;font-weight:600;
   padding:0.28rem 0.7rem;border-radius:6px;
-  background:rgba(155,45,138,0.15);border:1px solid #9b2d8a;color:#c97bbf;
+  background:var(--surface2);border:1px solid var(--accent-light);color:var(--accent);
   text-decoration:none;white-space:nowrap;transition:background 0.2s;
 }
-.demo-ext:hover{background:rgba(155,45,138,0.3);}
+.demo-ext:hover{background:var(--tag-bg);}
 .demo-iframe{flex:1;border:none;width:100%;display:block;}
 
 /* ════ APPS BUTTON on Cover ════ */
