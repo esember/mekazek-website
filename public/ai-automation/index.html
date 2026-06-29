@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered Internal Request Automation — Case Study</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f8fd;
+  --white:#ffffff;
+  --surface:#eaf2fb;
+  --border:#c8ddf0;
+  --text:#0d1f2d;
+  --muted:#4e6c84;
+  --light:#7a9ab5;
+  --primary:#1455a4;
+  --accent:#1a6ecc;
+  --accent-light:#e3effe;
+  --teal:#0077a3;
+  --green:#1a7a2e;
+  --green-bg:#e8f5eb;
+  --yellow:#8a6200;
+  --yellow-bg:#fff8e1;
+  --red:#b81c1c;
+  --red-bg:#fff0f0;
+}
+html,body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  font-size:16px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+
+/* ── TOP NAV ── */
+.topnav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{font-size:0.9rem;font-weight:700;color:var(--primary);letter-spacing:0.02em;}
+.nav-links{display:flex;align-items:center;gap:1.8rem;}
+.nav-link{font-size:0.85rem;font-weight:500;color:var(--muted);transition:color 0.2s;}
+.nav-link:hover{color:var(--primary);}
+.nav-cta{
+  font-size:0.82rem;font-weight:700;
+  background:var(--primary);color:#fff;
+  padding:0.4rem 1rem;border-radius:6px;
+  transition:background 0.2s;
+}
+.nav-cta:hover{background:var(--accent);}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,#0d2c5e 0%,#1455a4 50%,#1a6ecc 100%);
+  padding:5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 70% 30%,rgba(100,180,255,0.12) 0%,transparent 60%),
+             radial-gradient(ellipse at 20% 80%,rgba(80,140,220,0.08) 0%,transparent 50%);
+}
+.hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+  color:rgba(255,255,255,0.9);font-size:0.82rem;font-weight:600;
+  padding:0.35rem 1rem;border-radius:30px;margin-bottom:1.5rem;letter-spacing:0.04em;
+}
+.hero-title{
+  font-size:clamp(2rem,5vw,3.4rem);font-weight:800;color:#fff;
+  letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;
+}
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.2rem);color:rgba(200,225,255,0.85);
+  line-height:1.65;max-width:640px;margin:0 auto 2.5rem;font-weight:400;
+}
+.hero-metrics{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;
+}
+.metric{
+  background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.18);border-radius:12px;
+  padding:1rem 1.4rem;min-width:130px;
+}
+.metric-num{font-size:1.8rem;font-weight:800;color:#fff;line-height:1;}
+.metric-lbl{font-size:0.78rem;color:rgba(180,210,255,0.85);margin-top:0.3rem;font-weight:500;}
+
+/* ── SECTION WRAPPER ── */
+.section{padding:4rem 2rem;}
+.section-inner{max-width:960px;margin:0 auto;}
+.section-alt{background:var(--white);}
+
+.eyebrow{
+  font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:0.6rem;
+}
+.section-title{
+  font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--text);
+  letter-spacing:-0.02em;line-height:1.2;margin-bottom:1rem;
+}
+.section-lead{
+  font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:680px;
+}
+
+/* ── PROBLEM ── */
+.problem-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;
+}
+.problem-card{
+  background:var(--red-bg);border:1px solid #f0bcbc;border-radius:12px;padding:1.4rem;
+}
+.problem-card-title{font-size:0.95rem;font-weight:700;color:var(--red);margin-bottom:0.5rem;
+  display:flex;align-items:center;gap:0.5rem;}
+.problem-card p{font-size:0.93rem;color:#5a1a1a;line-height:1.65;}
+
+/* ── SOLUTION STRIP ── */
+.solution-strip{
+  background:linear-gradient(135deg,var(--primary),var(--teal));
+  border-radius:16px;padding:2rem 2.5rem;margin-top:2rem;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;
+}
+.sol-item{text-align:center;}
+.sol-icon{font-size:2rem;margin-bottom:0.6rem;}
+.sol-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:0.3rem;}
+.sol-desc{font-size:0.85rem;color:rgba(200,230,255,0.85);line-height:1.5;}
+
+/* ── PIPELINE ── */
+.pipeline-section{margin-top:2.5rem;}
+.pipeline-phases{display:flex;gap:0;align-items:stretch;margin-bottom:1.5rem;}
+.phase{flex:1;position:relative;}
+.phase-inner{
+  background:var(--white);border:2px solid var(--border);border-radius:12px;
+  padding:1.2rem;height:100%;
+}
+.phase:not(:last-child)::after{
+  content:'›';position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  font-size:1.8rem;color:var(--light);z-index:1;line-height:1;
+}
+.phase-num{
+  font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:0.5rem;
+}
+.phase-title{font-size:0.95rem;font-weight:700;color:var(--primary);margin-bottom:0.6rem;}
+.phase-steps{list-style:none;display:flex;flex-direction:column;gap:0.3rem;}
+.phase-steps li{font-size:0.82rem;color:var(--muted);padding-left:1rem;position:relative;}
+.phase-steps li::before{content:'·';position:absolute;left:0;color:var(--accent);font-weight:700;}
+
+.fast-path-box{
+  background:linear-gradient(135deg,#e8f5e9,#f0f9f0);
+  border:2px solid #81c784;border-radius:12px;
+  padding:1.2rem 1.5rem;margin:1rem 0;
+  display:flex;align-items:center;gap:1.2rem;
+}
+.fast-path-icon{font-size:2rem;flex-shrink:0;}
+.fast-path-title{font-size:1rem;font-weight:700;color:#1b5e20;margin-bottom:0.2rem;}
+.fast-path-desc{font-size:0.88rem;color:#2e7d32;line-height:1.5;}
+
+/* ── THREE PATHS ── */
+.paths-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;margin-top:2rem;}
+.path-card{border-radius:14px;padding:1.5rem;border:2px solid;}
+.path-card.auto{background:#e8f5e9;border-color:#81c784;}
+.path-card.rag{background:#e3effe;border-color:#90c0f0;}
+.path-card.human{background:#fff8e1;border-color:#ffd54f;}
+.path-badge{
+  font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  padding:0.2rem 0.7rem;border-radius:20px;display:inline-block;margin-bottom:0.8rem;
+}
+.auto .path-badge{background:#1b5e20;color:#fff;}
+.rag .path-badge{background:#0d47a1;color:#fff;}
+.human .path-badge{background:#e65100;color:#fff;}
+.path-title{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;}
+.path-trigger{font-size:0.8rem;font-weight:600;color:var(--muted);margin-bottom:0.8rem;
+  padding:0.3rem 0.7rem;border-radius:6px;background:rgba(255,255,255,0.6);display:inline-block;}
+.path-steps{list-style:none;display:flex;flex-direction:column;gap:0.4rem;}
+.path-steps li{font-size:0.88rem;color:var(--text);padding-left:1.2rem;position:relative;line-height:1.5;}
+.auto .path-steps li::before{content:'✓';position:absolute;left:0;color:#1b5e20;font-weight:700;}
+.rag .path-steps li::before{content:'→';position:absolute;left:0;color:#0d47a1;font-weight:700;}
+.human .path-steps li::before{content:'•';position:absolute;left:0;color:#e65100;font-weight:700;}
+
+/* ── DECISIONS ── */
+.decisions-list{display:flex;flex-direction:column;gap:1.2rem;margin-top:2rem;}
+.decision-row{
+  background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:1.4rem 1.6rem;display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start;
+}
+.dec-q{font-size:0.98rem;font-weight:700;color:var(--primary);}
+.dec-q-sub{font-size:0.82rem;color:var(--muted);margin-top:0.2rem;font-style:italic;}
+.dec-a{font-size:0.93rem;color:var(--text);line-height:1.65;}
+.dec-a strong{color:var(--teal);}
+
+/* ── TECH STACK ── */
+.tech-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:2rem;
+}
+.tech-card{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:1rem 1.1rem;display:flex;gap:0.8rem;align-items:flex-start;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.tech-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(26,110,204,0.1);}
+.tech-ico{font-size:1.5rem;flex-shrink:0;line-height:1;margin-top:0.1rem;}
+.tech-name{font-size:0.93rem;font-weight:700;color:var(--text);}
+.tech-role{font-size:0.8rem;color:var(--muted);margin-top:0.15rem;line-height:1.4;}
+
+/* ── IMPACT ── */
+.impact-section{
+  background:linear-gradient(135deg,#0d2c5e,#1455a4);
+  padding:4rem 2rem;text-align:center;
+}
+.impact-inner{max-width:900px;margin:0 auto;}
+.impact-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:0.6rem;}
+.impact-sub{font-size:1rem;color:rgba(180,210,255,0.85);margin-bottom:2.5rem;}
+.impact-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-bottom:2.5rem;
+}
+.impact-card{
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:14px;padding:1.4rem 1rem;
+}
+.impact-num{font-size:2.2rem;font-weight:800;color:#fff;line-height:1;}
+.impact-label{font-size:0.82rem;color:rgba(180,210,255,0.85);margin-top:0.4rem;line-height:1.4;}
+.impact-note{font-size:0.85rem;color:rgba(180,210,255,0.7);font-style:italic;}
+
+/* ── ARCHITECTURE LINK ── */
+.arch-cta{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:1.8rem 2rem;margin-top:2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.arch-cta-text h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;}
+.arch-cta-text p{font-size:0.9rem;color:var(--muted);}
+.arch-cta-btn{
+  display:inline-flex;align-items:center;gap:0.5rem;flex-shrink:0;
+  background:var(--primary);color:#fff;
+  padding:0.6rem 1.3rem;border-radius:8px;font-size:0.9rem;font-weight:700;
+  transition:background 0.2s;white-space:nowrap;
+}
+.arch-cta-btn:hover{background:var(--accent);}
+
+/* ── FOOTER ── */
+.footer{
+  padding:2rem;text-align:center;border-top:1px solid var(--border);
+  font-size:0.85rem;color:var(--light);
+}
+.footer a{color:var(--accent);font-weight:600;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .problem-grid,.paths-grid,.solution-strip{grid-template-columns:1fr;}
+  .pipeline-phases{flex-direction:column;}
+  .phase:not(:last-child)::after{display:none;}
+  .decision-row{grid-template-columns:1fr;}
+  .hero-metrics{gap:0.7rem;}
+  .metric{min-width:100px;padding:0.8rem 1rem;}
+  .arch-cta{flex-direction:column;align-items:flex-start;}
+  .topnav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="nav-brand">← <a href="/">Home</a></div>
+  <div class="nav-links">
+    <a href="#challenge" class="nav-link">Challenge</a>
+    <a href="#architecture" class="nav-link">Architecture</a>
+    <a href="#decisions" class="nav-link">Decisions</a>
+    <a href="#stack" class="nav-link">Tech Stack</a>
+    <a href="/portfolio/showcase/ai-request-system" class="nav-cta">Interactive Demo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">⚙ Enterprise AI Architecture · Internal Operations</div>
+    <h1 class="hero-title">AI-Powered Internal<br>Request Automation</h1>
+    <p class="hero-sub">Designed a 10-step end-to-end pipeline to automate internal employee request handling — classifying, routing, resolving, and escalating 800–1,000 daily requests while maintaining full audit traceability and human oversight.</p>
+    <div class="hero-metrics">
+      <div class="metric">
+        <div class="metric-num">1,000<span style="font-size:1.1rem">+</span></div>
+        <div class="metric-lbl">Requests / day</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">10</div>
+        <div class="metric-lbl">Pipeline Steps</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">3</div>
+        <div class="metric-lbl">Routing Paths</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">≥80<span style="font-size:1.1rem">%</span></div>
+        <div class="metric-lbl">Auto-Resolve Target</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">1,800</div>
+        <div class="metric-lbl">Hours Saved / Year</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGE -->
+<section class="section" id="challenge">
+  <div class="section-inner">
+    <div class="eyebrow">The Problem</div>
+    <h2 class="section-title">Manual Handling at Scale Doesn't Work</h2>
+    <p class="section-lead">With hundreds of employee requests arriving daily through email, Teams, and the intranet, support teams were spending most of their time triaging and categorizing — not solving. The result: slow responses, inconsistent answers, and no audit trail.</p>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-card-title">⏱ Slow & Inconsistent</div>
+        <p>Every request was read, categorized, and responded to manually. Similar questions got different answers depending on who picked up the ticket. Average resolution time was measured in hours, not minutes.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-title">📂 No Centralized Knowledge</div>
+        <p>Internal policies lived in SharePoint, email threads, and individual inboxes. Support staff searched for the right policy document for every request — the same search, repeated hundreds of times a day.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-title">🔍 No Audit Visibility</div>
+        <p>In a regulated environment, every access request and policy decision must be traceable. Manual handling meant no consistent log of who asked, who approved, what information was used, or when.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-title">📈 Impossible to Scale</div>
+        <p>Request volume was growing. Hiring more support staff was not a sustainable solution. The operation needed a system that could handle 3× the volume without 3× the headcount.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="section section-alt" id="architecture">
+  <div class="section-inner">
+    <div class="eyebrow">The Solution</div>
+    <h2 class="section-title">A 10-Step Pipeline — Rules First, AI Second</h2>
+    <p class="section-lead">The most important architectural decision was made before writing a single line of automation: <strong>deterministic rules run before the LLM</strong>. The majority of requests are actually simple and predictable — they should never touch an AI layer.</p>
+
+    <div class="solution-strip">
+      <div class="sol-item">
+        <div class="sol-icon">⚡</div>
+        <div class="sol-title">Fast Path First</div>
+        <div class="sol-desc">Power Automate rules resolve ~60% of requests in milliseconds — no LLM cost, no latency, no hallucination risk</div>
+      </div>
+      <div class="sol-item">
+        <div class="sol-icon">🤖</div>
+        <div class="sol-title">AI for the Ambiguous</div>
+        <div class="sol-desc">Copilot Studio + Azure OpenAI handle intent classification, semantic understanding, and RAG knowledge retrieval only when rules fail</div>
+      </div>
+      <div class="sol-item">
+        <div class="sol-icon">👤</div>
+        <div class="sol-title">Human Always in the Loop</div>
+        <div class="sol-desc">Low-confidence and high-risk requests always escalate to a human. No sensitive action is ever taken autonomously</div>
+      </div>
+    </div>
+
+    <div class="pipeline-section">
+      <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">Pipeline Overview</div>
+      <div class="pipeline-phases" style="gap:1.8rem;">
+        <div class="phase">
+          <div class="phase-inner" style="border-color:#90c0f0;background:#f0f6ff;">
+            <div class="phase-num">Phase 1 — Intake & Security</div>
+            <div class="phase-title">Capture & Authenticate</div>
+            <ul class="phase-steps">
+              <li>Teams, Email, Intranet, Service Desk, Mobile, Forms</li>
+              <li>All channels write to a single Dataverse table</li>
+              <li>Unique tracking ID assigned at receipt</li>
+              <li>Entra ID verifies identity before anything moves</li>
+              <li>RBAC & DLP applied at the data layer</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-inner" style="border-color:#81c784;background:#f1f9f2;">
+            <div class="phase-num">Phase 2 — Processing & Routing</div>
+            <div class="phase-title">Classify & Decide</div>
+            <ul class="phase-steps">
+              <li>Fast Path: regex, keywords, business rules (Power Automate)</li>
+              <li>LLM Layer: intent, entities, priority, risk (Copilot Studio)</li>
+              <li>Decision Engine: weighted confidence + risk score</li>
+              <li>Routes to Auto-Resolve, RAG, or Human Review</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-inner" style="border-color:#ffb74d;background:#fffbf0;">
+            <div class="phase-num">Phase 3 — Resolution & Governance</div>
+            <div class="phase-title">Act & Audit</div>
+            <ul class="phase-steps">
+              <li>Execute action or deliver knowledge-grounded answer</li>
+              <li>Human approves sensitive actions before execution</li>
+              <li>Response via Teams, Email, or ticket update</li>
+              <li>Full audit log: who asked, what retrieved, who approved</li>
+              <li>Feedback loop improves accuracy over time</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="fast-path-box">
+        <div class="fast-path-icon">⚡</div>
+        <div>
+          <div class="fast-path-title">The Fast Path — Why It Matters</div>
+          <div class="fast-path-desc">Password resets, VPN access requests, equipment orders, and leave balance questions are predictable. A Power Automate flow with regex matching, keyword lookups, and a business rules engine resolves these in under a second at zero LLM cost. The LLM only activates when rules return no confident match. This is how you scale to 1,000+ requests/day without a runaway AI bill.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREE PATHS -->
+    <div style="margin-top:2.5rem;">
+      <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">After Classification — Three Resolution Paths</div>
+      <div class="paths-grid">
+        <div class="path-card auto">
+          <span class="path-badge">≥ 80% Confidence</span>
+          <div class="path-title">Auto-Resolve Path</div>
+          <span class="path-trigger">Triggered for: access requests, known IT issues, catalog items</span>
+          <ul class="path-steps">
+            <li>Business rules identify request type</li>
+            <li>Approval sent via Teams Adaptive Card</li>
+            <li>Manager or SME approves with one click</li>
+            <li>System action executes only after approval</li>
+            <li>Employee notified with resolution details</li>
+          </ul>
+        </div>
+        <div class="path-card rag">
+          <span class="path-badge">50–80% Confidence</span>
+          <div class="path-title">Knowledge Path (RAG)</div>
+          <span class="path-trigger">Triggered for: policy questions, leave rules, reimbursement</span>
+          <ul class="path-steps">
+            <li>SharePoint documents chunked & embedded</li>
+            <li>Semantic vector search retrieves relevant docs</li>
+            <li>Only docs the user has permission to see</li>
+            <li>LLM generates a grounded, citable answer</li>
+            <li>Human reviews before delivery (50–80% band)</li>
+          </ul>
+        </div>
+        <div class="path-card human">
+          <span class="path-badge">&lt; 50% or High Risk</span>
+          <div class="path-title">Human Review Queue</div>
+          <span class="path-trigger">Triggered for: low confidence, sensitive categories, compliance</span>
+          <ul class="path-steps">
+            <li>Routed to specialist review queue (Power Apps)</li>
+            <li>Full context visible: request, history, priority</li>
+            <li>AI suggestion shown alongside for efficiency</li>
+            <li>Specialist accepts, edits, or overrides</li>
+            <li>Response sent after specialist approval</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARCH DETAIL LINK -->
+    <div class="arch-cta">
+      <div class="arch-cta-text">
+        <h3>Explore the Full 10-Step Architecture</h3>
+        <p>Interactive pipeline diagram — click each step to see implementation details, tech choices, and data flow</p>
+      </div>
+      <a href="/portfolio/showcase/ai-request-system" class="arch-cta-btn">View Architecture →</a>
+    </div>
+  </div>
+</section>
+
+<!-- DECISIONS -->
+<section class="section" id="decisions">
+  <div class="section-inner">
+    <div class="eyebrow">Engineering Decisions</div>
+    <h2 class="section-title">The "Why" Behind Every Choice</h2>
+    <p class="section-lead">Good architecture is mostly made of decisions you didn't make. Here's what we chose and why — including what we ruled out.</p>
+
+    <div class="decisions-list">
+      <div class="decision-row">
+        <div>
+          <div class="dec-q">Why rules before AI?</div>
+          <div class="dec-q-sub">Fast Path (Power Automate) runs first</div>
+        </div>
+        <div class="dec-a">Most requests aren't ambiguous — "reset my password" is not a natural language understanding problem. Running an LLM on every request adds latency, cost, and hallucination risk for no benefit. <strong>Deterministic rules handle what's predictable; AI handles what isn't.</strong> This separation also means the Fast Path can be audited and explained without touching a language model.</div>
+      </div>
+      <div class="decision-row">
+        <div>
+          <div class="dec-q">RAG over fine-tuning?</div>
+          <div class="dec-q-sub">Knowledge retrieval, not model training</div>
+        </div>
+        <div class="dec-a">Internal policies change — leave rules update, compliance requirements shift, IT catalogs evolve. Fine-tuning bakes knowledge into the model weights: every policy change requires retraining and redeployment. <strong>With RAG, update the SharePoint document and the system immediately answers with the new version.</strong> RAG also provides citable sources for every answer — critical for SOX audit trails where the reviewer needs to verify what information was used.</div>
+      </div>
+      <div class="decision-row">
+        <div>
+          <div class="dec-q">Why Microsoft native stack?</div>
+          <div class="dec-q-sub">Copilot Studio, Power Automate, Dataverse, Entra ID</div>
+        </div>
+        <div class="dec-a">A custom Python/FastAPI stack could do everything this architecture does — but it would also need to build authentication, RBAC enforcement, DLP policy, audit logging, and enterprise integration from scratch. <strong>The Microsoft stack delivers all of these as built-in features.</strong> In a regulated environment, building your own security and governance layer is the highest-risk choice. Entra ID handles identity; Dataverse handles audit; Power Platform handles governance. Ship a working, compliant system faster.</div>
+      </div>
+      <div class="decision-row">
+        <div>
+          <div class="dec-q">Why does risk override confidence?</div>
+          <div class="dec-q-sub">Decision Engine — Risk Factor (10% weight)</div>
+        </div>
+        <div class="dec-a">The Decision Engine uses a weighted confidence score (intent 40%, retrieval 30%, historical accuracy 20%, risk 10%). But regardless of the final score, <strong>sensitive categories — financial data access, credential changes, compliance requests — always route to human review.</strong> In a regulated environment, a confident-but-wrong action is the most expensive failure mode. The 10% risk weighting is a floor, not a ceiling.</div>
+      </div>
+      <div class="decision-row">
+        <div>
+          <div class="dec-q">Why Dataverse as the central store?</div>
+          <div class="dec-q-sub">Not a custom database or ticketing system</div>
+        </div>
+        <div class="dec-a">Dataverse provides row-level security, a Power Platform-native API, built-in audit log columns, and native integration with Power Automate and Power Apps — without custom code. <strong>The audit trail begins at the moment of request receipt, before any processing.</strong> An auditor can query Dataverse and answer any compliance question: who submitted, what was retrieved, who approved, when each step happened. This is not possible when the audit trail is an afterthought.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="section section-alt" id="stack">
+  <div class="section-inner">
+    <div class="eyebrow">Technology</div>
+    <h2 class="section-title">Built on the Microsoft Intelligent Cloud</h2>
+    <p class="section-lead">Every component was chosen for enterprise-grade governance, not just capability. Each tool earns its place by eliminating a category of risk.</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-ico">🤖</div>
+        <div>
+          <div class="tech-name">Copilot Studio</div>
+          <div class="tech-role">LLM orchestration, intent classification, entity extraction, RAG integration</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">⚡</div>
+        <div>
+          <div class="tech-name">Power Automate</div>
+          <div class="tech-role">Fast Path rules engine, approval workflows, system action execution</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">🗄</div>
+        <div>
+          <div class="tech-name">Dataverse</div>
+          <div class="tech-role">Central request store, audit log, row-level security, native PP integration</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">🧠</div>
+        <div>
+          <div class="tech-name">Azure OpenAI</div>
+          <div class="tech-role">LLM backbone for reasoning, answer generation, confidence scoring</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">🔒</div>
+        <div>
+          <div class="tech-name">Entra ID</div>
+          <div class="tech-role">Authentication, RBAC enforcement, permission-aware RAG, identity audit</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">📄</div>
+        <div>
+          <div class="tech-name">SharePoint Online</div>
+          <div class="tech-role">Knowledge base for RAG — policies, SOPs, FAQs, training materials</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">📱</div>
+        <div>
+          <div class="tech-name">Power Apps</div>
+          <div class="tech-role">Human review queue interface for support specialists</div>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">💬</div>
+        <div>
+          <div class="tech-name">Microsoft Teams</div>
+          <div class="tech-role">Primary request channel, approval delivery, Adaptive Card notifications</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact-section">
+  <div class="impact-inner">
+    <div class="eyebrow" style="color:rgba(150,200,255,0.9)">Projected Impact</div>
+    <h2 class="impact-title">What This System Delivers</h2>
+    <p class="impact-sub">Based on 800–1,000 daily requests and an assumed 60% Fast Path resolution rate</p>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">~600</div>
+        <div class="impact-label">Requests auto-resolved daily without human touch</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">1,800+</div>
+        <div class="impact-label">Staff hours saved per year on triage and categorization</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">&lt;2s</div>
+        <div class="impact-label">Fast Path resolution time (vs. hours manually)</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">100%</div>
+        <div class="impact-label">Requests logged with full audit trail from first contact</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">0</div>
+        <div class="impact-label">Sensitive actions taken without explicit human approval</div>
+      </div>
+    </div>
+    <p class="impact-note">* Numbers are design-phase projections based on stated volume and architecture assumptions. Actual results depend on implementation tuning.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p><a href="/">← Back to Home</a> &nbsp;·&nbsp; <a href="/portfolio">Portfolio</a> &nbsp;·&nbsp; <a href="/portfolio/showcase/ai-request-system">Interactive Architecture →</a></p>
+</footer>
+
+</body>
+</html>

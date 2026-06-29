@@ -19,6 +19,9 @@ export default function Home() {
         <Link href="/helpdesk" className={styles.navLink}>
           IT Help Desk
         </Link>
+        <Link href="/ai-automation" className={styles.navLink}>
+          AI Request System
+        </Link>
         <Link href="/portfolio" className={styles.navLink}>
           Portfolio
         </Link>
