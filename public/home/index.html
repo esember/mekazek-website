@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform &amp; AI Portfolio — mekazek</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ============================================================
+   MATRIX INTRO
+   ============================================================ */
+#intro {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.85s ease;
+}
+#intro.fade-out { opacity: 0; pointer-events: none; }
+
+#matrix-canvas { position: absolute; inset: 0; display: block; }
+
+.intro-center {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  user-select: none;
+}
+.intro-brand {
+  font-size: clamp(2.5rem, 9vw, 5.5rem);
+  font-weight: 900;
+  color: #00ff41;
+  letter-spacing: 0.35em;
+  text-shadow: 0 0 20px #00ff41, 0 0 50px #00c032, 0 0 80px #006e1a;
+  opacity: 0;
+  animation: glowIn 1.2s cubic-bezier(0.22,1,0.36,1) 1.6s forwards;
+  line-height: 1;
+}
+.intro-sub {
+  font-size: clamp(0.6rem, 1.8vw, 0.82rem);
+  color: #4dff7c;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-top: 1rem;
+  opacity: 0;
+  animation: glowIn 1s ease 2.4s forwards;
+}
+.enter-btn {
+  display: inline-block;
+  margin-top: 2.75rem;
+  background: transparent;
+  border: 1px solid #00ff41;
+  color: #00ff41;
+  padding: 0.85rem 3rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.28em;
+  cursor: pointer;
+  opacity: 0;
+  animation: glowIn 1s ease 3.1s forwards;
+  transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+}
+.enter-btn:hover {
+  background: #00ff41;
+  color: #000;
+  box-shadow: 0 0 30px #00ff4199, 0 0 60px #00ff4144;
+}
+@keyframes glowIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   MAIN LANDING PAGE
+   ============================================================ */
+#main {
+  display: none;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #eef5fc;
+  color: #0f2034;
+  scroll-behavior: smooth;
+}
+#main.visible { display: block; }
+
+/* ---- Sticky Nav ---- */
+.top-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(238,245,252,0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #c8ddf0;
+  padding: 0 2rem;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+.nav-brand {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a56db;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+.nav-links { display: flex; gap: 1.75rem; list-style: none; align-items: center; }
+.nav-links a {
+  color: #374151;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #1a56db; }
+.nav-cta {
+  background: #1a56db;
+  color: #fff !important;
+  padding: 0.4rem 1.1rem;
+  border-radius: 6px;
+  font-weight: 600 !important;
+  transition: background 0.2s !important;
+}
+.nav-cta:hover { background: #1648bb !important; }
+
+/* ---- Hero ---- */
+.hero {
+  padding: 5.5rem 2rem 4.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e0edff;
+  color: #1a56db;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.75rem;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  background: #1a56db;
+  border-radius: 50%;
+  animation: blink 2.2s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.hero h1 {
+  font-size: clamp(2rem, 5.5vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #0f2034;
+  margin-bottom: 1.25rem;
+}
+.hero h1 .accent { color: #1a56db; }
+.hero-desc {
+  font-size: 1.1rem;
+  color: #4b6280;
+  max-width: 590px;
+  line-height: 1.75;
+  margin-bottom: 2.25rem;
+}
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+.btn-primary {
+  background: #1a56db;
+  color: #fff;
+  padding: 0.82rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-block;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.btn-primary:hover {
+  background: #1648bb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(26,86,219,0.3);
+}
+.btn-outline {
+  border: 1.5px solid #b8d0ed;
+  color: #374151;
+  background: #fff;
+  padding: 0.82rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-block;
+  transition: border-color 0.2s, color 0.2s, transform 0.15s;
+}
+.btn-outline:hover {
+  border-color: #1a56db;
+  color: #1a56db;
+  transform: translateY(-2px);
+}
+
+/* Stats strip */
+.stats-strip {
+  display: flex;
+  gap: 3rem;
+  margin-top: 3rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid #d0e4f7;
+  flex-wrap: wrap;
+}
+.stat-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #0f2034;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: #7a94b0;
+  margin-top: 0.3rem;
+}
+
+/* ---- Section skeleton ---- */
+.section {
+  padding: 4rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #1a56db;
+  margin-bottom: 0.4rem;
+}
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f2034;
+  margin-bottom: 0.4rem;
+}
+.section-sub {
+  font-size: 0.94rem;
+  color: #4b6280;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+/* ---- Project Cards ---- */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.project-card {
+  background: #fff;
+  border: 1px solid #d0e4f7;
+  border-radius: 14px;
+  padding: 1.75rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent, #1a56db);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(15,32,52,0.1);
+  border-color: var(--accent, #1a56db);
+}
+.project-card:hover::after { transform: scaleX(1); }
+
+.card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.card-icon {
+  width: 48px; height: 48px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.card-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f2034;
+  line-height: 1.3;
+}
+.card-desc {
+  font-size: 0.875rem;
+  color: #4b6280;
+  line-height: 1.65;
+  flex: 1;
+}
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #eef5fc;
+}
+.card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.ctag {
+  font-size: 0.67rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: #eef5fc;
+  color: #4b6280;
+}
+.card-cta { font-size: 0.82rem; font-weight: 700; color: var(--accent, #1a56db); white-space: nowrap; }
+
+/* ---- Skills ---- */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.875rem;
+}
+.skill-card {
+  background: #fff;
+  border: 1px solid #d0e4f7;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.skill-card:hover {
+  border-color: #93b8e4;
+  box-shadow: 0 2px 10px rgba(26,86,219,0.09);
+}
+.sk-icon { font-size: 1.35rem; }
+.sk-name { font-size: 0.84rem; font-weight: 600; color: #0f2034; }
+
+/* ---- Demo chips ---- */
+.demos-row { display: flex; flex-wrap: wrap; gap: 0.875rem; }
+.demo-chip {
+  background: #fff;
+  border: 1.5px solid #d0e4f7;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  text-decoration: none;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+.demo-chip:hover {
+  border-color: #1a56db;
+  color: #1a56db;
+  background: #f0f6ff;
+  transform: translateY(-2px);
+}
+
+/* ---- Dividers ---- */
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #c8ddf0 20%, #c8ddf0 80%, transparent);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---- Footer ---- */
+footer {
+  background: #0f2034;
+  color: #7a94b0;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  font-size: 0.84rem;
+  line-height: 1.8;
+}
+footer a { color: #60a5fa; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .hero { padding: 3.5rem 1.25rem 3rem; }
+  .section { padding: 3rem 1.25rem; }
+  .top-nav { padding: 0 1.25rem; }
+  .nav-links { gap: 0.875rem; }
+  .stats-strip { gap: 1.75rem; }
+  .stat-value { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     MATRIX INTRO
+     ============================================================ -->
+<section id="intro">
+  <canvas id="matrix-canvas"></canvas>
+  <div class="intro-center">
+    <div class="intro-brand">MEKAZEK</div>
+    <div class="intro-sub">Power Platform &nbsp;·&nbsp; AI Solutions &nbsp;·&nbsp; Enterprise Automation</div>
+    <button class="enter-btn" onclick="enterSite()">[ ENTER PORTFOLIO ]</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     MAIN LANDING
+     ============================================================ -->
+<div id="main">
+
+  <!-- Nav -->
+  <nav class="top-nav">
+    <a href="#hero" class="nav-brand">mekazek</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#demos">Demos</a></li>
+      <li><a href="/portfolio" class="nav-cta">Portfolio →</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Power Platform &amp; AI
+    </div>
+    <h1>Building <span class="accent">intelligent</span><br>enterprise systems</h1>
+    <p class="hero-desc">
+      End-to-end automation, AI-powered workflows, and enterprise application development
+      on the Microsoft Power Platform — from concept to production.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="/portfolio" class="btn-outline">Open Portfolio</a>
+    </div>
+    <div class="stats-strip">
+      <div>
+        <div class="stat-value">80%</div>
+        <div class="stat-label">Reduction in manual triage</div>
+      </div>
+      <div>
+        <div class="stat-value">95%+</div>
+        <div class="stat-label">Document extraction accuracy</div>
+      </div>
+      <div>
+        <div class="stat-value">&lt; 2 min</div>
+        <div class="stat-label">Average request routing time</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Projects -->
+  <section class="section" id="projects">
+    <div class="section-eyebrow">Featured Work</div>
+    <div class="section-title">Enterprise Projects</div>
+    <div class="section-sub">Production-grade solutions built on the Microsoft Power Platform ecosystem.</div>
+
+    <div class="projects-grid">
+
+      <a class="project-card" href="/ai-automation" style="--accent:#0d9488">
+        <div class="card-head">
+          <div class="card-icon" style="background:#e0f7f4">🤖</div>
+          <span class="card-badge" style="background:#e0f7f4;color:#0d9488">AI · Production</span>
+        </div>
+        <div class="card-title">AI Request Automation System</div>
+        <div class="card-desc">
+          Intelligent intake pipeline that classifies and routes business requests using
+          Azure OpenAI + Power Automate. Multi-stage RAG architecture with confidence-based escalation paths.
+        </div>
+        <div class="card-foot">
+          <div class="card-tags">
+            <span class="ctag">Azure OpenAI</span>
+            <span class="ctag">Power Automate</span>
+            <span class="ctag">RAG</span>
+          </div>
+          <span class="card-cta">Case study →</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="/portfolio/showcase/scan-to-dataverse" style="--accent:#7c3aed">
+        <div class="card-head">
+          <div class="card-icon" style="background:#f0e8ff">📄</div>
+          <span class="card-badge" style="background:#f0e8ff;color:#7c3aed">Document AI · Production</span>
+        </div>
+        <div class="card-title">Scan to Dataverse</div>
+        <div class="card-desc">
+          AI Builder document processing pipeline that extracts structured data from physical documents
+          with confidence scoring, auto-validation, and direct Dataverse integration.
+        </div>
+        <div class="card-foot">
+          <div class="card-tags">
+            <span class="ctag">AI Builder</span>
+            <span class="ctag">Dataverse</span>
+            <span class="ctag">OCR</span>
+          </div>
+          <span class="card-cta">Case study →</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="/portfolio/showcase" style="--accent:#1a56db">
+        <div class="card-head">
+          <div class="card-icon" style="background:#e0edff">💼</div>
+          <span class="card-badge" style="background:#e0edff;color:#1a56db">Power Apps · Showcase</span>
+        </div>
+        <div class="card-title">Enterprise App Showcase</div>
+        <div class="card-desc">
+          Canvas App prototypes and Power Platform solutions — helpdesk ticket management,
+          employee leave workflows, HR onboarding flows, and data collection apps.
+        </div>
+        <div class="card-foot">
+          <div class="card-tags">
+            <span class="ctag">Power Apps</span>
+            <span class="ctag">SharePoint</span>
+            <span class="ctag">Dataverse</span>
+          </div>
+          <span class="card-cta">Browse →</span>
+        </div>
+      </a>
+
+      <a class="project-card" href="/portfolio" style="--accent:#e65100">
+        <div class="card-head">
+          <div class="card-icon" style="background:#fff3e0">📊</div>
+          <span class="card-badge" style="background:#fff3e0;color:#e65100">Architecture · Slides</span>
+        </div>
+        <div class="card-title">Full Portfolio Deck</div>
+        <div class="card-desc">
+          Interactive slide presentation covering enterprise projects, system architecture diagrams,
+          AI implementations, automation patterns, and solution design decisions.
+        </div>
+        <div class="card-foot">
+          <div class="card-tags">
+            <span class="ctag">Power Platform</span>
+            <span class="ctag">Architecture</span>
+            <span class="ctag">AI</span>
+          </div>
+          <span class="card-cta">Open deck →</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Skills -->
+  <section class="section" id="skills">
+    <div class="section-eyebrow">Technical Skills</div>
+    <div class="section-title">Tools &amp; Platforms</div>
+    <div class="section-sub">Full-stack Power Platform development with enterprise AI integration.</div>
+
+    <div class="skills-grid">
+      <div class="skill-card"><span class="sk-icon">⚡</span><span class="sk-name">Power Automate</span></div>
+      <div class="skill-card"><span class="sk-icon">📱</span><span class="sk-name">Power Apps</span></div>
+      <div class="skill-card"><span class="sk-icon">🧠</span><span class="sk-name">AI Builder</span></div>
+      <div class="skill-card"><span class="sk-icon">🗄️</span><span class="sk-name">Dataverse</span></div>
+      <div class="skill-card"><span class="sk-icon">🤖</span><span class="sk-name">Copilot Studio</span></div>
+      <div class="skill-card"><span class="sk-icon">☁️</span><span class="sk-name">Azure OpenAI</span></div>
+      <div class="skill-card"><span class="sk-icon">📂</span><span class="sk-name">SharePoint</span></div>
+      <div class="skill-card"><span class="sk-icon">🔐</span><span class="sk-name">Entra ID</span></div>
+      <div class="skill-card"><span class="sk-icon">🐍</span><span class="sk-name">Python</span></div>
+      <div class="skill-card"><span class="sk-icon">🌐</span><span class="sk-name">Next.js</span></div>
+      <div class="skill-card"><span class="sk-icon">📊</span><span class="sk-name">Power BI</span></div>
+      <div class="skill-card"><span class="sk-icon">🔗</span><span class="sk-name">REST / Graph API</span></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Demo Apps -->
+  <section class="section" id="demos">
+    <div class="section-eyebrow">Live Demos</div>
+    <div class="section-title">Interactive Apps</div>
+    <div class="section-sub">Functional prototypes you can explore right now.</div>
+
+    <div class="demos-row">
+      <a class="demo-chip" href="/english">📚 English Learning App</a>
+      <a class="demo-chip" href="/helpdesk">🎫 IT Help Desk</a>
+      <a class="demo-chip" href="/powerplatform">⚡ Power Platform Explorer</a>
+      <a class="demo-chip" href="/pp-rehber">🗺️ PP Mülakat Rehberi</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="/portfolio">Portfolio</a>
+      <a href="/ai-automation">AI Case Study</a>
+      <a href="/portfolio/showcase/scan-to-dataverse">Scan to Dataverse</a>
+    </div>
+    <p>mekazek.com &nbsp;·&nbsp; Power Platform &amp; AI Portfolio</p>
+  </footer>
+
+</div><!-- /main -->
+
+<script>
+(function () {
+  /* ===== MATRIX RAIN ===== */
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx    = canvas.getContext('2d');
+  const CHARS  = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ{}[]<>|/\\@#$%';
+  const FS     = 14;
+
+  let cols, drops, raf;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    cols  = Math.floor(canvas.width / FS);
+    drops = new Array(cols).fill(1);
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = FS + 'px monospace';
+    for (let i = 0; i < cols; i++) {
+      const bright = Math.random() > 0.95;
+      ctx.fillStyle = bright ? '#c0ffcc' : '#00ff41';
+      const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+      ctx.fillText(ch, i * FS, drops[i] * FS);
+      if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+
+  /* ===== ENTER TRANSITION ===== */
+  window.enterSite = function () {
+    const intro = document.getElementById('intro');
+    const main  = document.getElementById('main');
+    intro.classList.add('fade-out');
+    cancelAnimationFrame(raf);
+    setTimeout(function () {
+      intro.style.display = 'none';
+      main.classList.add('visible');
+    }, 860);
+  };
+
+  /* Optional: auto-enter after 12 s for visitors who don't click */
+  /* setTimeout(window.enterSite, 12000); */
+})();
+</script>
+</body>
+</html>

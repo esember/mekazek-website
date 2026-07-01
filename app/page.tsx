@@ -1,31 +1,14 @@
-import Link from 'next/link'
-import styles from './page.module.css'
+export const metadata = {
+  title: 'Power Platform & AI Portfolio — mekazek',
+  description: 'End-to-end automation, AI-powered workflows, and enterprise application development on the Microsoft Power Platform.',
+}
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <h1 className={styles.heading}>Welcome</h1>
-
-      <nav className={styles.nav}>
-        <Link href="/english" className={styles.navLink}>
-          English App
-        </Link>
-        <Link href="/powerplatform" className={styles.navLink}>
-          Power Platform
-        </Link>
-        <Link href="/pp-rehber" className={styles.navLink}>
-          PP Mülakat Rehberi
-        </Link>
-        <Link href="/helpdesk" className={styles.navLink}>
-          IT Help Desk
-        </Link>
-        <Link href="/ai-automation" className={styles.navLink}>
-          AI Request System
-        </Link>
-        <Link href="/portfolio" className={styles.navLink}>
-          Portfolio
-        </Link>
-      </nav>
-    </main>
+    <iframe
+      src="/home/index.html"
+      style={{ display: 'block', width: '100%', height: '100vh', border: 'none' }}
+      title="Power Platform & AI Portfolio — mekazek"
+    />
   )
 }
