@@ -6,92 +6,242 @@
 <title>Power Platform &amp; AI Portfolio — mekazek</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body.no-scroll { overflow: hidden; }
 
 /* ============================================================
-   MATRIX INTRO
+   MATRIX OVERLAY — sits on top of everything, fades out
    ============================================================ */
-#intro {
+#matrix-overlay {
   position: fixed;
   inset: 0;
+  z-index: 200;
   background: #000;
-  z-index: 100;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.85s ease;
+  transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-#intro.fade-out { opacity: 0; pointer-events: none; }
+#matrix-overlay.fade-out { opacity: 0; pointer-events: none; }
 
 #matrix-canvas { position: absolute; inset: 0; display: block; }
 
-.intro-center {
+.matrix-brand {
   position: relative;
   z-index: 2;
-  text-align: center;
   font-family: 'Courier New', monospace;
-  user-select: none;
-}
-.intro-brand {
   font-size: clamp(2.5rem, 9vw, 5.5rem);
   font-weight: 900;
   color: #00ff41;
   letter-spacing: 0.35em;
   text-shadow: 0 0 20px #00ff41, 0 0 50px #00c032, 0 0 80px #006e1a;
+  text-align: center;
   opacity: 0;
-  animation: glowIn 1.2s cubic-bezier(0.22,1,0.36,1) 1.6s forwards;
-  line-height: 1;
+  animation: glowIn 1.2s cubic-bezier(0.22,1,0.36,1) 1.4s forwards;
 }
-.intro-sub {
-  font-size: clamp(0.6rem, 1.8vw, 0.82rem);
+.matrix-sub {
+  position: relative;
+  z-index: 2;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(0.58rem, 1.8vw, 0.8rem);
   color: #4dff7c;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   margin-top: 1rem;
+  text-align: center;
   opacity: 0;
-  animation: glowIn 1s ease 2.4s forwards;
+  animation: glowIn 1s ease 2.1s forwards;
 }
-.enter-btn {
-  display: inline-block;
-  margin-top: 2.75rem;
-  background: transparent;
-  border: 1px solid #00ff41;
-  color: #00ff41;
-  padding: 0.85rem 3rem;
-  font-family: 'Courier New', monospace;
-  font-size: 0.88rem;
-  letter-spacing: 0.28em;
-  cursor: pointer;
-  opacity: 0;
-  animation: glowIn 1s ease 3.1s forwards;
-  transition: background 0.25s, color 0.25s, box-shadow 0.25s;
-}
-.enter-btn:hover {
-  background: #00ff41;
-  color: #000;
-  box-shadow: 0 0 30px #00ff4199, 0 0 60px #00ff4144;
-}
+
 @keyframes glowIn {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================
-   MAIN LANDING PAGE
+   PHOTO HERO — first section, 100vh, photo background
    ============================================================ */
-#main {
-  display: none;
+#hero {
   height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  position: relative;
+  overflow: hidden;
+  background: #080f1d; /* fallback if image not loaded */
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: url('/images/hero.jpg') center 30% / cover no-repeat;
+  transform: scale(1.07);
+  transition: transform 11s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.hero-bg.zoomed { transform: scale(1); }
+
+/* Gradient overlay — dark left & bottom for text readability */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right,  rgba(4,12,30,0.72) 0%,  rgba(4,12,30,0.25) 55%, rgba(4,12,30,0.45) 100%),
+    linear-gradient(to bottom, rgba(4,12,30,0.10) 0%,  rgba(4,12,30,0.40) 60%, rgba(4,12,30,0.88) 100%);
+}
+
+/* Nav on top of photo (transparent) */
+.photo-nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 0 2.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+.photo-nav-brand {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+.photo-nav-links {
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+  align-items: center;
+}
+.photo-nav-links a {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.photo-nav-links a:hover { color: #fff; }
+.photo-nav-cta {
+  border: 1.5px solid rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.9) !important;
+  padding: 0.4rem 1.1rem;
+  border-radius: 6px;
+}
+.photo-nav-cta:hover {
+  border-color: #fff !important;
+  background: rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+}
+
+/* Hero text content */
+.hero-content {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 11%;
+  padding: 0 2.5rem;
+  max-width: 740px;
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+.hero-content.visible { opacity: 1; transform: translateY(0); }
+
+.hero-eyebrow {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #00ff88;
+  margin-bottom: 1rem;
+}
+.hero-h1 {
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 1.1rem;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.45);
+}
+.hero-h1 .accent { color: #60c5ff; }
+.hero-tagline {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.72;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-white {
+  background: rgba(255,255,255,0.95);
+  color: #0f2034;
+  padding: 0.82rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  display: inline-block;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-white:hover { background: #fff; transform: translateY(-2px); }
+.btn-ghost {
+  border: 1.5px solid rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.9);
+  padding: 0.82rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: inline-block;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 2.2rem;
+  right: 2.5rem;
+  writing-mode: vertical-rl;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transition: opacity 1s ease 0.5s;
+  animation: scrollBounce 2.8s ease-in-out infinite;
+}
+.scroll-hint.visible { opacity: 1; }
+.scroll-hint::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+/* ============================================================
+   LANDING CONTENT — below the photo
+   ============================================================ */
+#landing {
   background: #eef5fc;
   color: #0f2034;
-  scroll-behavior: smooth;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
-#main.visible { display: block; }
 
-/* ---- Sticky Nav ---- */
-.top-nav {
+/* Sticky nav — becomes visible when landing scrolls into view */
+.sticky-nav {
   position: sticky;
   top: 0;
   background: rgba(238,245,252,0.94);
@@ -99,141 +249,55 @@
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid #c8ddf0;
   padding: 0 2rem;
-  height: 58px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   z-index: 50;
 }
-.nav-brand {
+.sticky-brand {
   font-size: 1.05rem;
   font-weight: 800;
   color: #1a56db;
   text-decoration: none;
   letter-spacing: 0.1em;
 }
-.nav-links { display: flex; gap: 1.75rem; list-style: none; align-items: center; }
-.nav-links a {
+.sticky-links { display: flex; gap: 1.75rem; list-style: none; align-items: center; }
+.sticky-links a {
   color: #374151;
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
   transition: color 0.2s;
 }
-.nav-links a:hover { color: #1a56db; }
-.nav-cta {
+.sticky-links a:hover { color: #1a56db; }
+.sticky-cta {
   background: #1a56db;
   color: #fff !important;
   padding: 0.4rem 1.1rem;
   border-radius: 6px;
   font-weight: 600 !important;
-  transition: background 0.2s !important;
 }
-.nav-cta:hover { background: #1648bb !important; }
+.sticky-cta:hover { background: #1648bb; }
 
-/* ---- Hero ---- */
-.hero {
-  padding: 5.5rem 2rem 4.5rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #e0edff;
-  color: #1a56db;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.35rem 1rem;
-  border-radius: 999px;
-  margin-bottom: 1.75rem;
-}
-.badge-dot {
-  width: 6px; height: 6px;
-  background: #1a56db;
-  border-radius: 50%;
-  animation: blink 2.2s ease-in-out infinite;
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
-}
-.hero h1 {
-  font-size: clamp(2rem, 5.5vw, 3.8rem);
-  font-weight: 800;
-  line-height: 1.1;
-  color: #0f2034;
-  margin-bottom: 1.25rem;
-}
-.hero h1 .accent { color: #1a56db; }
-.hero-desc {
-  font-size: 1.1rem;
-  color: #4b6280;
-  max-width: 590px;
-  line-height: 1.75;
-  margin-bottom: 2.25rem;
-}
-.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-.btn-primary {
-  background: #1a56db;
-  color: #fff;
-  padding: 0.82rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: inline-block;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
-}
-.btn-primary:hover {
-  background: #1648bb;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(26,86,219,0.3);
-}
-.btn-outline {
-  border: 1.5px solid #b8d0ed;
-  color: #374151;
+/* Stats row */
+.stats-bar {
   background: #fff;
-  padding: 0.82rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: inline-block;
-  transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  border-bottom: 1px solid #d0e4f7;
+  padding: 1.75rem 2rem;
 }
-.btn-outline:hover {
-  border-color: #1a56db;
-  color: #1a56db;
-  transform: translateY(-2px);
-}
-
-/* Stats strip */
-.stats-strip {
+.stats-inner {
+  max-width: 960px;
+  margin: 0 auto;
   display: flex;
   gap: 3rem;
-  margin-top: 3rem;
-  padding-top: 2.5rem;
-  border-top: 1px solid #d0e4f7;
   flex-wrap: wrap;
+  align-items: center;
 }
-.stat-value {
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: #0f2034;
-  line-height: 1;
-}
-.stat-label {
-  font-size: 0.8rem;
-  color: #7a94b0;
-  margin-top: 0.3rem;
-}
+.stat-value { font-size: 1.9rem; font-weight: 800; color: #0f2034; line-height: 1; }
+.stat-label { font-size: 0.8rem; color: #7a94b0; margin-top: 0.3rem; }
 
-/* ---- Section skeleton ---- */
+/* Sections */
 .section {
   padding: 4rem 2rem;
   max-width: 1100px;
@@ -247,20 +311,10 @@
   color: #1a56db;
   margin-bottom: 0.4rem;
 }
-.section-title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #0f2034;
-  margin-bottom: 0.4rem;
-}
-.section-sub {
-  font-size: 0.94rem;
-  color: #4b6280;
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
-}
+.section-title { font-size: 1.75rem; font-weight: 800; color: #0f2034; margin-bottom: 0.4rem; }
+.section-sub { font-size: 0.94rem; color: #4b6280; margin-bottom: 2.5rem; line-height: 1.6; }
 
-/* ---- Project Cards ---- */
+/* Project cards */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -290,67 +344,21 @@
   transform-origin: left;
   transition: transform 0.3s ease;
 }
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(15,32,52,0.1);
-  border-color: var(--accent, #1a56db);
-}
+.project-card:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(15,32,52,0.1); border-color: var(--accent, #1a56db); }
 .project-card:hover::after { transform: scaleX(1); }
 
 .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.card-icon {
-  width: 48px; height: 48px;
-  border-radius: 11px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-.card-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.22rem 0.65rem;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0f2034;
-  line-height: 1.3;
-}
-.card-desc {
-  font-size: 0.875rem;
-  color: #4b6280;
-  line-height: 1.65;
-  flex: 1;
-}
-.card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid #eef5fc;
-}
+.card-icon { width: 48px; height: 48px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+.card-badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.22rem 0.65rem; border-radius: 999px; white-space: nowrap; }
+.card-title { font-size: 1.1rem; font-weight: 700; color: #0f2034; line-height: 1.3; }
+.card-desc { font-size: 0.875rem; color: #4b6280; line-height: 1.65; flex: 1; }
+.card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 1rem; border-top: 1px solid #eef5fc; }
 .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.ctag {
-  font-size: 0.67rem;
-  font-weight: 600;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  background: #eef5fc;
-  color: #4b6280;
-}
+.ctag { font-size: 0.67rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eef5fc; color: #4b6280; }
 .card-cta { font-size: 0.82rem; font-weight: 700; color: var(--accent, #1a56db); white-space: nowrap; }
 
-/* ---- Skills ---- */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 0.875rem;
-}
+/* Skills */
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.875rem; }
 .skill-card {
   background: #fff;
   border: 1px solid #d0e4f7;
@@ -361,14 +369,11 @@
   gap: 0.75rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.skill-card:hover {
-  border-color: #93b8e4;
-  box-shadow: 0 2px 10px rgba(26,86,219,0.09);
-}
+.skill-card:hover { border-color: #93b8e4; box-shadow: 0 2px 10px rgba(26,86,219,0.09); }
 .sk-icon { font-size: 1.35rem; }
 .sk-name { font-size: 0.84rem; font-weight: 600; color: #0f2034; }
 
-/* ---- Demo chips ---- */
+/* Demo chips */
 .demos-row { display: flex; flex-wrap: wrap; gap: 0.875rem; }
 .demo-chip {
   background: #fff;
@@ -384,22 +389,12 @@
   gap: 0.5rem;
   transition: all 0.2s;
 }
-.demo-chip:hover {
-  border-color: #1a56db;
-  color: #1a56db;
-  background: #f0f6ff;
-  transform: translateY(-2px);
-}
+.demo-chip:hover { border-color: #1a56db; color: #1a56db; background: #f0f6ff; transform: translateY(-2px); }
 
-/* ---- Dividers ---- */
-.divider {
-  height: 1px;
-  background: linear-gradient(to right, transparent, #c8ddf0 20%, #c8ddf0 80%, transparent);
-  max-width: 1100px;
-  margin: 0 auto;
-}
+/* Divider */
+.divider { height: 1px; background: linear-gradient(to right, transparent, #c8ddf0 20%, #c8ddf0 80%, transparent); max-width: 1100px; margin: 0 auto; }
 
-/* ---- Footer ---- */
+/* Footer */
 footer {
   background: #0f2034;
   color: #7a94b0;
@@ -410,87 +405,92 @@ footer {
 }
 footer a { color: #60a5fa; text-decoration: none; }
 footer a:hover { text-decoration: underline; }
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-}
+.footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
 
-/* ---- Responsive ---- */
+/* Responsive */
 @media (max-width: 640px) {
-  .hero { padding: 3.5rem 1.25rem 3rem; }
+  .photo-nav { padding: 0 1.25rem; }
+  .photo-nav-links { display: none; }
+  .hero-content { padding: 0 1.25rem; bottom: 9%; }
+  .sticky-nav { padding: 0 1.25rem; }
+  .sticky-links { gap: 0.875rem; }
   .section { padding: 3rem 1.25rem; }
-  .top-nav { padding: 0 1.25rem; }
-  .nav-links { gap: 0.875rem; }
-  .stats-strip { gap: 1.75rem; }
+  .stats-bar { padding: 1.5rem 1.25rem; }
+  .stats-inner { gap: 1.75rem; }
   .stat-value { font-size: 1.5rem; }
 }
 </style>
 </head>
-<body>
+<body class="no-scroll">
 
 <!-- ============================================================
-     MATRIX INTRO
+     MATRIX OVERLAY
      ============================================================ -->
-<section id="intro">
+<div id="matrix-overlay">
   <canvas id="matrix-canvas"></canvas>
-  <div class="intro-center">
-    <div class="intro-brand">MEKAZEK</div>
-    <div class="intro-sub">Power Platform &nbsp;·&nbsp; AI Solutions &nbsp;·&nbsp; Enterprise Automation</div>
-    <button class="enter-btn" onclick="enterSite()">[ ENTER PORTFOLIO ]</button>
-  </div>
-</section>
+  <div class="matrix-brand">MEKAZEK</div>
+  <div class="matrix-sub">Power Platform &nbsp;·&nbsp; AI Solutions &nbsp;·&nbsp; Enterprise Automation</div>
+</div>
 
 <!-- ============================================================
-     MAIN LANDING
+     PHOTO HERO
      ============================================================ -->
-<div id="main">
+<section id="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
 
-  <!-- Nav -->
-  <nav class="top-nav">
-    <a href="#hero" class="nav-brand">mekazek</a>
-    <ul class="nav-links">
+  <nav class="photo-nav">
+    <a href="#landing" class="photo-nav-brand">mekazek</a>
+    <ul class="photo-nav-links">
       <li><a href="#projects">Projects</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#demos">Demos</a></li>
-      <li><a href="/portfolio" class="nav-cta">Portfolio →</a></li>
+      <li><a href="/portfolio" class="photo-nav-cta">Portfolio →</a></li>
     </ul>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero" id="hero">
-    <div class="hero-badge">
-      <span class="badge-dot"></span>
-      Power Platform &amp; AI
-    </div>
-    <h1>Building <span class="accent">intelligent</span><br>enterprise systems</h1>
-    <p class="hero-desc">
-      End-to-end automation, AI-powered workflows, and enterprise application development
-      on the Microsoft Power Platform — from concept to production.
+  <div class="hero-content" id="hero-content">
+    <div class="hero-eyebrow">// Power Platform · AI Solutions</div>
+    <h1 class="hero-h1">
+      Building <span class="accent">intelligent</span><br>
+      enterprise systems
+    </h1>
+    <p class="hero-tagline">
+      End-to-end automation and AI-powered workflows on the Microsoft
+      Power Platform — from concept to production.
     </p>
     <div class="hero-actions">
-      <a href="#projects" class="btn-primary">View Projects</a>
-      <a href="/portfolio" class="btn-outline">Open Portfolio</a>
+      <a href="#projects" class="btn-white">View Projects</a>
+      <a href="/portfolio" class="btn-ghost">Open Portfolio →</a>
     </div>
-    <div class="stats-strip">
-      <div>
-        <div class="stat-value">80%</div>
-        <div class="stat-label">Reduction in manual triage</div>
-      </div>
-      <div>
-        <div class="stat-value">95%+</div>
-        <div class="stat-label">Document extraction accuracy</div>
-      </div>
-      <div>
-        <div class="stat-value">&lt; 2 min</div>
-        <div class="stat-label">Average request routing time</div>
-      </div>
-    </div>
-  </section>
+  </div>
 
-  <div class="divider"></div>
+  <div class="scroll-hint" id="scroll-hint">Scroll</div>
+</section>
+
+<!-- ============================================================
+     LANDING CONTENT
+     ============================================================ -->
+<div id="landing">
+
+  <nav class="sticky-nav">
+    <a href="#hero" class="sticky-brand">mekazek</a>
+    <ul class="sticky-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#demos">Demos</a></li>
+      <li><a href="/portfolio" class="sticky-cta">Portfolio →</a></li>
+    </ul>
+  </nav>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div><div class="stat-value">80%</div><div class="stat-label">Reduction in manual triage</div></div>
+      <div><div class="stat-value">95%+</div><div class="stat-label">Document extraction accuracy</div></div>
+      <div><div class="stat-value">&lt;&nbsp;2 min</div><div class="stat-label">Average request routing time</div></div>
+    </div>
+  </div>
 
   <!-- Projects -->
   <section class="section" id="projects">
@@ -506,16 +506,9 @@ footer a:hover { text-decoration: underline; }
           <span class="card-badge" style="background:#e0f7f4;color:#0d9488">AI · Production</span>
         </div>
         <div class="card-title">AI Request Automation System</div>
-        <div class="card-desc">
-          Intelligent intake pipeline that classifies and routes business requests using
-          Azure OpenAI + Power Automate. Multi-stage RAG architecture with confidence-based escalation paths.
-        </div>
+        <div class="card-desc">Intelligent intake pipeline classifying and routing business requests using Azure OpenAI + Power Automate. Multi-stage RAG architecture with confidence-based escalation paths.</div>
         <div class="card-foot">
-          <div class="card-tags">
-            <span class="ctag">Azure OpenAI</span>
-            <span class="ctag">Power Automate</span>
-            <span class="ctag">RAG</span>
-          </div>
+          <div class="card-tags"><span class="ctag">Azure OpenAI</span><span class="ctag">Power Automate</span><span class="ctag">RAG</span></div>
           <span class="card-cta">Case study →</span>
         </div>
       </a>
@@ -526,16 +519,9 @@ footer a:hover { text-decoration: underline; }
           <span class="card-badge" style="background:#f0e8ff;color:#7c3aed">Document AI · Production</span>
         </div>
         <div class="card-title">Scan to Dataverse</div>
-        <div class="card-desc">
-          AI Builder document processing pipeline that extracts structured data from physical documents
-          with confidence scoring, auto-validation, and direct Dataverse integration.
-        </div>
+        <div class="card-desc">AI Builder document processing pipeline extracting structured data from physical documents with confidence scoring, auto-validation, and direct Dataverse integration.</div>
         <div class="card-foot">
-          <div class="card-tags">
-            <span class="ctag">AI Builder</span>
-            <span class="ctag">Dataverse</span>
-            <span class="ctag">OCR</span>
-          </div>
+          <div class="card-tags"><span class="ctag">AI Builder</span><span class="ctag">Dataverse</span><span class="ctag">OCR</span></div>
           <span class="card-cta">Case study →</span>
         </div>
       </a>
@@ -546,16 +532,9 @@ footer a:hover { text-decoration: underline; }
           <span class="card-badge" style="background:#e0edff;color:#1a56db">Power Apps · Showcase</span>
         </div>
         <div class="card-title">Enterprise App Showcase</div>
-        <div class="card-desc">
-          Canvas App prototypes and Power Platform solutions — helpdesk ticket management,
-          employee leave workflows, HR onboarding flows, and data collection apps.
-        </div>
+        <div class="card-desc">Canvas App prototypes and Power Platform solutions — helpdesk ticket management, employee leave workflows, HR onboarding flows, and data collection apps.</div>
         <div class="card-foot">
-          <div class="card-tags">
-            <span class="ctag">Power Apps</span>
-            <span class="ctag">SharePoint</span>
-            <span class="ctag">Dataverse</span>
-          </div>
+          <div class="card-tags"><span class="ctag">Power Apps</span><span class="ctag">SharePoint</span><span class="ctag">Dataverse</span></div>
           <span class="card-cta">Browse →</span>
         </div>
       </a>
@@ -566,16 +545,9 @@ footer a:hover { text-decoration: underline; }
           <span class="card-badge" style="background:#fff3e0;color:#e65100">Architecture · Slides</span>
         </div>
         <div class="card-title">Full Portfolio Deck</div>
-        <div class="card-desc">
-          Interactive slide presentation covering enterprise projects, system architecture diagrams,
-          AI implementations, automation patterns, and solution design decisions.
-        </div>
+        <div class="card-desc">Interactive slide presentation covering enterprise projects, system architecture diagrams, AI implementations, automation patterns, and solution design decisions.</div>
         <div class="card-foot">
-          <div class="card-tags">
-            <span class="ctag">Power Platform</span>
-            <span class="ctag">Architecture</span>
-            <span class="ctag">AI</span>
-          </div>
+          <div class="card-tags"><span class="ctag">Power Platform</span><span class="ctag">Architecture</span><span class="ctag">AI</span></div>
           <span class="card-cta">Open deck →</span>
         </div>
       </a>
@@ -590,7 +562,6 @@ footer a:hover { text-decoration: underline; }
     <div class="section-eyebrow">Technical Skills</div>
     <div class="section-title">Tools &amp; Platforms</div>
     <div class="section-sub">Full-stack Power Platform development with enterprise AI integration.</div>
-
     <div class="skills-grid">
       <div class="skill-card"><span class="sk-icon">⚡</span><span class="sk-name">Power Automate</span></div>
       <div class="skill-card"><span class="sk-icon">📱</span><span class="sk-name">Power Apps</span></div>
@@ -614,7 +585,6 @@ footer a:hover { text-decoration: underline; }
     <div class="section-eyebrow">Live Demos</div>
     <div class="section-title">Interactive Apps</div>
     <div class="section-sub">Functional prototypes you can explore right now.</div>
-
     <div class="demos-row">
       <a class="demo-chip" href="/english">📚 English Learning App</a>
       <a class="demo-chip" href="/helpdesk">🎫 IT Help Desk</a>
@@ -623,7 +593,6 @@ footer a:hover { text-decoration: underline; }
     </div>
   </section>
 
-  <!-- Footer -->
   <footer>
     <div class="footer-links">
       <a href="#projects">Projects</a>
@@ -635,7 +604,7 @@ footer a:hover { text-decoration: underline; }
     <p>mekazek.com &nbsp;·&nbsp; Power Platform &amp; AI Portfolio</p>
   </footer>
 
-</div><!-- /main -->
+</div><!-- /landing -->
 
 <script>
 (function () {
@@ -644,7 +613,6 @@ footer a:hover { text-decoration: underline; }
   const ctx    = canvas.getContext('2d');
   const CHARS  = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ{}[]<>|/\\@#$%';
   const FS     = 14;
-
   let cols, drops, raf;
 
   function resize() {
@@ -653,40 +621,46 @@ footer a:hover { text-decoration: underline; }
     cols  = Math.floor(canvas.width / FS);
     drops = new Array(cols).fill(1);
   }
-
   function draw() {
     ctx.fillStyle = 'rgba(0,0,0,0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.font = FS + 'px monospace';
     for (let i = 0; i < cols; i++) {
-      const bright = Math.random() > 0.95;
-      ctx.fillStyle = bright ? '#c0ffcc' : '#00ff41';
-      const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
-      ctx.fillText(ch, i * FS, drops[i] * FS);
+      ctx.fillStyle = Math.random() > 0.95 ? '#c0ffcc' : '#00ff41';
+      ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], i * FS, drops[i] * FS);
       if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     }
     raf = requestAnimationFrame(draw);
   }
-
   resize();
   window.addEventListener('resize', resize);
   draw();
 
-  /* ===== ENTER TRANSITION ===== */
-  window.enterSite = function () {
-    const intro = document.getElementById('intro');
-    const main  = document.getElementById('main');
-    intro.classList.add('fade-out');
-    cancelAnimationFrame(raf);
-    setTimeout(function () {
-      intro.style.display = 'none';
-      main.classList.add('visible');
-    }, 860);
-  };
+  /* ===== TRANSITION: Matrix → Photo ===== */
+  var overlay      = document.getElementById('matrix-overlay');
+  var heroBg       = document.getElementById('hero-bg');
+  var heroContent  = document.getElementById('hero-content');
+  var scrollHint   = document.getElementById('scroll-hint');
 
-  /* Optional: auto-enter after 12 s for visitors who don't click */
-  /* setTimeout(window.enterSite, 12000); */
+  setTimeout(function () {
+    /* Step 1: Fade matrix out (1.6s transition in CSS) */
+    overlay.classList.add('fade-out');
+    cancelAnimationFrame(raf);
+
+    /* Step 2: Start Ken Burns zoom on photo as matrix fades */
+    heroBg.classList.add('zoomed');
+
+    /* Step 3: When matrix is gone — restore scroll, reveal hero text */
+    setTimeout(function () {
+      overlay.style.display = 'none';
+      document.body.classList.remove('no-scroll');
+      heroContent.classList.add('visible');
+      scrollHint.classList.add('visible');
+    }, 950);
+
+  }, 3600); /* total matrix display time: 3.6s */
+
 })();
 </script>
 </body>
