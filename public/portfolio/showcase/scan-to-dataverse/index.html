@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Automation — Scan to Dataverse with AI Builder</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f8fd;--white:#ffffff;--surface:#eaf2fb;--border:#c8ddf0;
+  --text:#0d1f2d;--muted:#4e6c84;--light:#7a9ab5;
+  --primary:#1455a4;--accent:#1a6ecc;--accent-light:#e3effe;
+  --teal:#0077a3;--green:#1a7a2e;--green-bg:#e8f5eb;
+  --purple:#5c2d91;--purple-bg:#f3eefe;
+}
+html,body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  font-size:16px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+
+/* NAV */
+.topnav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{font-size:0.9rem;font-weight:700;color:var(--primary);}
+.nav-links{display:flex;align-items:center;gap:1.8rem;}
+.nav-link{font-size:0.85rem;font-weight:500;color:var(--muted);transition:color 0.2s;}
+.nav-link:hover{color:var(--primary);}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#1b0045 0%,#5c2d91 50%,#0078d4 100%);
+  padding:5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 75% 25%,rgba(140,100,255,0.15) 0%,transparent 60%);
+}
+.hero-inner{position:relative;z-index:1;max-width:780px;margin:0 auto;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+  color:rgba(255,255,255,0.9);font-size:0.82rem;font-weight:600;
+  padding:0.35rem 1rem;border-radius:30px;margin-bottom:1.5rem;letter-spacing:0.04em;
+}
+.hero-title{
+  font-size:clamp(2rem,5vw,3.2rem);font-weight:800;color:#fff;
+  letter-spacing:-0.03em;line-height:1.15;margin-bottom:1rem;
+}
+.hero-sub{
+  font-size:clamp(0.95rem,2vw,1.15rem);color:rgba(210,225,255,0.88);
+  line-height:1.7;max-width:620px;margin:0 auto 2.5rem;
+}
+.hero-metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;}
+.metric{
+  background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.18);border-radius:12px;
+  padding:1rem 1.4rem;min-width:120px;
+}
+.metric-num{font-size:1.7rem;font-weight:800;color:#fff;line-height:1;}
+.metric-lbl{font-size:0.78rem;color:rgba(200,215,255,0.85);margin-top:0.3rem;font-weight:500;}
+
+/* SECTIONS */
+.section{padding:4rem 2rem;}
+.section-inner{max-width:960px;margin:0 auto;}
+.section-alt{background:var(--white);}
+.eyebrow{font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);margin-bottom:0.6rem;}
+.section-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--text);letter-spacing:-0.02em;line-height:1.2;margin-bottom:1rem;}
+.section-lead{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:680px;}
+
+/* EVOLUTION CARDS */
+.evolution{display:grid;grid-template-columns:1fr 40px 1fr;gap:0;align-items:center;margin-top:2rem;}
+.evo-card{border-radius:14px;padding:1.6rem;}
+.evo-v1{background:var(--surface);border:2px solid var(--border);}
+.evo-v2{background:linear-gradient(135deg,#f0f6ff,#e8f5e9);border:2px solid #81c784;}
+.evo-arrow{font-size:2rem;color:var(--light);text-align:center;line-height:1;}
+.evo-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;}
+.evo-v1 .evo-label{color:var(--muted);}
+.evo-v2 .evo-label{color:var(--green);}
+.evo-title{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:0.8rem;}
+.evo-list{list-style:none;display:flex;flex-direction:column;gap:0.4rem;}
+.evo-list li{font-size:0.9rem;color:var(--muted);padding-left:1.3rem;position:relative;line-height:1.5;}
+.evo-v1 .evo-list li::before{content:'·';position:absolute;left:0;color:var(--light);font-weight:700;font-size:1.2rem;}
+.evo-v2 .evo-list li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
+.evo-v2 .evo-list li{color:var(--text);}
+
+/* PIPELINE */
+.pipeline{margin-top:2.5rem;}
+.pipe-steps{display:flex;flex-direction:column;gap:1rem;}
+.pipe-step{
+  display:grid;grid-template-columns:48px 1fr;gap:1.2rem;align-items:start;
+  background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.pipe-step:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(26,110,204,0.08);}
+.step-bubble{
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+}
+.step-body{}
+.step-num{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;}
+.step-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;}
+.step-desc{font-size:0.9rem;color:var(--muted);line-height:1.6;}
+.step-tag{
+  display:inline-block;margin-top:0.5rem;
+  font-size:0.75rem;font-weight:600;padding:0.15rem 0.6rem;border-radius:20px;
+  background:var(--accent-light);color:var(--primary);
+}
+
+/* AI BUILDER HIGHLIGHT */
+.ai-highlight{
+  background:linear-gradient(135deg,#f3eefe,#e3effe);
+  border:2px solid #b39ddb;border-radius:16px;
+  padding:2rem;margin:2rem 0;
+}
+.ai-highlight-title{font-size:1.1rem;font-weight:700;color:var(--purple);margin-bottom:1rem;
+  display:flex;align-items:center;gap:0.6rem;}
+.extraction-demo{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem;
+}
+.extraction-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.8rem;}
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.7rem;}
+.field-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.8rem;}
+.field-name{font-size:0.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem;}
+.field-val{font-size:0.92rem;font-weight:700;color:var(--text);}
+.field-conf{font-size:0.7rem;color:var(--green);font-weight:600;margin-top:0.2rem;}
+
+.ai-points{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:1.2rem;}
+.ai-point{background:var(--white);border:1px solid #b39ddb;border-radius:8px;padding:0.9rem 1rem;}
+.ai-point-title{font-size:0.88rem;font-weight:700;color:var(--purple);margin-bottom:0.2rem;}
+.ai-point-desc{font-size:0.83rem;color:var(--muted);line-height:1.5;}
+
+/* BEFORE AFTER */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;}
+.ba-card{border-radius:14px;padding:1.5rem;}
+.ba-before{background:#fff5f5;border:2px solid #f5a0a0;}
+.ba-after{background:var(--green-bg);border:2px solid #81c784;}
+.ba-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.8rem;}
+.ba-before .ba-label{color:#b81c1c;}
+.ba-after .ba-label{color:var(--green);}
+.ba-list{list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+.ba-list li{font-size:0.9rem;padding-left:1.3rem;position:relative;line-height:1.5;}
+.ba-before .ba-list li::before{content:'✗';position:absolute;left:0;color:#b81c1c;font-weight:700;}
+.ba-after .ba-list li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
+.ba-before .ba-list li{color:#7f1a1a;}
+.ba-after .ba-list li{color:#1a4a1a;}
+
+/* TECH */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:2rem;}
+.tech-card{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:1rem 1.1rem;display:flex;gap:0.8rem;align-items:flex-start;
+  transition:border-color 0.2s,box-shadow 0.2s;}
+.tech-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(26,110,204,0.1);}
+.tech-ico{font-size:1.5rem;flex-shrink:0;line-height:1;margin-top:0.1rem;}
+.tech-name{font-size:0.93rem;font-weight:700;color:var(--text);}
+.tech-role{font-size:0.8rem;color:var(--muted);margin-top:0.15rem;line-height:1.4;}
+
+/* IMPACT */
+.impact-section{background:linear-gradient(135deg,#1b0045,#5c2d91);padding:4rem 2rem;text-align:center;}
+.impact-inner{max-width:900px;margin:0 auto;}
+.impact-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:0.6rem;}
+.impact-sub{font-size:1rem;color:rgba(200,185,255,0.85);margin-bottom:2.5rem;}
+.impact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-bottom:1.5rem;}
+.impact-card{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:1.4rem 1rem;}
+.impact-num{font-size:2.2rem;font-weight:800;color:#fff;line-height:1;}
+.impact-label{font-size:0.82rem;color:rgba(210,195,255,0.85);margin-top:0.4rem;line-height:1.4;}
+
+/* FOOTER */
+.footer{padding:2rem;text-align:center;border-top:1px solid var(--border);font-size:0.85rem;color:var(--light);}
+.footer a{color:var(--accent);font-weight:600;}
+
+@media(max-width:768px){
+  .evolution{grid-template-columns:1fr;}.evo-arrow{display:none;}
+  .ba-grid,.ai-points{grid-template-columns:1fr;}
+  .topnav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-brand">← <a href="/">Home</a></div>
+  <div class="nav-links">
+    <a href="#pipeline" class="nav-link">Pipeline</a>
+    <a href="#ai-builder" class="nav-link">AI Builder</a>
+    <a href="#impact" class="nav-link">Impact</a>
+    <a href="/portfolio" class="nav-link">Portfolio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">⚡ Production System · Microsoft Power Platform</div>
+    <h1 class="hero-title">From Paper to Dataverse —<br>Smart Document Automation</h1>
+    <p class="hero-sub">Built a scan-to-Dataverse pipeline that takes a document off a physical scanner and lands structured, queryable records in Dataverse — automatically. No manual data entry. No custom code. No human in the loop.</p>
+    <div class="hero-metrics">
+      <div class="metric"><div class="metric-num">7</div><div class="metric-lbl">Pipeline Steps</div></div>
+      <div class="metric"><div class="metric-num">0</div><div class="metric-lbl">Manual Touch Points</div></div>
+      <div class="metric"><div class="metric-num">100%</div><div class="metric-lbl">Automated Process</div></div>
+      <div class="metric"><div class="metric-num">&lt;30s</div><div class="metric-lbl">Scan to Stored Record</div></div>
+      <div class="metric"><div class="metric-num">0</div><div class="metric-lbl">Lines of Custom Code</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EVOLUTION -->
+<section class="section section-alt">
+  <div class="section-inner">
+    <div class="eyebrow">Project Evolution</div>
+    <h2 class="section-title">Started with SharePoint. Then Made It Smarter.</h2>
+    <p class="section-lead">The first version solved the routing and storage problem. The second version solved the data quality problem — and that's where the real value was hiding.</p>
+
+    <div class="evolution">
+      <div class="evo-card evo-v1">
+        <div class="evo-label">Version 1 · Production</div>
+        <div class="evo-title">Scan → SharePoint</div>
+        <ul class="evo-list">
+          <li>Scanner emails document to a shared mailbox</li>
+          <li>Power Automate triggers on email arrival</li>
+          <li>Attachment saved to SharePoint folder</li>
+          <li>SharePoint list record created with basic metadata</li>
+          <li>Staff notified via email</li>
+          <li>✗ Document content still needs manual review</li>
+          <li>✗ Field values not extracted — file only</li>
+        </ul>
+      </div>
+      <div class="evo-arrow">→</div>
+      <div class="evo-card evo-v2">
+        <div class="evo-label">Version 2 · With AI Builder</div>
+        <div class="evo-title">Scan → Dataverse (Structured Data)</div>
+        <ul class="evo-list">
+          <li>Same trigger, same flow architecture</li>
+          <li>AI Builder reads the PDF and extracts fields</li>
+          <li>Invoice Number, Vendor, Amount, Dates → Dataverse columns</li>
+          <li>Structured, searchable, reportable records</li>
+          <li>Confidence scores logged per extracted field</li>
+          <li>No data entry errors — model handles it</li>
+          <li>SharePoint file still stored as the source of truth</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section class="section" id="pipeline">
+  <div class="section-inner">
+    <div class="eyebrow">The Pipeline</div>
+    <h2 class="section-title">7 Steps. Zero Human Intervention.</h2>
+    <p class="section-lead">The architecture is intentionally simple. Every step does one thing. Power Automate orchestrates the entire flow — no custom code, no infrastructure to maintain.</p>
+
+    <div class="pipeline">
+      <div class="pipe-steps">
+
+        <div class="pipe-step">
+          <div class="step-bubble" style="background:#e3effe;">🖨️</div>
+          <div class="step-body">
+            <div class="step-num">Step 1</div>
+            <div class="step-title">Document Scanning</div>
+            <div class="step-desc">A staff member places a physical document (invoice, contract, form) into a multifunction printer (MFP). The scanner digitizes it to PDF or image format. This is the only human action in the entire pipeline.</div>
+            <span class="step-tag">MFP Scanner</span>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="step-bubble" style="background:#fff8e1;">📧</div>
+          <div class="step-body">
+            <div class="step-num">Step 2</div>
+            <div class="step-title">Scan to Email (Server Account)</div>
+            <div class="step-desc">The scanner is configured to send the scanned file as an email attachment to a dedicated shared mailbox. The email subject and sender are standardized — this consistency is what makes reliable automation possible.</div>
+            <span class="step-tag">Microsoft 365 Shared Mailbox</span>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="step-bubble" style="background:#e3f2fd;">⚡</div>
+          <div class="step-body">
+            <div class="step-num">Step 3</div>
+            <div class="step-title">Power Automate Trigger</div>
+            <div class="step-desc">A Power Automate cloud flow watches the shared mailbox. The moment a new email arrives with an attachment, the flow triggers instantly. No polling delay, no scheduled batch — real-time response to every scan.</div>
+            <span class="step-tag">Power Automate · When email arrives trigger</span>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="step-bubble" style="background:#f3e5f5;">📎</div>
+          <div class="step-body">
+            <div class="step-num">Step 4</div>
+            <div class="step-title">Get Email & Attachment</div>
+            <div class="step-desc">The flow reads the email metadata (sender, subject, timestamp) and retrieves the attachment content as a file object. This file is passed to AI Builder in the next step — no temporary storage needed at this stage.</div>
+            <span class="step-tag">Power Automate · Get attachment action</span>
+          </div>
+        </div>
+
+        <div class="pipe-step" style="border-color:#b39ddb;">
+          <div class="step-bubble" style="background:#f3eefe;">🤖</div>
+          <div class="step-body">
+            <div class="step-num">Step 5 — The Key Step</div>
+            <div class="step-title">AI Builder — OCR & Field Extraction</div>
+            <div class="step-desc">AI Builder's Document Processing model reads the scanned PDF and extracts structured fields — Invoice Number, Invoice Date, Vendor Name, Total Amount, Due Date, and any custom fields defined in the model. Each extracted value comes with a confidence score. The model handles handwriting, different invoice layouts, and varying font sizes.</div>
+            <span class="step-tag">AI Builder · Document Processing model</span>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="step-bubble" style="background:#e8f5e9;">🗄</div>
+          <div class="step-body">
+            <div class="step-num">Step 6</div>
+            <div class="step-title">Store Data — Dataverse + SharePoint</div>
+            <div class="step-desc">The extracted fields are mapped to columns in a Dataverse table — creating a structured, queryable record. The original scanned file is simultaneously stored in a SharePoint document library as the source of truth. Both records are linked by a unique document ID.</div>
+            <span class="step-tag">Dataverse · SharePoint Online</span>
+          </div>
+        </div>
+
+        <div class="pipe-step">
+          <div class="step-bubble" style="background:#e3effe;">✅</div>
+          <div class="step-body">
+            <div class="step-num">Step 7</div>
+            <div class="step-title">Post-Processing & Notification</div>
+            <div class="step-desc">The original email is moved to an "Archived" folder and marked as processed — keeping the shared mailbox clean. If a confidence score falls below threshold on any field, a notification is sent to a reviewer. Otherwise, the process completes silently. No staff action required.</div>
+            <span class="step-tag">Power Automate · Move email · Teams/Email notification</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI BUILDER SECTION -->
+<section class="section section-alt" id="ai-builder">
+  <div class="section-inner">
+    <div class="eyebrow">The Intelligence Layer</div>
+    <h2 class="section-title">What AI Builder Actually Does</h2>
+    <p class="section-lead">AI Builder Document Processing is a trained model — you teach it which fields to extract from your specific document type, then it handles every variation of that document automatically.</p>
+
+    <div class="ai-highlight">
+      <div class="ai-highlight-title">🤖 Example Extraction Output — Invoice Document</div>
+      <div class="extraction-demo">
+        <div class="extraction-label">Fields extracted from scanned PDF — with confidence scores</div>
+        <div class="fields-grid">
+          <div class="field-item">
+            <div class="field-name">Invoice Number</div>
+            <div class="field-val">INV-2024-00123</div>
+            <div class="field-conf">⬤ 98% confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-name">Invoice Date</div>
+            <div class="field-val">15.05.2024</div>
+            <div class="field-conf">⬤ 97% confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-name">Vendor Name</div>
+            <div class="field-val">Acme Supplies</div>
+            <div class="field-conf">⬤ 95% confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-name">Total Amount</div>
+            <div class="field-val">$12,450.00</div>
+            <div class="field-conf">⬤ 99% confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-name">Due Date</div>
+            <div class="field-val">14.06.2024</div>
+            <div class="field-conf">⬤ 96% confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-name">Custom Field</div>
+            <div class="field-val">PO-2024-447</div>
+            <div class="field-conf">⬤ 93% confidence</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-points">
+        <div class="ai-point">
+          <div class="ai-point-title">Custom-Trained Model</div>
+          <div class="ai-point-desc">You label sample documents to teach the model where each field lives. After training, it handles layout variations, different vendors, font sizes, and even handwritten annotations.</div>
+        </div>
+        <div class="ai-point">
+          <div class="ai-point-title">Confidence Score per Field</div>
+          <div class="ai-point-desc">Every extracted value comes with a confidence percentage. Low-confidence fields automatically trigger a human review notification — nothing slips through silently.</div>
+        </div>
+        <div class="ai-point">
+          <div class="ai-point-title">Native Power Automate Integration</div>
+          <div class="ai-point-desc">AI Builder output is a native action in Power Automate. No API calls, no JSON parsing — extracted fields are directly available as dynamic content in subsequent flow steps.</div>
+        </div>
+        <div class="ai-point">
+          <div class="ai-point-title">No Code Required</div>
+          <div class="ai-point-desc">No Python, no Azure Functions, no custom OCR pipeline. The entire intelligence layer is configured in the Power Platform UI — maintainable by the same team that built the flow.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="section">
+  <div class="section-inner">
+    <div class="eyebrow">The Difference It Makes</div>
+    <h2 class="section-title">Before & After</h2>
+    <p class="section-lead">The scan-to-SharePoint version took hours of manual work off the table. The scan-to-Dataverse version eliminated the data entry problem entirely — including the errors that came with it.</p>
+    <div class="ba-grid">
+      <div class="ba-card ba-before">
+        <div class="ba-label">Before — Manual Process</div>
+        <ul class="ba-list">
+          <li>Staff scans document and emails it to a colleague</li>
+          <li>Colleague manually opens the PDF and reads the fields</li>
+          <li>Values typed into a spreadsheet or system manually</li>
+          <li>Transcription errors on amounts, dates, invoice numbers</li>
+          <li>Processing time: 5–15 minutes per document</li>
+          <li>No searchable record — document buried in email or folder</li>
+          <li>Audit trail: none</li>
+        </ul>
+      </div>
+      <div class="ba-card ba-after">
+        <div class="ba-label">After — Automated Pipeline</div>
+        <ul class="ba-list">
+          <li>Staff places document in scanner — done</li>
+          <li>AI Builder extracts all fields automatically</li>
+          <li>Dataverse record created with structured data in &lt;30s</li>
+          <li>Zero transcription errors from the extraction model</li>
+          <li>Processing time: under 30 seconds end-to-end</li>
+          <li>Fully searchable, reportable, filterable in Dataverse</li>
+          <li>Full audit trail: timestamp, source email, confidence scores</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="section section-alt">
+  <div class="section-inner">
+    <div class="eyebrow">Technology</div>
+    <h2 class="section-title">Built Entirely on Microsoft Power Platform</h2>
+    <p class="section-lead">No custom infrastructure. No external APIs. Everything runs inside the Microsoft 365 tenant — governed, compliant, and maintainable without a developer.</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-ico">⚡</div>
+        <div><div class="tech-name">Power Automate</div><div class="tech-role">Flow orchestration, email trigger, all step coordination</div></div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">🤖</div>
+        <div><div class="tech-name">AI Builder</div><div class="tech-role">Document Processing model — OCR, field extraction, confidence scoring</div></div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">🗄</div>
+        <div><div class="tech-name">Dataverse</div><div class="tech-role">Structured record storage, queryable columns, native PP integration</div></div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">📄</div>
+        <div><div class="tech-name">SharePoint Online</div><div class="tech-role">Source document library — original scanned files stored and linked</div></div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">📧</div>
+        <div><div class="tech-name">Microsoft 365 Mail</div><div class="tech-role">Shared mailbox as the pipeline trigger — scanner sends attachment here</div></div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-ico">🖨️</div>
+        <div><div class="tech-name">MFP Scanner</div><div class="tech-role">Scan-to-email configured — only human touchpoint in the process</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact-section" id="impact">
+  <div class="impact-inner">
+    <div class="eyebrow" style="color:rgba(200,180,255,0.9)">Production Results</div>
+    <h2 class="impact-title">What This Pipeline Delivers</h2>
+    <p class="impact-sub">Built and deployed — not a prototype. Staff don't touch it. It works.</p>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">0</div>
+        <div class="impact-label">Manual steps between scanner and Dataverse record</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">&lt;30s</div>
+        <div class="impact-label">End-to-end processing time per document</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">100%</div>
+        <div class="impact-label">Documents captured with full audit trail</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">0</div>
+        <div class="impact-label">Lines of custom code — pure Power Platform</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">∞</div>
+        <div class="impact-label">Volume scalability — handles 1 or 1,000 docs/day equally</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p><a href="/">← Home</a> &nbsp;·&nbsp; <a href="/portfolio">Portfolio</a> &nbsp;·&nbsp; <a href="/portfolio/showcase">All Projects</a></p>
+</footer>
+
+</body>
+</html>

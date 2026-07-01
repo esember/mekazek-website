@@ -610,6 +610,10 @@ ul.rlist li::before{
               <span class="sdesc">Copilot Studio · Power Automate · RAG · 10-step pipeline design</span>
             </button>
             <button class="toc-btn-s" onclick="goTo(8)">
+              <span class="stitle">📄 Scan to Dataverse</span>
+              <span class="sdesc">Power Automate · AI Builder · OCR · Zero-touch document pipeline</span>
+            </button>
+            <button class="toc-btn-s" onclick="goTo(9)">
               <span class="stitle">🛠 Tools &amp; Side Projects</span>
               <span class="sdesc">Vocab learning tool, open-source experiments &amp; side builds</span>
             </button>
@@ -1105,8 +1109,76 @@ ul.rlist li::before{
     </div>
   </div>
 
-  <!-- SLIDE 8 — TOOLS & SIDE PROJECTS -->
-  <div class="slide tools-slide next" data-index="8">
+  <!-- SLIDE 8 — SCAN TO DATAVERSE -->
+  <div class="slide proj-slide next" data-index="8">
+    <div class="scroll-area">
+      <div class="proj-header">
+        <span class="proj-num">08</span>
+        <h1 class="proj-title">Document Automation — Scan to Dataverse</h1>
+      </div>
+      <div class="proj-meta">Production System &nbsp;·&nbsp; Power Automate · AI Builder · Dataverse · SharePoint &nbsp;·&nbsp; <a href="/portfolio/showcase/scan-to-dataverse" target="_blank" style="color:var(--accent);font-style:normal">View Full Case Study →</a></div>
+
+      <div class="proj-cols">
+        <div>
+          <div class="section-block">
+            <div class="section-label">Overview</div>
+            <p class="section-text">Built a production scan-to-Dataverse pipeline that takes a physical document off a scanner and creates a structured, queryable Dataverse record — automatically, in under 30 seconds. Zero manual touch points. Zero custom code. Staff place a document in the scanner and walk away.</p>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">7-Step Pipeline</div>
+            <ul class="blist">
+              <li><strong>Scanner → Shared Mailbox</strong> — MFP scanner emails the scanned document (PDF/image) to a dedicated M365 shared mailbox. The only human action in the entire pipeline.</li>
+              <li><strong>Power Automate Trigger</strong> — Flow fires the instant an email with attachment arrives. No polling, no batch — real-time.</li>
+              <li><strong>AI Builder Document Processing</strong> — The intelligence layer. Custom-trained model reads the PDF and extracts Invoice Number, Date, Vendor Name, Total Amount, Due Date — with confidence scores per field.</li>
+              <li><strong>Dataverse Record Created</strong> — Extracted fields map directly to Dataverse table columns. Structured, searchable, reportable data — not just a stored file.</li>
+              <li><strong>SharePoint Storage</strong> — Original scanned file saved to SharePoint document library as source of truth, linked to the Dataverse record by unique ID.</li>
+              <li><strong>Post-Processing</strong> — Email archived, staff notified only if confidence score falls below threshold. Otherwise completes silently.</li>
+            </ul>
+          </div>
+
+          <div class="section-block">
+            <div class="section-label">V1 → V2 Evolution</div>
+            <p class="section-text">Version 1 (production) solved routing and storage — scan goes to SharePoint, list record created, staff notified. The gap: document content still required manual review. Version 2 adds AI Builder — same trigger, same flow architecture, dramatically different data quality. The extraction problem is eliminated entirely.</p>
+          </div>
+        </div>
+
+        <div>
+          <div class="results-card">
+            <div class="results-head">Production Results</div>
+            <div class="results-body">
+              <ul class="rlist">
+                <li><strong>0 manual steps</strong> between scanner and Dataverse record</li>
+                <li><strong>Under 30 seconds</strong> end-to-end processing per document</li>
+                <li><strong>Zero transcription errors</strong> — AI Builder handles extraction</li>
+                <li><strong>Fully searchable records</strong> — invoice number, vendor, amount queryable in Dataverse</li>
+                <li><strong>100% audit trail</strong> — timestamp, source email, confidence scores logged</li>
+                <li><strong>Infinitely scalable</strong> — same pipeline handles 1 or 1,000 docs/day</li>
+              </ul>
+              <a class="demo-link" href="/portfolio/showcase/scan-to-dataverse" target="_blank">
+                📄 Full Case Study
+              </a>
+              <div style="margin-top:1.2rem">
+                <div class="tech-label">Tech Stack</div>
+                <div class="tags">
+                  <span class="tag">Power Automate</span>
+                  <span class="tag">AI Builder</span>
+                  <span class="tag">Dataverse</span>
+                  <span class="tag">SharePoint Online</span>
+                  <span class="tag">Microsoft 365</span>
+                  <span class="tag">OCR</span>
+                  <span class="tag">Document Processing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9 — TOOLS & SIDE PROJECTS -->
+  <div class="slide tools-slide next" data-index="9">
     <div class="scroll-area">
       <div class="tools-header">
         <div class="tools-eyebrow">Beyond Enterprise</div>
@@ -1151,7 +1223,7 @@ ul.rlist li::before{
   </div>
 
   <!-- SLIDE 8 — CLOSING -->
-  <div class="slide closing next" data-index="9">
+  <div class="slide closing next" data-index="10">
     <div class="closing-inner">
       <div class="cover-name" style="font-size:clamp(2rem,5vw,3.5rem)">GURSEL OLCA</div>
       <div class="closing-lines">
@@ -1268,7 +1340,7 @@ ul.rlist li::before{
 </div>
 
 <script>
-const TOTAL = 10;
+const TOTAL = 11;
 let current = 0;
 let isAnimating = false;
 
