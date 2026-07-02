@@ -69,15 +69,20 @@ body.no-scroll { overflow: hidden; }
   background: #080f1d; /* fallback if image not loaded */
 }
 
+/* Two-layer cross-fade background slideshow */
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: url('/images/hero.jpg') center 30% / cover no-repeat;
+  background: center 30% / cover no-repeat;
+  opacity: 0;
   transform: scale(1.07);
-  transition: transform 11s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: transform;
+  transition: opacity 1.8s ease, transform 10s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
 }
-.hero-bg.zoomed { transform: scale(1); }
+.hero-bg.active {
+  opacity: 1;
+  transform: scale(1);
+}
 
 /* Gradient overlay — lighter so photo is more visible */
 .hero-overlay {
@@ -425,7 +430,8 @@ footer a:hover { text-decoration: underline; }
      PHOTO HERO
      ============================================================ -->
 <section id="hero">
-  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-bg" id="bg-a"></div>
+  <div class="hero-bg" id="bg-b"></div>
   <div class="hero-overlay"></div>
 
   <nav class="photo-nav">
@@ -623,9 +629,46 @@ footer a:hover { text-decoration: underline; }
   window.addEventListener('resize', resize);
   draw();
 
+  /* ===== BACKGROUND SLIDESHOW ===== */
+  var SLIDES = [
+    '/images/slides/slide1.jpg',
+    '/images/slides/slide2.jpg',
+    '/images/slides/slide3.jpg',
+    '/images/slides/slide4.jpg',
+    '/images/slides/slide5.jpg',
+    '/images/slides/slide6.jpg',
+    '/images/slides/slide7.jpg',
+    '/images/slides/slide8.jpg',
+    '/images/slides/slide9.jpg',
+    '/images/hero.jpg',
+    '/images/portfolio-bg.jpg'
+  ];
+
+  var bgA    = document.getElementById('bg-a');
+  var bgB    = document.getElementById('bg-b');
+  var useA   = true;
+  var idx    = 0;
+
+  /* Preload all images in background */
+  SLIDES.forEach(function(src) { var i = new Image(); i.src = src; });
+
+  /* Show first slide immediately */
+  bgA.style.backgroundImage = "url('" + SLIDES[0] + "')";
+  bgA.classList.add('active');
+
+  /* Cross-fade to next slide */
+  function nextSlide() {
+    idx = (idx + 1) % SLIDES.length;
+    var incoming = useA ? bgB : bgA;
+    var outgoing = useA ? bgA : bgB;
+    incoming.style.backgroundImage = "url('" + SLIDES[idx] + "')";
+    incoming.classList.add('active');
+    outgoing.classList.remove('active');
+    useA = !useA;
+  }
+
   /* ===== TRANSITION: Matrix → Photo ===== */
   var overlay      = document.getElementById('matrix-overlay');
-  var heroBg       = document.getElementById('hero-bg');
   var heroContent  = document.getElementById('hero-content');
   var heroBtnLeft  = document.getElementById('hero-btn-left');
   var heroBtnRight = document.getElementById('hero-btn-right');
@@ -633,7 +676,6 @@ footer a:hover { text-decoration: underline; }
   setTimeout(function () {
     overlay.classList.add('fade-out');
     cancelAnimationFrame(raf);
-    heroBg.classList.add('zoomed');
 
     setTimeout(function () {
       overlay.style.display = 'none';
@@ -641,6 +683,8 @@ footer a:hover { text-decoration: underline; }
       heroContent.classList.add('visible');
       heroBtnLeft.classList.add('visible');
       heroBtnRight.classList.add('visible');
+      /* Start cycling 7s after first reveal */
+      setInterval(nextSlide, 7000);
     }, 950);
 
   }, 3600);
