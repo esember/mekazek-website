@@ -160,6 +160,43 @@ html,body{height:100%;background:var(--sp-bg);
 
 /* STATUS BAR */
 .status-bar{background:#fff4ce;border-top:1px solid #fde7a0;padding:0.4rem 1.5rem;font-size:0.75rem;color:#7a5400;display:flex;align-items:center;gap:0.5rem;flex-shrink:0;}
+
+/* ── DATAVERSE VIEW ── */
+#dvView{flex:1;overflow-y:auto;padding:1.5rem;background:var(--sp-bg);display:none;flex-direction:column;gap:1.2rem;}
+.dv-hero{background:linear-gradient(135deg,#0d3318,#107c10);border-radius:8px;padding:1.1rem 1.4rem;color:#fff;display:flex;align-items:flex-start;gap:1rem;}
+.dv-hero-icon{font-size:2rem;flex-shrink:0;}
+.dv-hero-title{font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;}
+.dv-hero-sub{font-size:0.76rem;opacity:0.82;line-height:1.5;}
+.dv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--sp-border);border:1px solid var(--sp-border);border-radius:6px;overflow:hidden;}
+.dv-stat{background:#fff;padding:0.7rem 1rem;text-align:center;}
+.dv-stat-val{font-size:1.35rem;font-weight:700;color:var(--sp-green);}
+.dv-stat-lbl{font-size:0.66rem;color:var(--sp-muted);text-transform:uppercase;letter-spacing:0.04em;margin-top:0.1rem;}
+.dv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1rem;}
+.dv-card{background:#fff;border:1px solid var(--sp-border);border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.dv-card-head{background:var(--sp-green);padding:0.5rem 0.85rem;display:flex;align-items:center;gap:0.4rem;}
+.dv-card-name{color:#fff;font-size:0.8rem;font-weight:700;flex:1;}
+.dv-card-tag{color:rgba(255,255,255,0.65);font-size:0.68rem;font-family:monospace;background:rgba(255,255,255,0.12);border-radius:3px;padding:0.05rem 0.35rem;}
+.dv-col{display:flex;align-items:center;gap:0.45rem;padding:0.27rem 0.85rem;font-size:0.73rem;border-bottom:1px solid #f5f5f5;}
+.dv-col:last-child{border-bottom:none;}
+.dv-col:hover{background:#f8f8f8;}
+.dv-col-name{flex:1;color:var(--sp-text);}
+.dv-col.pk .dv-col-name{color:var(--sp-green);font-weight:700;}
+.dv-col.fk .dv-col-name{color:#8764b8;}
+.dv-col-type{font-size:0.64rem;color:var(--sp-muted);background:#f3f2f1;border-radius:3px;padding:0.04rem 0.28rem;font-family:monospace;white-space:nowrap;}
+.dv-rels{background:#fff;border:1px solid var(--sp-border);border-radius:6px;padding:0.9rem 1.1rem;}
+.dv-rels-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--sp-muted);margin-bottom:0.7rem;padding-bottom:0.45rem;border-bottom:1px solid var(--sp-border);}
+.dv-rel-row{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.76rem;border-bottom:1px solid #f5f5f5;}
+.dv-rel-row:last-child{border-bottom:none;}
+.dv-tref{background:#dff6dd;color:var(--sp-green);border-radius:3px;padding:0.08rem 0.4rem;font-family:monospace;font-size:0.7rem;}
+.dv-rtype{background:#ede7f6;color:#8764b8;border-radius:3px;padding:0.08rem 0.3rem;font-size:0.68rem;font-weight:700;}
+.dv-rdesc{color:var(--sp-muted);font-size:0.72rem;}
+.dv-br{background:#fff;border:1px solid var(--sp-border);border-radius:6px;padding:0.9rem 1.1rem;}
+.dv-br-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--sp-muted);margin-bottom:0.7rem;padding-bottom:0.45rem;border-bottom:1px solid var(--sp-border);}
+.dv-br-item{display:flex;align-items:flex-start;gap:0.5rem;padding:0.35rem 0;font-size:0.76rem;border-bottom:1px solid #f5f5f5;}
+.dv-br-item:last-child{border-bottom:none;}
+.dv-br-icon{font-size:0.85rem;flex-shrink:0;}
+.dv-br-text{flex:1;color:var(--sp-text);}
+.dv-br-badge{background:#dff6dd;color:var(--sp-green);font-size:0.66rem;font-weight:700;border-radius:3px;padding:0.05rem 0.3rem;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -216,6 +253,8 @@ html,body{height:100%;background:var(--sp-bg);
     <div class="leftnav-item"><span class="leftnav-icon">📊</span> Compliance Dashboard</div>
     <div class="leftnav-item"><span class="leftnav-icon">📈</span> Power BI Report</div>
     <div class="leftnav-item"><span class="leftnav-icon">📬</span> Audit Archive</div>
+    <div class="leftnav-label">Architecture</div>
+    <div class="leftnav-item" onclick="toggleDV(this)"><span class="leftnav-icon">📦</span> Dataverse Model</div>
     <div class="leftnav-label">Settings</div>
     <div class="leftnav-item"><span class="leftnav-icon">⚙️</span> Site Settings</div>
   </div>
@@ -244,7 +283,7 @@ html,body{height:100%;background:var(--sp-bg);
     </div>
 
     <!-- COMMAND BAR -->
-    <div class="cmd-bar">
+    <div class="cmd-bar" id="cmdBar">
       <button class="cmd-btn primary">＋ New Inspection</button>
       <div class="cmd-sep"></div>
       <button class="cmd-btn">📤 Export</button>
@@ -260,7 +299,7 @@ html,body{height:100%;background:var(--sp-bg);
     </div>
 
     <!-- FILTER BAR -->
-    <div class="filter-bar">
+    <div class="filter-bar" id="filterBar">
       <span>Filters:</span>
       <span class="filter-chip">Month: May 2026 ✕</span>
       <span class="filter-chip">Status: All ✕</span>
@@ -269,7 +308,7 @@ html,body{height:100%;background:var(--sp-bg);
     </div>
 
     <!-- LIST -->
-    <div class="sp-list">
+    <div class="sp-list" id="spList">
       <table class="sp-table" id="inspTable">
         <thead>
           <tr>
@@ -286,6 +325,99 @@ html,body{height:100%;background:var(--sp-bg);
         </thead>
         <tbody id="inspBody"></tbody>
       </table>
+    </div>
+
+    <!-- DATAVERSE VIEW -->
+    <div id="dvView">
+      <div class="dv-hero">
+        <div class="dv-hero-icon">📦</div>
+        <div>
+          <div class="dv-hero-title">Dataverse Data Model — Facilities Audit &amp; Compliance Engine</div>
+          <div class="dv-hero-sub">Parallel Dataverse implementation of the SharePoint architecture · 5 custom tables · Publisher prefix: <code style="background:rgba(255,255,255,0.15);border-radius:3px;padding:0 0.3rem">mka_</code> · Power Apps Model-Driven App + Power BI DirectQuery</div>
+        </div>
+      </div>
+
+      <div class="dv-stats">
+        <div class="dv-stat"><div class="dv-stat-val">5</div><div class="dv-stat-lbl">Custom Tables</div></div>
+        <div class="dv-stat"><div class="dv-stat-val">42</div><div class="dv-stat-lbl">Columns</div></div>
+        <div class="dv-stat"><div class="dv-stat-val">5</div><div class="dv-stat-lbl">Relationships</div></div>
+        <div class="dv-stat"><div class="dv-stat-val">4</div><div class="dv-stat-lbl">Business Rules</div></div>
+      </div>
+
+      <div class="dv-grid">
+        <div class="dv-card">
+          <div class="dv-card-head"><span>🏢</span><span class="dv-card-name">mka_facility</span><span class="dv-card-tag">Core</span></div>
+          <div class="dv-col pk"><span class="dv-col-name">🔑 mka_facilityid</span><span class="dv-col-type">UniqueIdentifier</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_name</span><span class="dv-col-type">nvarchar(200)</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_type</span><span class="dv-col-type">OptionSet</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_address</span><span class="dv-col-type">nvarchar(500)</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_managerid</span><span class="dv-col-type">Lookup → systemuser</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_status</span><span class="dv-col-type">OptionSet</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_nextinspectiondate</span><span class="dv-col-type">DateTime</span></div>
+        </div>
+
+        <div class="dv-card">
+          <div class="dv-card-head"><span>📋</span><span class="dv-card-name">mka_inspectionrecord</span><span class="dv-card-tag">Inspection</span></div>
+          <div class="dv-col pk"><span class="dv-col-name">🔑 mka_inspectionrecordid</span><span class="dv-col-type">UniqueIdentifier</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_facilityid</span><span class="dv-col-type">Lookup → mka_facility</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_inspectiondate</span><span class="dv-col-type">DateTime</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_inspectorid</span><span class="dv-col-type">Lookup → systemuser</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_overallscore</span><span class="dv-col-type">Decimal</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_status</span><span class="dv-col-type">OptionSet</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_approverid</span><span class="dv-col-type">Lookup → systemuser</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_approvedon</span><span class="dv-col-type">DateTime</span></div>
+        </div>
+
+        <div class="dv-card">
+          <div class="dv-card-head"><span>☑️</span><span class="dv-card-name">mka_checklistitem</span><span class="dv-card-tag">Checklist</span></div>
+          <div class="dv-col pk"><span class="dv-col-name">🔑 mka_checklistitemid</span><span class="dv-col-type">UniqueIdentifier</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_name</span><span class="dv-col-type">nvarchar(300)</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_category</span><span class="dv-col-type">OptionSet</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_weight</span><span class="dv-col-type">Decimal</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_isfailurecritical</span><span class="dv-col-type">Boolean</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_regulatoryref</span><span class="dv-col-type">nvarchar(100)</span></div>
+        </div>
+
+        <div class="dv-card">
+          <div class="dv-card-head"><span>📝</span><span class="dv-card-name">mka_inspectionresponse</span><span class="dv-card-tag">Response</span></div>
+          <div class="dv-col pk"><span class="dv-col-name">🔑 mka_inspectionresponseid</span><span class="dv-col-type">UniqueIdentifier</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_inspectionrecordid</span><span class="dv-col-type">Lookup → mka_inspectionrecord</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_checklistitemid</span><span class="dv-col-type">Lookup → mka_checklistitem</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_response</span><span class="dv-col-type">OptionSet</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_score</span><span class="dv-col-type">Decimal</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_notes</span><span class="dv-col-type">nvarchar(1000)</span></div>
+        </div>
+
+        <div class="dv-card">
+          <div class="dv-card-head"><span>⚠️</span><span class="dv-card-name">mka_deficiency</span><span class="dv-card-tag">Deficiency</span></div>
+          <div class="dv-col pk"><span class="dv-col-name">🔑 mka_deficiencyid</span><span class="dv-col-type">UniqueIdentifier</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_inspectionrecordid</span><span class="dv-col-type">Lookup → mka_inspectionrecord</span></div>
+          <div class="dv-col fk"><span class="dv-col-name">🔗 mka_facilityid</span><span class="dv-col-type">Lookup → mka_facility</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_description</span><span class="dv-col-type">nvarchar(2000)</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_severity</span><span class="dv-col-type">OptionSet</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_correctiveaction</span><span class="dv-col-type">nvarchar(2000)</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_duedate</span><span class="dv-col-type">DateTime</span></div>
+          <div class="dv-col"><span class="dv-col-name">mka_status</span><span class="dv-col-type">OptionSet</span></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="dv-rels">
+          <div class="dv-rels-title">Table Relationships</div>
+          <div class="dv-rel-row"><span class="dv-tref">mka_facility</span><span class="dv-rtype">1 : N</span><span class="dv-tref">mka_inspectionrecord</span><span class="dv-rdesc">— all inspections per facility</span></div>
+          <div class="dv-rel-row"><span class="dv-tref">mka_inspectionrecord</span><span class="dv-rtype">1 : N</span><span class="dv-tref">mka_inspectionresponse</span><span class="dv-rdesc">— checklist answers</span></div>
+          <div class="dv-rel-row"><span class="dv-tref">mka_checklistitem</span><span class="dv-rtype">1 : N</span><span class="dv-tref">mka_inspectionresponse</span><span class="dv-rdesc">— reusable items across inspections</span></div>
+          <div class="dv-rel-row"><span class="dv-tref">mka_inspectionrecord</span><span class="dv-rtype">1 : N</span><span class="dv-tref">mka_deficiency</span><span class="dv-rdesc">— deficiencies per inspection</span></div>
+          <div class="dv-rel-row"><span class="dv-tref">mka_facility</span><span class="dv-rtype">1 : N</span><span class="dv-tref">mka_deficiency</span><span class="dv-rdesc">— open deficiencies per facility</span></div>
+        </div>
+        <div class="dv-br">
+          <div class="dv-br-title">Business Rules &amp; Automation</div>
+          <div class="dv-br-item"><span class="dv-br-icon">⚡</span><div class="dv-br-text">Score rollup: weighted average of <code>mka_inspectionresponse.mka_score</code> auto-calculated to <code>mka_overallscore</code></div><span class="dv-br-badge">BR</span></div>
+          <div class="dv-br-item"><span class="dv-br-icon">⚡</span><div class="dv-br-text">Critical failure lock: any critical checklist failure forces overall status to <em>Non-Compliant</em> regardless of score</div><span class="dv-br-badge">BR</span></div>
+          <div class="dv-br-item"><span class="dv-br-icon">⚡</span><div class="dv-br-text">Next inspection date auto-set to +30 days on approval</div><span class="dv-br-badge">BR</span></div>
+          <div class="dv-br-item"><span class="dv-br-icon">🔌</span><div class="dv-br-text">Post-approval plugin: triggers Power Automate to generate PDF report + archive to SharePoint Compliance Library</div><span class="dv-br-badge">Plugin</span></div>
+        </div>
+      </div>
     </div>
 
     <!-- STATUS BAR -->
@@ -502,6 +634,19 @@ function switchTab(idx, el){
 function closeDetail(){
   document.getElementById('detailOverlay').style.display='none';
   document.querySelectorAll('#inspBody tr').forEach(r=>r.classList.remove('selected'));
+}
+
+function toggleDV(el){
+  const dv=document.getElementById('dvView');
+  const showing=dv.style.display==='flex';
+  ['cmdBar','filterBar','spList'].forEach(id=>{
+    const e=document.getElementById(id);
+    if(e) e.style.display=showing?'':'none';
+  });
+  dv.style.display=showing?'none':'flex';
+  document.querySelectorAll('.leftnav-item').forEach(t=>t.classList.remove('active'));
+  if(!showing) el.classList.add('active');
+  else document.querySelector('.leftnav-item').classList.add('active');
 }
 
 buildTable();
