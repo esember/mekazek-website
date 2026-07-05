@@ -41,16 +41,31 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);
 /* MAIN */
 .main{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem;}
 
-.hero{text-align:center;margin-bottom:3rem;}
+.hero{
+  text-align:center;margin-bottom:3rem;position:relative;overflow:hidden;
+  border-radius:20px;padding:3.2rem 2rem;
+  background:linear-gradient(135deg, #0d1b2e 0%, #0a1425 55%, #060b16 100%);
+  box-shadow:0 16px 48px rgba(10,20,40,0.18);
+}
+.hero-tech-bg{position:absolute;inset:0;z-index:0;overflow:hidden;}
+.hero-tech-bg svg{position:absolute;inset:0;width:100%;height:100%;}
+.hero-content{position:relative;z-index:1;}
+
+.showcase-gear-a, .showcase-gear-b { transform-box:view-box; }
+.showcase-gear-a{ transform-origin:1060px 70px; animation:showcaseSpinCW 60s linear infinite; }
+.showcase-gear-b{ transform-origin:1150px 190px; animation:showcaseSpinCCW 38s linear infinite; }
+@keyframes showcaseSpinCW  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes showcaseSpinCCW { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+
 .hero-eyebrow{
   font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;
-  font-weight:700;color:var(--accent);margin-bottom:0.8rem;
+  font-weight:700;color:#7dd3fc;margin-bottom:0.8rem;
 }
 .hero-title{
-  font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--text);
+  font-size:clamp(2rem,4vw,3rem);font-weight:700;color:#fff;
   letter-spacing:-0.02em;line-height:1.2;margin-bottom:1rem;
 }
-.hero-sub{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:580px;margin:0 auto;}
+.hero-sub{font-size:1.1rem;color:rgba(219,234,254,0.78);line-height:1.7;max-width:580px;margin:0 auto;}
 
 .section-label{
   font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;
@@ -149,9 +164,40 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);
 <div class="main">
 
   <div class="hero">
-    <div class="hero-eyebrow">Interactive Prototypes</div>
-    <h1 class="hero-title">Power Platform App Showcase</h1>
-    <p class="hero-sub">Canvas App-style web prototypes demonstrating real-world Power Platform solutions — built to show design thinking, UX patterns, and business logic before going to production.</p>
+    <div class="hero-tech-bg">
+      <svg viewBox="0 0 1200 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <path id="showcaseGearShape" fill-rule="evenodd" d="M100.0,0.0 L99.1,13.1 L79.2,21.2 L75.8,31.4 L86.6,50.0 L79.3,60.9 L58.0,58.0 L49.9,65.1 L50.0,86.6 L38.3,92.4 L21.2,79.2 L10.7,81.3 L0.0,100.0 L-13.1,99.1 L-21.2,79.2 L-31.4,75.8 L-50.0,86.6 L-60.9,79.3 L-58.0,58.0 L-65.1,49.9 L-86.6,50.0 L-92.4,38.3 L-79.2,21.2 L-81.3,10.7 L-100.0,0.0 L-99.1,-13.1 L-79.2,-21.2 L-75.8,-31.4 L-86.6,-50.0 L-79.3,-60.9 L-58.0,-58.0 L-65.1,-49.9 L-50.0,-86.6 L-38.3,-92.4 L-21.2,-79.2 L-10.7,-81.3 L-0.0,-100.0 L13.1,-99.1 L21.2,-79.2 L31.4,-75.8 L50.0,-86.6 L60.9,-79.3 L58.0,-58.0 L65.1,-49.9 L86.6,-50.0 L92.4,-38.3 L79.2,-21.2 L81.3,-10.7 Z M34,0 A34,34 0 1,0 -34,0 A34,34 0 1,0 34,0 Z"/>
+          <filter id="showcaseGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <g stroke="#38bdf8" stroke-width="1.2" fill="none" opacity="0.16">
+          <path id="sc1" d="M0,60 C200,40 350,120 560,90 S900,50 1200,80"/>
+          <path id="sc2" d="M0,240 C180,220 320,270 520,250 S850,210 1200,235"/>
+        </g>
+        <g fill="#7dd3fc" opacity="0.85">
+          <circle r="3"><animateMotion dur="6s" repeatCount="indefinite"><mpath href="#sc1"/></animateMotion></circle>
+          <circle r="2.6"><animateMotion dur="7.5s" begin="1.2s" repeatCount="indefinite"><mpath href="#sc2"/></animateMotion></circle>
+        </g>
+
+        <g filter="url(#showcaseGlow)" opacity="0.4">
+          <g class="showcase-gear-a">
+            <use href="#showcaseGearShape" transform="translate(1060,70) scale(0.85)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
+          </g>
+          <g class="showcase-gear-b">
+            <use href="#showcaseGearShape" transform="translate(1150,190) scale(0.55)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Interactive Prototypes</div>
+      <h1 class="hero-title">Power Platform App Showcase</h1>
+      <p class="hero-sub">Canvas App-style web prototypes demonstrating real-world Power Platform solutions — built to show design thinking, UX patterns, and business logic before going to production.</p>
+    </div>
   </div>
 
   <div class="section-label">Canvas App Prototypes</div>
