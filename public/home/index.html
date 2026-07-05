@@ -779,38 +779,38 @@ footer a:hover { text-decoration: underline; }
      CONTACT FAB + MODAL
      ============================================================ -->
 <button class="contact-fab" id="contactFabBtn" onclick="openContactModal()">
-  📩 İletişim ve danışmanlık için lütfen tıklayınız
+  📩 Click here for consulting &amp; inquiries
 </button>
 
 <div class="contact-modal-overlay" id="contactModalOverlay" onclick="if(event.target===this) closeContactModal()">
   <div class="contact-modal">
-    <button class="contact-modal-close" onclick="closeContactModal()" aria-label="Kapat">✕</button>
-    <h2>İletişim &amp; Danışmanlık</h2>
-    <p class="contact-lead">Projeniz için görüşmek ister misiniz? Formu doldurun, en kısa sürede size dönüş yapayım.</p>
+    <button class="contact-modal-close" onclick="closeContactModal()" aria-label="Close">✕</button>
+    <h2>Contact &amp; Consulting</h2>
+    <p class="contact-lead">Interested in discussing a project? Fill out the form below and I'll get back to you shortly.</p>
 
     <form class="contact-form" id="contactForm" onsubmit="return submitContactForm(event)">
       <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
-      <input type="hidden" name="subject" value="mekazek.com — Yeni İletişim Formu">
+      <input type="hidden" name="subject" value="mekazek.com — New Contact Form Submission">
       <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
 
       <div class="field">
-        <label for="cf-name">Ad Soyad</label>
-        <input type="text" id="cf-name" name="name" placeholder="Adınız Soyadınız" required>
+        <label for="cf-name">Full Name</label>
+        <input type="text" id="cf-name" name="name" placeholder="Your full name" required>
       </div>
       <div class="field">
-        <label for="cf-email">E-posta</label>
-        <input type="email" id="cf-email" name="email" placeholder="ornek@mail.com" required>
+        <label for="cf-email">Email</label>
+        <input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
       </div>
       <div class="field">
-        <label for="cf-phone">Telefon (opsiyonel)</label>
-        <input type="tel" id="cf-phone" name="phone" placeholder="+90 5xx xxx xx xx">
+        <label for="cf-phone">Phone (optional)</label>
+        <input type="tel" id="cf-phone" name="phone" placeholder="+1 (555) 000-0000">
       </div>
       <div class="field">
-        <label for="cf-message">Not</label>
-        <textarea id="cf-message" name="message" placeholder="Projeniz hakkında kısaca bilgi verin..." required></textarea>
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" placeholder="Briefly describe your project..." required></textarea>
       </div>
 
-      <button type="submit" class="contact-submit-btn" id="contactSubmitBtn">Gönder</button>
+      <button type="submit" class="contact-submit-btn" id="contactSubmitBtn">Send</button>
       <div class="contact-form-status" id="contactFormStatus"></div>
     </form>
   </div>
@@ -894,7 +894,7 @@ async function submitContactForm(e) {
   var btn = document.getElementById('contactSubmitBtn');
 
   btn.disabled = true;
-  btn.textContent = 'Gönderiliyor...';
+  btn.textContent = 'Sending...';
   statusEl.textContent = '';
   statusEl.className = 'contact-form-status';
 
@@ -907,21 +907,21 @@ async function submitContactForm(e) {
     var data = await res.json();
 
     if (data.success) {
-      statusEl.textContent = '✓ Mesajınız gönderildi, teşekkürler!';
+      statusEl.textContent = '✓ Message sent, thank you!';
       statusEl.className = 'contact-form-status success';
       form.reset();
       setTimeout(closeContactModal, 1800);
     } else {
-      statusEl.textContent = 'Bir hata oluştu, lütfen tekrar deneyin.';
+      statusEl.textContent = 'Something went wrong, please try again.';
       statusEl.className = 'contact-form-status error';
     }
   } catch (err) {
-    statusEl.textContent = 'Bağlantı hatası, lütfen tekrar deneyin.';
+    statusEl.textContent = 'Connection error, please try again.';
     statusEl.className = 'contact-form-status error';
   }
 
   btn.disabled = false;
-  btn.textContent = 'Gönder';
+  btn.textContent = 'Send';
   return false;
 }
 </script>
