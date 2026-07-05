@@ -69,20 +69,35 @@ body.no-scroll { overflow: hidden; }
   background: #080f1d; /* fallback if image not loaded */
 }
 
-/* Two-layer cross-fade background slideshow */
-.hero-bg {
+/* Animated robotic-process background (gears + arm + circuit pulses) */
+.hero-tech-bg {
   position: absolute;
   inset: 0;
-  background: center 30% / cover no-repeat;
-  opacity: 0;
-  transform: scale(1.07);
-  transition: opacity 1.8s ease, transform 10s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: opacity, transform;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0d1b2e 0%, #0a1425 55%, #060b16 100%);
 }
-.hero-bg.active {
-  opacity: 1;
-  transform: scale(1);
+.hero-tech-bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.gear-cw-slow, .gear-ccw-fast, .gear-cw-small,
+.arm-lower, .arm-upper, .claw-l, .claw-r {
+  transform-box: view-box;
 }
+.gear-cw-slow  { transform-origin: 1700px 200px; animation: spinCW 75s linear infinite; }
+.gear-ccw-fast { transform-origin: 1850px 380px; animation: spinCCW 44s linear infinite; }
+.gear-cw-small { transform-origin: 1830px 880px; animation: spinCW 58s linear infinite; }
+
+@keyframes spinCW  { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes spinCCW { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
+
+.arm-lower { transform-origin: 230px 980px; animation: armSwayLower 7s ease-in-out infinite; }
+.arm-upper { transform-origin: 230px 740px; animation: armSwayUpper 6s ease-in-out infinite; }
+.claw-l    { transform-origin: 230px 520px; animation: clawL 3.4s ease-in-out infinite; }
+.claw-r    { transform-origin: 230px 520px; animation: clawR 3.4s ease-in-out infinite; }
+
+@keyframes armSwayLower { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(4deg); } }
+@keyframes armSwayUpper { 0%,100% { transform: rotate(26deg); } 50% { transform: rotate(40deg); } }
+@keyframes clawL { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(11deg); } }
+@keyframes clawR { 0%,100% { transform: rotate(4deg); }  50% { transform: rotate(-11deg); } }
 
 /* Gradient overlay — lighter so photo is more visible */
 .hero-overlay {
@@ -427,11 +442,68 @@ footer a:hover { text-decoration: underline; }
 </div>
 
 <!-- ============================================================
-     PHOTO HERO
+     TECH HERO
      ============================================================ -->
 <section id="hero">
-  <div class="hero-bg" id="bg-a"></div>
-  <div class="hero-bg" id="bg-b"></div>
+  <div class="hero-tech-bg">
+    <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <path id="gearShape" fill-rule="evenodd" d="M100.0,0.0 L99.1,13.1 L79.2,21.2 L75.8,31.4 L86.6,50.0 L79.3,60.9 L58.0,58.0 L49.9,65.1 L50.0,86.6 L38.3,92.4 L21.2,79.2 L10.7,81.3 L0.0,100.0 L-13.1,99.1 L-21.2,79.2 L-31.4,75.8 L-50.0,86.6 L-60.9,79.3 L-58.0,58.0 L-65.1,49.9 L-86.6,50.0 L-92.4,38.3 L-79.2,21.2 L-81.3,10.7 L-100.0,0.0 L-99.1,-13.1 L-79.2,-21.2 L-75.8,-31.4 L-86.6,-50.0 L-79.3,-60.9 L-58.0,-58.0 L-65.1,-49.9 L-50.0,-86.6 L-38.3,-92.4 L-21.2,-79.2 L-10.7,-81.3 L-0.0,-100.0 L13.1,-99.1 L21.2,-79.2 L31.4,-75.8 L50.0,-86.6 L60.9,-79.3 L58.0,-58.0 L65.1,-49.9 L86.6,-50.0 L92.4,-38.3 L79.2,-21.2 L81.3,-10.7 Z M34,0 A34,34 0 1,0 -34,0 A34,34 0 1,0 34,0 Z"/>
+        <filter id="techGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="7" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- circuit traces -->
+      <g stroke="#38bdf8" stroke-width="1.5" fill="none" opacity="0.14">
+        <path id="c1" d="M0,300 C400,250 700,500 1100,420 S1600,300 1920,340"/>
+        <path id="c2" d="M0,720 C300,670 600,820 950,780 S1500,660 1920,710"/>
+        <path id="c3" d="M120,0 C260,150 210,350 390,420 S520,660 470,900"/>
+      </g>
+      <g fill="#7dd3fc" opacity="0.8">
+        <circle r="3.5"><animateMotion dur="6s" repeatCount="indefinite"><mpath href="#c1"/></animateMotion></circle>
+        <circle r="3"><animateMotion dur="8s" begin="1s" repeatCount="indefinite"><mpath href="#c2"/></animateMotion></circle>
+        <circle r="3"><animateMotion dur="7s" begin="2.5s" repeatCount="indefinite"><mpath href="#c3"/></animateMotion></circle>
+      </g>
+
+      <!-- gear cluster, top-right -->
+      <g filter="url(#techGlow)" opacity="0.45">
+        <g class="gear-cw-slow">
+          <use href="#gearShape" transform="translate(1700,200) scale(1.5)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
+        </g>
+        <g class="gear-ccw-fast">
+          <use href="#gearShape" transform="translate(1850,380) scale(0.9)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
+        </g>
+      </g>
+
+      <!-- small gear, bottom-right -->
+      <g filter="url(#techGlow)" opacity="0.35">
+        <g class="gear-cw-small">
+          <use href="#gearShape" transform="translate(1830,880) scale(0.75)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
+        </g>
+      </g>
+
+      <!-- robotic arm, bottom-left -->
+      <g filter="url(#techGlow)" opacity="0.5" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.45">
+        <rect x="170" y="980" width="120" height="60" rx="10"/>
+        <circle cx="230" cy="980" r="26"/>
+        <g class="arm-lower">
+          <rect x="207" y="740" width="46" height="240" rx="20"/>
+          <circle cx="230" cy="740" r="22"/>
+          <g class="arm-upper">
+            <rect x="210" y="520" width="40" height="220" rx="18"/>
+            <circle cx="230" cy="520" r="18"/>
+            <g class="claw-l"><path d="M230,520 L212,468" fill="none" stroke-width="14" stroke-linecap="round"/></g>
+            <g class="claw-r"><path d="M230,520 L248,468" fill="none" stroke-width="14" stroke-linecap="round"/></g>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
   <div class="hero-overlay"></div>
 
   <nav class="photo-nav">
@@ -655,37 +727,7 @@ footer a:hover { text-decoration: underline; }
   window.addEventListener('resize', resize);
   draw();
 
-  /* ===== BACKGROUND SLIDESHOW ===== */
-  var SLIDES = [
-    '/images/portfolio-bg.jpg',
-    '/images/hero.jpg',
-    '/images/sunset.jpg'
-  ];
-
-  var bgA    = document.getElementById('bg-a');
-  var bgB    = document.getElementById('bg-b');
-  var useA   = true;
-  var idx    = 0;
-
-  /* Preload all images in background */
-  SLIDES.forEach(function(src) { var i = new Image(); i.src = src; });
-
-  /* Show first slide immediately */
-  bgA.style.backgroundImage = "url('" + SLIDES[0] + "')";
-  bgA.classList.add('active');
-
-  /* Cross-fade to next slide */
-  function nextSlide() {
-    idx = (idx + 1) % SLIDES.length;
-    var incoming = useA ? bgB : bgA;
-    var outgoing = useA ? bgA : bgB;
-    incoming.style.backgroundImage = "url('" + SLIDES[idx] + "')";
-    incoming.classList.add('active');
-    outgoing.classList.remove('active');
-    useA = !useA;
-  }
-
-  /* ===== TRANSITION: Matrix → Photo ===== */
+  /* ===== TRANSITION: Matrix → Tech Background ===== */
   var overlay      = document.getElementById('matrix-overlay');
   var heroContent  = document.getElementById('hero-content');
   var heroBtnLeft  = document.getElementById('hero-btn-left');
@@ -701,8 +743,6 @@ footer a:hover { text-decoration: underline; }
       heroContent.classList.add('visible');
       heroBtnLeft.classList.add('visible');
       heroBtnRight.classList.add('visible');
-      /* Start cycling 7s after first reveal */
-      setInterval(nextSlide, 7000);
     }, 950);
 
   }, 3600);
