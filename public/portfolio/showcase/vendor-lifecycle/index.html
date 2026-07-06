@@ -267,6 +267,7 @@ html,body{height:100%;background:var(--sp-bg);
 
 /* ── DATAVERSE VIEW ── */
 #dvView{flex:1;overflow-y:auto;padding:1.5rem;background:var(--sp-bg);display:none;flex-direction:column;gap:1.2rem;}
+@keyframes dvFadeIn{from{opacity:0;transform:translateY(14px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .dv-hero{background:linear-gradient(135deg,#0d2c5e,#0078d4);border-radius:8px;padding:1.1rem 1.4rem;color:#fff;display:flex;align-items:flex-start;gap:1rem;}
 .dv-hero-icon{font-size:2rem;flex-shrink:0;}
 .dv-hero-title{font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;}
@@ -804,6 +805,11 @@ function toggleDV(el){
     if(el) el.style.display=showing?'':'none';
   });
   dv.style.display=showing?'none':'flex';
+  if(!showing){
+    dv.style.animation='none';
+    dv.offsetWidth;
+    dv.style.animation='dvFadeIn 0.35s cubic-bezier(0.22,1,0.36,1) both';
+  }
   document.querySelectorAll('.leftnav-item').forEach(t=>t.classList.remove('active'));
   if(!showing) el.classList.add('active');
   else document.querySelector('.leftnav-item').classList.add('active');
