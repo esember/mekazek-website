@@ -174,23 +174,31 @@ body.no-scroll { overflow: hidden; }
   color: #00ff88;
   margin-bottom: 1.4rem;
 }
-.hero-h1 {
-  font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+.hero-brand-link {
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.hero-brand-link:hover { transform: scale(1.03); }
+.hero-brand {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
   font-weight: 900;
-  line-height: 1.04;
-  color: #fff;
-  margin-bottom: 1.4rem;
-  text-shadow: 0 4px 32px rgba(0,0,0,0.45);
-  letter-spacing: -0.025em;
+  color: #38bdf8;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 20px #38bdf8, 0 0 50px #1a6ecc, 0 0 80px #0d2c5e;
+  margin-bottom: 0.8rem;
+  line-height: 1;
 }
-.hero-h1 .accent { color: #60c5ff; }
-.hero-tagline {
-  font-size: 1.15rem;
-  color: rgba(255,255,255,0.68);
-  line-height: 1.72;
-  max-width: 600px;
+.hero-brand-sub {
+  font-size: 1.1rem;
+  color: rgba(200,225,255,0.8);
+  line-height: 1.6;
+  max-width: 560px;
   margin: 0 auto;
+  font-weight: 400;
 }
+.hero-brand-sub .arrow { color: #7dd3fc; font-weight: 700; }
 
 /* Bottom-LEFT button */
 .hero-btn-left {
@@ -417,8 +425,8 @@ footer a:hover { text-decoration: underline; }
   .photo-nav { padding: 0 1.25rem; }
   .photo-nav-links { display: none; }
   .hero-top { top: 16%; padding: 0 1.25rem; }
-  .hero-h1 { font-size: clamp(2rem, 9vw, 3rem); }
-  .hero-tagline { font-size: 0.95rem; }
+  .hero-brand { font-size: clamp(2rem, 12vw, 3rem); }
+  .hero-brand-sub { font-size: 0.92rem; }
   .hero-btn-left { left: 1.25rem; padding: 0.85rem 1.5rem; font-size: 0.9rem; bottom: 8%; }
   .hero-btn-right { right: 1.25rem; padding: 0.85rem 1.5rem; font-size: 0.9rem; bottom: 8%; }
   .sticky-nav { padding: 0 1.25rem; }
@@ -509,7 +517,7 @@ footer a:hover { text-decoration: underline; }
   <nav class="photo-nav">
     <a href="#landing" class="photo-nav-brand">mekazek</a>
     <ul class="photo-nav-links">
-      <li><a href="#projects">Projects</a></li>
+      <li><a href="/projects">Projects</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#demos">Demos</a></li>
       <li><a href="/portfolio" class="photo-nav-cta">Portfolio →</a></li>
@@ -518,17 +526,13 @@ footer a:hover { text-decoration: underline; }
 
   <div class="hero-top" id="hero-content">
     <div class="hero-eyebrow">// Power Platform · AI Solutions</div>
-    <h1 class="hero-h1">
-      Building <span class="accent">intelligent</span><br>
-      enterprise systems &amp; solutions
-    </h1>
-    <p class="hero-tagline">
-      End-to-end automation and AI-powered workflows on the Microsoft
-      Power Platform — from concept to production.
-    </p>
+    <a href="/projects" class="hero-brand-link">
+      <h1 class="hero-brand">MEKAZEK</h1>
+      <p class="hero-brand-sub"><span class="arrow">→</span> Click to explore my projects, production systems &amp; designs</p>
+    </a>
   </div>
 
-  <a href="#projects" class="hero-btn-left" id="hero-btn-left">View Projects</a>
+  <a href="/projects" class="hero-btn-left" id="hero-btn-left">View Projects</a>
   <a href="/portfolio" class="hero-btn-right" id="hero-btn-right">Open Portfolio →</a>
 </section>
 
@@ -540,7 +544,7 @@ footer a:hover { text-decoration: underline; }
   <nav class="sticky-nav">
     <a href="#hero" class="sticky-brand">mekazek</a>
     <ul class="sticky-links">
-      <li><a href="#projects">Projects</a></li>
+      <li><a href="/projects">Projects</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#demos">Demos</a></li>
       <li><a href="/portfolio" class="sticky-cta">Portfolio →</a></li>
@@ -556,94 +560,6 @@ footer a:hover { text-decoration: underline; }
     </div>
   </div>
 
-  <!-- Projects -->
-  <section class="section" id="projects">
-    <div class="section-eyebrow">Featured Work</div>
-    <div class="section-title">Enterprise Projects</div>
-    <div class="section-sub">Production-grade solutions built on the Microsoft Power Platform ecosystem.</div>
-
-    <div class="projects-grid">
-
-      <a class="project-card" href="/ai-automation" style="--accent:#0d9488">
-        <div class="card-head">
-          <div class="card-icon" style="background:#e0f7f4">🤖</div>
-          <span class="card-badge" style="background:#e0f7f4;color:#0d9488">AI · Production</span>
-        </div>
-        <div class="card-title">AI Request Automation System</div>
-        <div class="card-desc">Intelligent intake pipeline classifying and routing business requests using Azure OpenAI + Power Automate. Multi-stage RAG architecture with confidence-based escalation paths.</div>
-        <div class="card-foot">
-          <div class="card-tags"><span class="ctag">Azure OpenAI</span><span class="ctag">Power Automate</span><span class="ctag">RAG</span></div>
-          <span class="card-cta">Case study →</span>
-        </div>
-      </a>
-
-      <a class="project-card" href="/portfolio/showcase/scan-to-dataverse" style="--accent:#7c3aed">
-        <div class="card-head">
-          <div class="card-icon" style="background:#f0e8ff">📄</div>
-          <span class="card-badge" style="background:#f0e8ff;color:#7c3aed">Document AI · Production</span>
-        </div>
-        <div class="card-title">Scan to Dataverse</div>
-        <div class="card-desc">AI Builder document processing pipeline extracting structured data from physical documents with confidence scoring, auto-validation, and direct Dataverse integration.</div>
-        <div class="card-foot">
-          <div class="card-tags"><span class="ctag">AI Builder</span><span class="ctag">Dataverse</span><span class="ctag">OCR</span></div>
-          <span class="card-cta">Case study →</span>
-        </div>
-      </a>
-
-      <a class="project-card" href="/portfolio/showcase/vendor-lifecycle" style="--accent:#0078d4">
-        <div class="card-head">
-          <div class="card-icon" style="background:#e0f0ff">🏢</div>
-          <span class="card-badge" style="background:#e0f0ff;color:#0078d4">SharePoint · Dataverse</span>
-        </div>
-        <div class="card-title">Vendor Lifecycle & Contract Management</div>
-        <div class="card-desc">Enterprise vendor registry for 380+ vendors across 5 departments. Dataverse schema, auto-provisioned folder structures, 3-level Teams approval workflows, and SLA expiry tracking.</div>
-        <div class="card-foot">
-          <div class="card-tags"><span class="ctag">Dataverse</span><span class="ctag">Power Automate</span><span class="ctag">SharePoint</span></div>
-          <span class="card-cta">View demo →</span>
-        </div>
-      </a>
-
-      <a class="project-card" href="/portfolio/showcase/facilities-audit" style="--accent:#107c10">
-        <div class="card-head">
-          <div class="card-icon" style="background:#e6f4e6">🏗️</div>
-          <span class="card-badge" style="background:#e6f4e6;color:#107c10">Compliance · Dataverse</span>
-        </div>
-        <div class="card-title">Facilities Audit & Compliance Engine</div>
-        <div class="card-desc">Monthly facility compliance audits with mobile inspection forms, Dataverse-driven checklist scoring, automated PDF reports, and real-time Power BI compliance dashboard.</div>
-        <div class="card-foot">
-          <div class="card-tags"><span class="ctag">Dataverse</span><span class="ctag">Power BI</span><span class="ctag">PDF Reports</span></div>
-          <span class="card-cta">View demo →</span>
-        </div>
-      </a>
-
-      <a class="project-card" href="/portfolio/showcase" style="--accent:#1a56db">
-        <div class="card-head">
-          <div class="card-icon" style="background:#e0edff">💼</div>
-          <span class="card-badge" style="background:#e0edff;color:#1a56db">Power Apps · Showcase</span>
-        </div>
-        <div class="card-title">Enterprise App Showcase</div>
-        <div class="card-desc">Canvas App prototypes and Power Platform solutions — helpdesk ticket management, employee leave workflows, HR onboarding flows, and data collection apps.</div>
-        <div class="card-foot">
-          <div class="card-tags"><span class="ctag">Power Apps</span><span class="ctag">SharePoint</span><span class="ctag">Dataverse</span></div>
-          <span class="card-cta">Browse →</span>
-        </div>
-      </a>
-
-      <a class="project-card" href="/portfolio" style="--accent:#e65100">
-        <div class="card-head">
-          <div class="card-icon" style="background:#fff3e0">📊</div>
-          <span class="card-badge" style="background:#fff3e0;color:#e65100">Architecture · Slides</span>
-        </div>
-        <div class="card-title">Full Portfolio Deck</div>
-        <div class="card-desc">Interactive slide presentation covering enterprise projects, system architecture diagrams, AI implementations, automation patterns, and solution design decisions.</div>
-        <div class="card-foot">
-          <div class="card-tags"><span class="ctag">Power Platform</span><span class="ctag">Architecture</span><span class="ctag">AI</span></div>
-          <span class="card-cta">Open deck →</span>
-        </div>
-      </a>
-
-    </div>
-  </section>
 
   <div class="divider"></div>
 
@@ -685,7 +601,7 @@ footer a:hover { text-decoration: underline; }
 
   <footer>
     <div class="footer-links">
-      <a href="#projects">Projects</a>
+      <a href="/projects">Projects</a>
       <a href="#skills">Skills</a>
       <a href="/portfolio">Portfolio</a>
       <a href="/ai-automation">AI Case Study</a>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Projects — mekazek</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#eef5fc;--surface:#ffffff;--surface2:#ddeaf7;
+  --border:#b8d0e8;--text:#0f2034;--muted:#4a6a86;
+  --accent:#1565c0;--accent-dim:#0d47a1;
+  --blue:#0078d4;--blue-dim:#004e8c;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;}
+a{color:inherit;text-decoration:none;}
+
+.topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0.85rem 2rem;display:flex;align-items:center;gap:1.2rem;backdrop-filter:blur(8px);}
+.back-link{display:inline-flex;align-items:center;gap:0.4rem;color:var(--muted);
+  font-size:0.95rem;font-weight:600;transition:color 0.2s;}
+.back-link:hover{color:var(--accent);}
+.topbar-title{font-size:1.05rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:0.6rem;}
+.topbar-badge{font-size:0.75rem;font-weight:600;padding:0.2rem 0.7rem;border-radius:20px;
+  background:linear-gradient(90deg,var(--accent),var(--blue));color:#fff;letter-spacing:0.04em;}
+
+.main{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem;}
+
+.hero{text-align:center;margin-bottom:3rem;}
+.hero-eyebrow{font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:700;color:var(--accent);margin-bottom:0.8rem;}
+.hero-title{font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--text);
+  letter-spacing:-0.02em;line-height:1.2;margin-bottom:1rem;}
+.hero-sub{font-size:1.1rem;color:var(--muted);line-height:1.7;max-width:640px;margin:0 auto;}
+
+.section-label{font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;
+  font-weight:700;color:var(--accent);margin-bottom:1.2rem;display:flex;align-items:center;gap:0.6rem;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-label.alt{color:#6b21a8;}
+
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.4rem;margin-bottom:3rem;}
+
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:1.6rem;display:flex;flex-direction:column;gap:1rem;
+  transition:border-color 0.25s ease,box-shadow 0.35s cubic-bezier(0.22,1,0.36,1),transform 0.35s cubic-bezier(0.22,1,0.36,1);}
+.pcard:hover{transform:translateY(-5px) scale(1.015);box-shadow:0 16px 44px rgba(21,101,192,0.15);}
+
+.pcard-top{display:flex;align-items:flex-start;gap:1rem;}
+.pcard-num{font-size:1.8rem;font-weight:800;color:var(--border);line-height:1;flex-shrink:0;}
+.pcard-icon{font-size:2rem;flex-shrink:0;line-height:1;}
+.pcard-name{font-size:1.15rem;font-weight:700;color:var(--text);line-height:1.3;}
+.pcard-type{font-size:0.85rem;color:var(--muted);margin-top:0.2rem;}
+.pcard-status{margin-left:auto;flex-shrink:0;font-size:0.72rem;font-weight:700;
+  padding:0.2rem 0.65rem;border-radius:20px;letter-spacing:0.04em;white-space:nowrap;}
+.status-prod{background:linear-gradient(90deg,#1b5e20,#2e7d32);color:#fff;}
+.status-arch{background:var(--surface2);border:1px solid var(--border);color:var(--muted);}
+
+.pcard-desc{font-size:0.92rem;color:var(--text);line-height:1.65;}
+.pcard-tags{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.ptag{font-size:0.78rem;color:var(--muted);border:1px solid var(--border);
+  padding:0.18rem 0.55rem;border-radius:20px;background:var(--surface2);}
+
+.pcard-footer{margin-top:auto;padding-top:0.6rem;border-top:1px solid var(--border);}
+.pcard-cta{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.9rem;font-weight:700;color:var(--accent);}
+.pcard:hover .pcard-cta{color:var(--blue-dim);}
+
+@media(max-width:600px){
+  .main{padding:1.5rem 1rem 4rem;}
+  .topbar{padding:0.75rem 1rem;}
+  .hero-title{font-size:1.8rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+    Home
+  </a>
+  <div class="topbar-title">📁 All Projects <span class="topbar-badge">Power Platform &amp; AI</span></div>
+</div>
+
+<div class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Projects · Production Systems · Designs</div>
+    <h1 class="hero-title">Everything I've Built</h1>
+    <p class="hero-sub">Enterprise production systems, architecture designs, and personal AI projects — each with a full case study and an interactive showcase demo.</p>
+  </div>
+
+  <div class="section-label">In Production</div>
+  <div class="projects-grid">
+
+    <a class="pcard" href="/b2b-inventory">
+      <div class="pcard-top">
+        <span class="pcard-num">01</span>
+        <span class="pcard-icon">📦</span>
+        <div><div class="pcard-name">B2B Inventory &amp; Order System</div>
+        <div class="pcard-type">Canvas App · Model-Driven · Dataverse · Copilot Studio</div></div>
+        <span class="pcard-status status-prod">Production</span>
+      </div>
+      <p class="pcard-desc">Canvas App for field sales + Model-Driven back-office admin, 7-table Dataverse schema, C# plugin for credit limit enforcement, and Copilot Studio Agentic AI natural language queries.</p>
+      <div class="pcard-tags"><span class="ptag">Canvas App</span><span class="ptag">Dataverse</span><span class="ptag">Copilot Studio</span><span class="ptag">CI/CD</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+    <a class="pcard" href="/vendor-lifecycle">
+      <div class="pcard-top">
+        <span class="pcard-num">02</span>
+        <span class="pcard-icon">🏢</span>
+        <div><div class="pcard-name">Vendor Lifecycle &amp; Contract Mgmt</div>
+        <div class="pcard-type">SharePoint Online · Power Automate · Dataverse</div></div>
+        <span class="pcard-status status-prod">Production</span>
+      </div>
+      <p class="pcard-desc">Enterprise vendor registry managing 380+ vendors across 5 departments. Auto-provisioned folder structures, 3-level approval workflows, SLA expiry tracking.</p>
+      <div class="pcard-tags"><span class="ptag">SharePoint Lists</span><span class="ptag">Power Automate</span><span class="ptag">Dataverse</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+    <a class="pcard" href="/facilities-audit">
+      <div class="pcard-top">
+        <span class="pcard-num">03</span>
+        <span class="pcard-icon">🏗️</span>
+        <div><div class="pcard-name">Facilities Audit &amp; Compliance</div>
+        <div class="pcard-type">SharePoint Lists · Microsoft Forms · Power BI</div></div>
+        <span class="pcard-status status-prod">Production</span>
+      </div>
+      <p class="pcard-desc">Monthly facility compliance audits with mobile inspection forms, JSON-parsed checklist scoring, automated PDF reports, and a real-time Power BI dashboard.</p>
+      <div class="pcard-tags"><span class="ptag">Microsoft Forms</span><span class="ptag">JSON Parsing</span><span class="ptag">Power BI</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+    <a class="pcard" href="/clinical-supervision">
+      <div class="pcard-top">
+        <span class="pcard-num">04</span>
+        <span class="pcard-icon">🏥</span>
+        <div><div class="pcard-name">Clinical Supervision &amp; Audit</div>
+        <div class="pcard-type">Power Apps · SharePoint · PDF Generation</div></div>
+        <span class="pcard-status status-prod">Production</span>
+      </div>
+      <p class="pcard-desc">Clinical supervision documentation with concurrent approvals from up to 10 supervisors, automated PDF dossier generation, and compliance archival.</p>
+      <div class="pcard-tags"><span class="ptag">Concurrent Approvals</span><span class="ptag">PDF Generation</span><span class="ptag">Power Apps</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+    <a class="pcard" href="/hr-certification">
+      <div class="pcard-top">
+        <span class="pcard-num">05</span>
+        <span class="pcard-icon">🎓</span>
+        <div><div class="pcard-name">HR Certification Rules Engine</div>
+        <div class="pcard-type">Power Apps · SharePoint · Power Automate</div></div>
+        <span class="pcard-status status-prod">Production</span>
+      </div>
+      <p class="pcard-desc">Dynamic rules engine evaluating assessment scores against configurable thresholds to auto-assign follow-up training — no developer involvement for updates.</p>
+      <div class="pcard-tags"><span class="ptag">Rules Engine</span><span class="ptag">LMS Integration</span><span class="ptag">Power Apps</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+    <a class="pcard" href="/scan-to-dataverse">
+      <div class="pcard-top">
+        <span class="pcard-num">06</span>
+        <span class="pcard-icon">📄</span>
+        <div><div class="pcard-name">Document Automation — Scan to Dataverse</div>
+        <div class="pcard-type">Power Automate · AI Builder · Dataverse</div></div>
+        <span class="pcard-status status-prod">Production</span>
+      </div>
+      <p class="pcard-desc">A scan-to-Dataverse pipeline that takes a physical document off a scanner and creates a structured record in under 30 seconds — zero manual steps, zero custom code.</p>
+      <div class="pcard-tags"><span class="ptag">AI Builder OCR</span><span class="ptag">Dataverse</span><span class="ptag">Zero Code</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+  </div>
+
+  <div class="section-label alt">Architecture &amp; Personal Projects</div>
+  <div class="projects-grid">
+
+    <a class="pcard" href="/ai-automation">
+      <div class="pcard-top">
+        <span class="pcard-num">07</span>
+        <span class="pcard-icon">🤖</span>
+        <div><div class="pcard-name">AI-Powered Internal Request Automation</div>
+        <div class="pcard-type">Copilot Studio · Power Automate · Dataverse · RAG</div></div>
+        <span class="pcard-status status-arch">Architecture</span>
+      </div>
+      <p class="pcard-desc">End-to-end pipeline design for automating 800–1,000 daily internal requests. Deterministic Fast Path rules run before any LLM, with confidence-based routing and SOX-compliant audit traceability.</p>
+      <div class="pcard-tags"><span class="ptag">Fast Path Rules</span><span class="ptag">RAG</span><span class="ptag">Copilot Studio</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+    <a class="pcard" href="/job-search-agent">
+      <div class="pcard-top">
+        <span class="pcard-num">08</span>
+        <span class="pcard-icon">🔍</span>
+        <div><div class="pcard-name">Job Search Agent</div>
+        <div class="pcard-type">Python · LangChain · Groq · Agentic AI</div></div>
+        <span class="pcard-status status-arch">Personal</span>
+      </div>
+      <p class="pcard-desc">Multi-tool agentic AI that searches job listings, evaluates fit against a CV, and reasons autonomously about which tools to invoke — no hard-coded workflow.</p>
+      <div class="pcard-tags"><span class="ptag">LangChain</span><span class="ptag">ReAct Agent</span><span class="ptag">Groq API</span></div>
+      <div class="pcard-footer"><span class="pcard-cta">View case study →</span></div>
+    </a>
+
+  </div>
+
+</div>
+
+</body>
+</html>
