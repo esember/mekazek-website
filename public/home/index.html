@@ -174,27 +174,46 @@ body.no-scroll { overflow: hidden; }
   color: #00ff88;
   margin-bottom: 1.4rem;
 }
+.hero-h1 {
+  font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+  font-weight: 900;
+  line-height: 1.04;
+  color: #fff;
+  margin-bottom: 1.4rem;
+  text-shadow: 0 4px 32px rgba(0,0,0,0.45);
+  letter-spacing: -0.025em;
+}
+.hero-h1 .accent { color: #60c5ff; }
+.hero-tagline {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.68);
+  line-height: 1.72;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .hero-brand-link {
   display: inline-block;
   text-decoration: none;
+  margin-top: 2.2rem;
   transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
 }
-.hero-brand-link:hover { transform: scale(1.03); }
+.hero-brand-link:hover { transform: scale(1.04); }
 .hero-brand {
   font-family: 'Courier New', monospace;
-  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
   font-weight: 900;
   color: #38bdf8;
-  letter-spacing: 0.2em;
-  text-shadow: 0 0 20px #38bdf8, 0 0 50px #1a6ecc, 0 0 80px #0d2c5e;
-  margin-bottom: 0.8rem;
+  letter-spacing: 0.22em;
+  text-shadow: 0 0 16px #38bdf8, 0 0 36px #1a6ecc, 0 0 60px #0d2c5e;
+  margin-bottom: 0.6rem;
   line-height: 1;
 }
 .hero-brand-sub {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: rgba(200,225,255,0.8);
   line-height: 1.6;
-  max-width: 560px;
+  max-width: 480px;
   margin: 0 auto;
   font-weight: 400;
 }
@@ -425,8 +444,10 @@ footer a:hover { text-decoration: underline; }
   .photo-nav { padding: 0 1.25rem; }
   .photo-nav-links { display: none; }
   .hero-top { top: 16%; padding: 0 1.25rem; }
-  .hero-brand { font-size: clamp(2rem, 12vw, 3rem); }
-  .hero-brand-sub { font-size: 0.92rem; }
+  .hero-h1 { font-size: clamp(2rem, 9vw, 3rem); }
+  .hero-tagline { font-size: 0.95rem; }
+  .hero-brand { font-size: clamp(1.3rem, 8vw, 1.8rem); }
+  .hero-brand-sub { font-size: 0.85rem; }
   .hero-btn-left { left: 1.25rem; padding: 0.85rem 1.5rem; font-size: 0.9rem; bottom: 8%; }
   .hero-btn-right { right: 1.25rem; padding: 0.85rem 1.5rem; font-size: 0.9rem; bottom: 8%; }
   .sticky-nav { padding: 0 1.25rem; }
@@ -526,9 +547,17 @@ footer a:hover { text-decoration: underline; }
 
   <div class="hero-top" id="hero-content">
     <div class="hero-eyebrow">// Power Platform · AI Solutions</div>
+    <h1 class="hero-h1">
+      Building <span class="accent">intelligent</span><br>
+      enterprise systems &amp; solutions
+    </h1>
+    <p class="hero-tagline">
+      End-to-end automation and AI-powered workflows on the Microsoft
+      Power Platform — from concept to production.
+    </p>
     <a href="/projects" class="hero-brand-link">
-      <h1 class="hero-brand">MEKAZEK</h1>
-      <p class="hero-brand-sub"><span class="arrow">→</span> Click to explore my projects, production systems &amp; designs</p>
+      <div class="hero-brand">MEKAZEK</div>
+      <p class="hero-brand-sub"><span class="arrow">→</span> Click to see my projects, prototypes &amp; in-production applications</p>
     </a>
   </div>
 
