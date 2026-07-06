@@ -21,7 +21,7 @@ body.no-scroll { overflow: hidden; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #matrix-overlay.fade-out { opacity: 0; pointer-events: none; }
 
@@ -33,25 +33,25 @@ body.no-scroll { overflow: hidden; }
   font-family: 'Courier New', monospace;
   font-size: clamp(2.5rem, 9vw, 5.5rem);
   font-weight: 900;
-  color: #00ff41;
+  color: #38bdf8;
   letter-spacing: 0.35em;
-  text-shadow: 0 0 20px #00ff41, 0 0 50px #00c032, 0 0 80px #006e1a;
+  text-shadow: 0 0 20px #38bdf8, 0 0 50px #1a6ecc, 0 0 80px #0d2c5e;
   text-align: center;
   opacity: 0;
-  animation: glowIn 1.2s cubic-bezier(0.22,1,0.36,1) 1.4s forwards;
+  animation: glowIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
 }
 .matrix-sub {
   position: relative;
   z-index: 2;
   font-family: 'Courier New', monospace;
   font-size: clamp(0.58rem, 1.8vw, 0.8rem);
-  color: #4dff7c;
+  color: #7dd3fc;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   margin-top: 1rem;
   text-align: center;
   opacity: 0;
-  animation: glowIn 1s ease 2.1s forwards;
+  animation: glowIn 0.5s ease 0.6s forwards;
 }
 
 @keyframes glowIn {
@@ -716,7 +716,7 @@ footer a:hover { text-decoration: underline; }
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.font = FS + 'px monospace';
     for (let i = 0; i < cols; i++) {
-      ctx.fillStyle = Math.random() > 0.95 ? '#c0ffcc' : '#00ff41';
+      ctx.fillStyle = Math.random() > 0.95 ? '#bfe6ff' : '#38bdf8';
       ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], i * FS, drops[i] * FS);
       if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
@@ -743,9 +743,9 @@ footer a:hover { text-decoration: underline; }
       heroContent.classList.add('visible');
       heroBtnLeft.classList.add('visible');
       heroBtnRight.classList.add('visible');
-    }, 950);
+    }, 550);
 
-  }, 2000);
+  }, 1100);
 
 })();
 </script>
