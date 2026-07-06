@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Learning Tool — Case Study</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f8fd;--white:#ffffff;--surface:#eaf2fb;--border:#c8ddf0;
+  --text:#0d1f2d;--muted:#4e6c84;--light:#7a9ab5;
+  --primary:#0e7490;--accent:#0891b2;--accent-light:#cffafe;
+  --green:#1a7a2e;--green-bg:#e8f5eb;
+}
+html,body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  font-size:16px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+
+.topnav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);padding:0 2rem;height:56px;
+  display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{font-size:0.9rem;font-weight:700;color:var(--primary);letter-spacing:0.02em;}
+.nav-links{display:flex;align-items:center;gap:1.8rem;}
+.nav-link{font-size:0.85rem;font-weight:500;color:var(--muted);transition:color 0.2s;}
+.nav-link:hover{color:var(--primary);}
+.nav-cta{font-size:0.82rem;font-weight:700;background:var(--primary);color:#fff;
+  padding:0.4rem 1rem;border-radius:6px;transition:background 0.2s;}
+.nav-cta:hover{background:var(--accent);}
+
+.hero{position:relative;overflow:hidden;padding:5rem 2rem 4rem;text-align:center;
+  background:linear-gradient(135deg,#0d1b2e 0%,#0a1425 55%,#060b16 100%);}
+.hero-tech-bg{position:absolute;inset:0;z-index:0;overflow:hidden;}
+.hero-tech-bg svg{position:absolute;inset:0;width:100%;height:100%;}
+.hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+  color:rgba(255,255,255,0.9);font-size:0.82rem;font-weight:600;
+  padding:0.35rem 1rem;border-radius:30px;margin-bottom:1.5rem;letter-spacing:0.04em;}
+.hero-title{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;color:#fff;
+  letter-spacing:-0.03em;line-height:1.1;margin-bottom:1rem;}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:rgba(200,225,255,0.85);
+  line-height:1.65;max-width:640px;margin:0 auto 2.5rem;font-weight:400;}
+.hero-metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;}
+.metric{background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:1rem 1.4rem;min-width:130px;}
+.metric-num{font-size:1.8rem;font-weight:800;color:#fff;line-height:1;}
+.metric-lbl{font-size:0.78rem;color:rgba(180,210,255,0.85);margin-top:0.3rem;font-weight:500;}
+
+.gear-cw-slow, .gear-ccw-fast, .gear-cw-small, .arm-lower, .arm-upper, .claw-l, .claw-r{transform-box:view-box;}
+.gear-cw-slow{transform-origin:1700px 200px;animation:spinCW 75s linear infinite;}
+.gear-ccw-fast{transform-origin:1850px 380px;animation:spinCCW 44s linear infinite;}
+.gear-cw-small{transform-origin:1830px 880px;animation:spinCW 58s linear infinite;}
+@keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+.arm-lower{transform-origin:230px 980px;animation:armSwayLower 7s ease-in-out infinite;}
+.arm-upper{transform-origin:230px 740px;animation:armSwayUpper 6s ease-in-out infinite;}
+.claw-l{transform-origin:230px 520px;animation:clawL 3.4s ease-in-out infinite;}
+.claw-r{transform-origin:230px 520px;animation:clawR 3.4s ease-in-out infinite;}
+@keyframes armSwayLower{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(4deg)}}
+@keyframes armSwayUpper{0%,100%{transform:rotate(26deg)}50%{transform:rotate(40deg)}}
+@keyframes clawL{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(11deg)}}
+@keyframes clawR{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-11deg)}}
+
+.section{padding:4rem 2rem;}
+.section-inner{max-width:960px;margin:0 auto;}
+.section-alt{background:var(--white);}
+.eyebrow{font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:0.6rem;}
+.section-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--text);
+  letter-spacing:-0.02em;line-height:1.2;margin-bottom:1rem;}
+.section-lead{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:680px;}
+
+.meta-line{font-size:0.88rem;color:var(--muted);margin-top:1.2rem;padding:0.6rem 1rem;
+  background:var(--surface);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;
+  font-style:italic;display:inline-block;}
+
+.arch-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin-top:2rem;}
+.arch-list{list-style:none;display:flex;flex-direction:column;gap:0.7rem;}
+.arch-list li{font-size:0.92rem;color:var(--text);line-height:1.65;padding-left:1.2rem;position:relative;}
+.arch-list li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700;}
+.arch-list li strong{color:var(--primary);}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem;}
+.result-item{background:var(--green-bg);border:1px solid #a5d6a7;border-radius:10px;
+  padding:1rem 1.2rem;font-size:0.92rem;color:#1b5e20;line-height:1.55;display:flex;gap:0.6rem;}
+.result-item::before{content:'✓';font-weight:700;flex-shrink:0;}
+
+.tech-grid{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:2rem;}
+.tech-tag{background:var(--white);border:1px solid var(--border);border-radius:20px;
+  padding:0.45rem 1rem;font-size:0.85rem;font-weight:600;color:var(--primary);}
+
+.arch-cta{background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:1.8rem 2rem;margin-top:2.5rem;display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;}
+.arch-cta-text h3{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;}
+.arch-cta-text p{font-size:0.9rem;color:var(--muted);}
+.arch-cta-actions{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.arch-cta-btn{display:inline-flex;align-items:center;gap:0.5rem;flex-shrink:0;
+  background:var(--primary);color:#fff;padding:0.6rem 1.3rem;border-radius:8px;
+  font-size:0.9rem;font-weight:700;transition:background 0.2s;white-space:nowrap;}
+.arch-cta-btn:hover{background:var(--accent);}
+.arch-cta-btn.ghost{background:transparent;border:2px solid var(--border);color:var(--primary);}
+.arch-cta-btn.ghost:hover{border-color:var(--accent);background:transparent;color:var(--accent);}
+
+.footer{padding:2rem;text-align:center;border-top:1px solid var(--border);font-size:0.85rem;color:var(--light);}
+.footer a{color:var(--accent);font-weight:600;}
+
+@media(max-width:768px){
+  .results-grid{grid-template-columns:1fr;}
+  .hero-metrics{gap:0.7rem;}
+  .metric{min-width:100px;padding:0.8rem 1rem;}
+  .arch-cta{flex-direction:column;align-items:flex-start;}
+  .topnav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-brand">← <a href="/">Home</a></div>
+  <div class="nav-links">
+    <a href="#overview" class="nav-link">Overview</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="/english" target="_blank" class="nav-cta">Live Demo →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tech-bg">
+    <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <path id="gearShape" fill-rule="evenodd" d="M100.0,0.0 L99.1,13.1 L79.2,21.2 L75.8,31.4 L86.6,50.0 L79.3,60.9 L58.0,58.0 L49.9,65.1 L50.0,86.6 L38.3,92.4 L21.2,79.2 L10.7,81.3 L0.0,100.0 L-13.1,99.1 L-21.2,79.2 L-31.4,75.8 L-50.0,86.6 L-60.9,79.3 L-58.0,58.0 L-65.1,49.9 L-86.6,50.0 L-92.4,38.3 L-79.2,21.2 L-81.3,10.7 L-100.0,0.0 L-99.1,-13.1 L-79.2,-21.2 L-75.8,-31.4 L-86.6,-50.0 L-79.3,-60.9 L-58.0,-58.0 L-65.1,-49.9 L-50.0,-86.6 L-38.3,-92.4 L-21.2,-79.2 L-10.7,-81.3 L-0.0,-100.0 L13.1,-99.1 L21.2,-79.2 L31.4,-75.8 L50.0,-86.6 L60.9,-79.3 L58.0,-58.0 L65.1,-49.9 L86.6,-50.0 L92.4,-38.3 L79.2,-21.2 L81.3,-10.7 Z M34,0 A34,34 0 1,0 -34,0 A34,34 0 1,0 34,0 Z"/>
+        <filter id="techGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="7" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g stroke="#38bdf8" stroke-width="1.5" fill="none" opacity="0.14">
+        <path id="c1" d="M0,300 C400,250 700,500 1100,420 S1600,300 1920,340"/>
+        <path id="c2" d="M0,720 C300,670 600,820 950,780 S1500,660 1920,710"/>
+        <path id="c3" d="M120,0 C260,150 210,350 390,420 S520,660 470,900"/>
+      </g>
+      <g fill="#7dd3fc" opacity="0.8">
+        <circle r="3.5"><animateMotion dur="6s" repeatCount="indefinite"><mpath href="#c1"/></animateMotion></circle>
+        <circle r="3"><animateMotion dur="8s" begin="1s" repeatCount="indefinite"><mpath href="#c2"/></animateMotion></circle>
+        <circle r="3"><animateMotion dur="7s" begin="2.5s" repeatCount="indefinite"><mpath href="#c3"/></animateMotion></circle>
+      </g>
+      <g filter="url(#techGlow)" opacity="0.45">
+        <g class="gear-cw-slow"><use href="#gearShape" transform="translate(1700,200) scale(1.5)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/></g>
+        <g class="gear-ccw-fast"><use href="#gearShape" transform="translate(1850,380) scale(0.9)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/></g>
+      </g>
+      <g filter="url(#techGlow)" opacity="0.35">
+        <g class="gear-cw-small"><use href="#gearShape" transform="translate(1830,880) scale(0.75)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/></g>
+      </g>
+      <g filter="url(#techGlow)" opacity="0.5" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.45">
+        <rect x="170" y="980" width="120" height="60" rx="10"/>
+        <circle cx="230" cy="980" r="26"/>
+        <g class="arm-lower">
+          <rect x="207" y="740" width="46" height="240" rx="20"/>
+          <circle cx="230" cy="740" r="22"/>
+          <g class="arm-upper">
+            <rect x="210" y="520" width="40" height="220" rx="18"/>
+            <circle cx="230" cy="520" r="18"/>
+            <g class="claw-l"><path d="M230,520 L212,468" fill="none" stroke-width="14" stroke-linecap="round"/></g>
+            <g class="claw-r"><path d="M230,520 L248,468" fill="none" stroke-width="14" stroke-linecap="round"/></g>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-badge">📚 Personal Project · Side Build</div>
+    <h1 class="hero-title">Vocabulary Learning Tool</h1>
+    <p class="hero-sub">A flashcard-style app for learning the 2,000 most frequently used B2 &amp; C1 English words — with text-to-speech, auto-timer, and bilingual display.</p>
+    <div class="hero-metrics">
+      <div class="metric"><div class="metric-num">1,816</div><div class="metric-lbl">Words</div></div>
+      <div class="metric"><div class="metric-num">B2/C1</div><div class="metric-lbl">CEFR Levels</div></div>
+      <div class="metric"><div class="metric-num">2025</div><div class="metric-lbl">Built</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="overview">
+  <div class="section-inner">
+    <div class="eyebrow">Overview</div>
+    <h2 class="section-title">Learn the Words That Matter Most</h2>
+    <p class="section-lead">Flashcard-style app for learning the 2,000 most frequently used B2 &amp; C1 English words. Features text-to-speech, auto-timer, alphabetical index, level filtering, and bilingual (Turkish + English) display.</p>
+    <div class="meta-line">Personal Project &nbsp;·&nbsp; Vanilla JS · Tailwind CSS · Web Speech API &nbsp;·&nbsp; Built 2025</div>
+  </div>
+</section>
+
+<section class="section section-alt" id="features">
+  <div class="section-inner">
+    <div class="eyebrow">Features</div>
+    <h2 class="section-title">Built for Real Study Habits</h2>
+    <p class="section-lead">No backend, no build step — just a fast, focused vanilla JS app that runs entirely in the browser.</p>
+
+    <div class="arch-card">
+      <ul class="arch-list">
+        <li><strong>Text-to-Speech</strong> — every word can be heard aloud via the Web Speech API, reinforcing pronunciation alongside spelling.</li>
+        <li><strong>Auto-timer</strong> — flashcards can auto-advance on a timer for hands-free repetition drills.</li>
+        <li><strong>Alphabetical index</strong> — jump directly to any word without scrolling through the full list.</li>
+        <li><strong>Level filtering</strong> — study B2 and C1 vocabulary separately or together.</li>
+        <li><strong>Bilingual display</strong> — Turkish and English shown side by side for every entry.</li>
+      </ul>
+    </div>
+
+    <div class="arch-cta">
+      <div class="arch-cta-text">
+        <h3>Try It Yourself</h3>
+        <p>The live app — no signup, just open and start studying</p>
+      </div>
+      <div class="arch-cta-actions">
+        <a href="/english" target="_blank" class="arch-cta-btn">🌐 Live Demo →</a>
+        <a href="https://github.com/esember/vocab-learning-tool" target="_blank" class="arch-cta-btn ghost">⬡ View on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="eyebrow">At a Glance</div>
+    <h2 class="section-title">Why It's Useful</h2>
+    <div class="results-grid">
+      <div class="result-item">1,816 curated B2 &amp; C1 words — the highest-frequency vocabulary for intermediate-advanced learners</div>
+      <div class="result-item">Zero backend — runs entirely client-side, fast and easy to host anywhere</div>
+      <div class="result-item">Bilingual by design — built for Turkish speakers learning English</div>
+      <div class="result-item">Open source — full code available on GitHub</div>
+    </div>
+    <div class="tech-grid">
+      <span class="tech-tag">Vanilla JavaScript</span>
+      <span class="tech-tag">Tailwind CSS</span>
+      <span class="tech-tag">Web Speech API</span>
+      <span class="tech-tag">localStorage</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p><a href="/">← Back to Home</a> &nbsp;·&nbsp; <a href="/projects">All Projects</a> &nbsp;·&nbsp; <a href="/english" target="_blank">Live Demo →</a></p>
+</footer>
+
+</body>
+</html>
