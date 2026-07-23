@@ -1,5 +1,5 @@
 /* ============================================================
-   MEKA SOLUTIONS — Interaction & animation engine
+   MEKAZEK STUDIO — Interaction & animation engine
    Path-based router (History API), page transitions, scroll
    animations, hero canvas, counters, chat demo, and the
    project page generator. Base path: /home
@@ -44,15 +44,15 @@
 
   function pageTitle(route) {
     const map = {
-      home: 'Meka Solutions — Automation & Agentic AI Consulting',
-      services: 'Services — Meka Solutions',
-      projects: 'Projects — Meka Solutions',
-      about: 'About — Meka Solutions',
-      contact: 'Contact — Meka Solutions'
+      home: 'Mekazek Studio — Automation & Agentic AI Consulting',
+      services: 'Services — Mekazek Studio',
+      projects: 'Projects — Mekazek Studio',
+      about: 'About — Mekazek Studio',
+      contact: 'Contact — Mekazek Studio'
     };
     if (route.page === 'project-detail') {
       const p = PROJECTS.find(x => x.slug === route.slug);
-      return (p ? p.title : 'Project') + ' — Meka Solutions';
+      return (p ? p.title : 'Project') + ' — Mekazek Studio';
     }
     return map[route.page];
   }
