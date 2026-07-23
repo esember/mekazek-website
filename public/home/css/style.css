@@ -76,6 +76,7 @@ button { font: inherit; cursor: pointer; }
   font-size: 0.95rem; color: var(--muted); padding-left: 0.42em;
   opacity: 0; animation: plFade 0.8s 0.7s forwards;
 }
+.preloader-word b { color: var(--accent-2); margin-left: 0.42em; }
 @keyframes plFade { to { opacity: 1; } }
 
 /* ============================================================
@@ -130,6 +131,7 @@ body.cursor-hot .cursor-ring { width: 58px; height: 58px; margin: -29px 0 0 -29p
 }
 .header-inner { display: flex; align-items: center; gap: 28px; }
 .logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.12em; font-size: 1rem; white-space: nowrap; }
+.logo b { font-weight: 500; color: var(--accent-2); margin-left: 0.34em; }
 .logo svg { width: 30px; height: 30px; }
 .main-nav { display: flex; gap: 26px; margin-left: auto; }
 .main-nav a {
