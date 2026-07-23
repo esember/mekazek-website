@@ -1,671 +1,559 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Power Platform &amp; AI Portfolio — mekazek</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; }
-body.no-scroll { overflow: hidden; }
-
-/* ============================================================
-   MATRIX OVERLAY — sits on top of everything, fades out
-   ============================================================ */
-#matrix-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-}
-#matrix-overlay.fade-out { opacity: 0; pointer-events: none; }
-
-#matrix-canvas { position: absolute; inset: 0; display: block; }
-
-.matrix-brand {
-  position: relative;
-  z-index: 2;
-  font-family: 'Courier New', monospace;
-  font-size: clamp(2.5rem, 9vw, 5.5rem);
-  font-weight: 900;
-  color: #38bdf8;
-  letter-spacing: 0.35em;
-  text-shadow: 0 0 20px #38bdf8, 0 0 50px #1a6ecc, 0 0 80px #0d2c5e;
-  text-align: center;
-  opacity: 0;
-  animation: glowIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
-}
-.matrix-sub {
-  position: relative;
-  z-index: 2;
-  font-family: 'Courier New', monospace;
-  font-size: clamp(0.58rem, 1.8vw, 0.8rem);
-  color: #7dd3fc;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  margin-top: 1rem;
-  text-align: center;
-  opacity: 0;
-  animation: glowIn 0.5s ease 0.6s forwards;
-}
-
-@keyframes glowIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ============================================================
-   PHOTO HERO — first section, 100vh, photo background
-   ============================================================ */
-#hero {
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-  background: #080f1d; /* fallback if image not loaded */
-}
-
-/* Animated robotic-process background (gears + arm + circuit pulses) */
-.hero-tech-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: linear-gradient(135deg, #0d1b2e 0%, #0a1425 55%, #060b16 100%);
-}
-.hero-tech-bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-.gear-cw-slow, .gear-ccw-fast, .gear-cw-small,
-.arm-lower, .arm-upper, .claw-l, .claw-r {
-  transform-box: view-box;
-}
-.gear-cw-slow  { transform-origin: 1700px 200px; animation: spinCW 75s linear infinite; }
-.gear-ccw-fast { transform-origin: 1850px 380px; animation: spinCCW 44s linear infinite; }
-.gear-cw-small { transform-origin: 1830px 880px; animation: spinCW 58s linear infinite; }
-
-@keyframes spinCW  { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
-@keyframes spinCCW { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
-
-.arm-lower { transform-origin: 230px 980px; animation: armSwayLower 7s ease-in-out infinite; }
-.arm-upper { transform-origin: 230px 740px; animation: armSwayUpper 6s ease-in-out infinite; }
-.claw-l    { transform-origin: 230px 520px; animation: clawL 3.4s ease-in-out infinite; }
-.claw-r    { transform-origin: 230px 520px; animation: clawR 3.4s ease-in-out infinite; }
-
-@keyframes armSwayLower { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(4deg); } }
-@keyframes armSwayUpper { 0%,100% { transform: rotate(26deg); } 50% { transform: rotate(40deg); } }
-@keyframes clawL { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(11deg); } }
-@keyframes clawR { 0%,100% { transform: rotate(4deg); }  50% { transform: rotate(-11deg); } }
-
-/* Gradient overlay — lighter so photo is more visible */
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to right,  rgba(4,12,30,0.48) 0%,  rgba(4,12,30,0.08) 55%, rgba(4,12,30,0.25) 100%),
-    linear-gradient(to bottom, rgba(4,12,30,0.04) 0%,  rgba(4,12,30,0.20) 60%, rgba(4,12,30,0.68) 100%);
-}
-
-/* Nav on top of photo (transparent) */
-.photo-nav {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  padding: 0 2.5rem;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 10;
-}
-.photo-nav-brand {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: rgba(255,255,255,0.95);
-  text-decoration: none;
-  letter-spacing: 0.1em;
-}
-.nav-brand-group { display: flex; align-items: baseline; gap: 0.6rem; }
-.nav-copyright { font-size: 0.62rem; font-weight: 400; letter-spacing: 0.01em; white-space: nowrap; }
-.photo-nav .nav-copyright { color: rgba(255,255,255,0.5); }
-.sticky-nav .nav-copyright { color: rgba(74,106,134,0.7); }
-.photo-nav-links {
-  display: flex;
-  gap: 1.75rem;
-  list-style: none;
-  align-items: center;
-}
-.photo-nav-links a {
-  color: rgba(255,255,255,0.8);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.photo-nav-links a:hover { color: #fff; }
-.photo-nav-cta {
-  border: 1.5px solid rgba(255,255,255,0.5);
-  color: rgba(255,255,255,0.9) !important;
-  padding: 0.4rem 1.1rem;
-  border-radius: 6px;
-}
-.photo-nav-cta:hover {
-  border-color: #fff !important;
-  background: rgba(255,255,255,0.12) !important;
-  color: #fff !important;
-}
-
-/* Hero TOP — heading centred in upper portion of photo */
-.hero-top {
-  position: absolute;
-  top: 20%;
-  left: 0; right: 0;
-  padding: 0 3rem;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 1.2s ease, transform 1.2s ease;
-}
-.hero-top.visible { opacity: 1; transform: translateY(0); }
-
-.hero-eyebrow {
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #00ff88;
-  margin-bottom: 1.4rem;
-}
-.hero-h1 {
-  font-size: clamp(2.6rem, 6.5vw, 5.2rem);
-  font-weight: 900;
-  line-height: 1.04;
-  color: #fff;
-  margin-bottom: 1.4rem;
-  text-shadow: 0 4px 32px rgba(0,0,0,0.45);
-  letter-spacing: -0.025em;
-}
-.hero-h1 .accent { color: #60c5ff; }
-.hero-tagline {
-  font-size: 1.15rem;
-  color: rgba(255,255,255,0.68);
-  line-height: 1.72;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.hero-brand-wrap { margin-top: 2.4rem; }
-.hero-brand-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.9rem;
-  text-decoration: none;
-  padding: 0.95rem 2.1rem;
-  border-radius: 50px;
-  background: linear-gradient(135deg, rgba(255,122,41,0.42), rgba(255,149,66,0.3));
-  border: 1.5px solid rgba(255,138,61,0.55);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 10px 30px rgba(40,15,0,0.4);
-  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-  animation: heroBrandPulse 2.2s ease-in-out infinite;
-}
-.hero-brand-btn:hover {
-  animation-play-state: paused;
-  transform: translateY(-3px) scale(1.03);
-  border-color: rgba(255,176,103,0.9);
-  background: linear-gradient(135deg, rgba(255,122,41,0.58), rgba(255,149,66,0.42));
-  box-shadow: 0 16px 40px rgba(40,15,0,0.55), 0 0 28px rgba(255,138,61,0.45);
-}
-@keyframes heroBrandPulse {
-  0%, 100% {
-    box-shadow: 0 10px 30px rgba(40,15,0,0.4), 0 0 0 rgba(255,138,61,0);
-    border-color: rgba(255,138,61,0.55);
-  }
-  50% {
-    box-shadow: 0 10px 30px rgba(40,15,0,0.4), 0 0 24px rgba(255,138,61,0.6);
-    border-color: rgba(255,176,103,0.9);
-  }
-}
-.hero-brand-btn-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: clamp(1.05rem, 2.6vw, 1.35rem);
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 14px rgba(255,138,61,0.9);
-  line-height: 1;
-}
-
-/* ============================================================
-   LANDING CONTENT — below the photo
-   ============================================================ */
-#landing {
-  background: #eef5fc;
-  color: #0f2034;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-}
-
-/* Sticky nav — becomes visible when landing scrolls into view */
-.sticky-nav {
-  position: sticky;
-  top: 0;
-  background: rgba(238,245,252,0.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid #c8ddf0;
-  padding: 0 2rem;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 50;
-}
-.sticky-brand {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #1a56db;
-  text-decoration: none;
-  letter-spacing: 0.1em;
-}
-.sticky-links { display: flex; gap: 1.75rem; list-style: none; align-items: center; }
-.sticky-links a {
-  color: #374151;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.sticky-links a:hover { color: #1a56db; }
-.sticky-cta {
-  background: #1a56db;
-  color: #fff !important;
-  padding: 0.4rem 1.1rem;
-  border-radius: 6px;
-  font-weight: 600 !important;
-}
-.sticky-cta:hover { background: #1648bb; }
-
-/* Stats row */
-.stats-bar {
-  background: #fff;
-  border-bottom: 1px solid #d0e4f7;
-  padding: 1.75rem 2rem;
-}
-.stats-inner {
-  max-width: 960px;
-  margin: 0 auto;
-  display: flex;
-  gap: 3rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.stat-value { font-size: 1.9rem; font-weight: 800; color: #0f2034; line-height: 1; }
-.stat-label { font-size: 0.8rem; color: #7a94b0; margin-top: 0.3rem; }
-
-/* Sections */
-.section {
-  padding: 4rem 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.section-eyebrow {
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #1a56db;
-  margin-bottom: 0.4rem;
-}
-.section-title { font-size: 1.75rem; font-weight: 800; color: #0f2034; margin-bottom: 0.4rem; }
-.section-sub { font-size: 0.94rem; color: #4b6280; margin-bottom: 2.5rem; line-height: 1.6; }
-
-/* Project cards */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.25rem;
-}
-.project-card {
-  background: #fff;
-  border: 1px solid #d0e4f7;
-  border-radius: 14px;
-  padding: 1.75rem;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s cubic-bezier(0.22,1,0.36,1), border-color 0.25s ease;
-}
-.project-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--accent, #1a56db);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-.project-card:hover { transform: translateY(-6px) scale(1.015); box-shadow: 0 18px 44px rgba(15,32,52,0.13); border-color: var(--accent, #1a56db); }
-.project-card:hover::after { transform: scaleX(1); }
-
-.card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.card-icon { width: 48px; height: 48px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
-.card-badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.22rem 0.65rem; border-radius: 999px; white-space: nowrap; }
-.card-title { font-size: 1.1rem; font-weight: 700; color: #0f2034; line-height: 1.3; }
-.card-desc { font-size: 0.875rem; color: #4b6280; line-height: 1.65; flex: 1; }
-.card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 1rem; border-top: 1px solid #eef5fc; }
-.card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.ctag { font-size: 0.67rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eef5fc; color: #4b6280; }
-.card-cta { font-size: 0.82rem; font-weight: 700; color: var(--accent, #1a56db); white-space: nowrap; }
-
-/* Skills */
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.875rem; }
-.skill-card {
-  background: #fff;
-  border: 1px solid #d0e4f7;
-  border-radius: 10px;
-  padding: 1rem 1.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.skill-card:hover { border-color: #93b8e4; box-shadow: 0 2px 10px rgba(26,86,219,0.09); }
-.sk-icon { font-size: 1.35rem; }
-.sk-name { font-size: 0.84rem; font-weight: 600; color: #0f2034; }
-
-/* Demo chips */
-.demos-row { display: flex; flex-wrap: wrap; gap: 0.875rem; }
-.demo-chip {
-  background: #fff;
-  border: 1.5px solid #d0e4f7;
-  border-radius: 8px;
-  padding: 0.65rem 1.25rem;
-  text-decoration: none;
-  color: #374151;
-  font-size: 0.875rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-}
-.demo-chip:hover { border-color: #1a56db; color: #1a56db; background: #f0f6ff; transform: translateY(-2px); }
-
-/* Divider */
-.divider { height: 1px; background: linear-gradient(to right, transparent, #c8ddf0 20%, #c8ddf0 80%, transparent); max-width: 1100px; margin: 0 auto; }
-
-/* Footer */
-footer {
-  background: #0f2034;
-  color: #7a94b0;
-  padding: 2.5rem 2rem;
-  text-align: center;
-  font-size: 0.84rem;
-  line-height: 1.8;
-}
-footer a { color: #60a5fa; text-decoration: none; }
-footer a:hover { text-decoration: underline; }
-.footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
-
-/* Responsive */
-@media (max-width: 640px) {
-  .photo-nav { padding: 0 1.25rem; }
-  .photo-nav-links { display: none; }
-  .hero-top { top: 16%; padding: 0 1.25rem; }
-  .hero-h1 { font-size: clamp(2rem, 9vw, 3rem); }
-  .hero-tagline { font-size: 0.95rem; }
-  .hero-brand-btn { padding: 0.8rem 1.6rem; gap: 0.6rem; }
-  .hero-brand-btn-text { font-size: clamp(0.95rem, 5.5vw, 1.15rem); }
-  .sticky-nav { padding: 0 1.25rem; }
-  .sticky-links { gap: 0.875rem; }
-  .section { padding: 3rem 1.25rem; }
-  .stats-bar { padding: 1.5rem 1.25rem; }
-  .stats-inner { gap: 1.75rem; }
-  .stat-value { font-size: 1.5rem; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sinaps — Automation & Agentic AI Consulting</title>
+  <meta name="description" content="Solutions that turn internal processes into automation, agentic AI design, and Copilot Studio agents built for your company.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='4' fill='%2322d3ee'/%3E%3Ccircle cx='23' cy='8' r='3' fill='%23818cf8'/%3E%3Ccircle cx='23' cy='24' r='3' fill='%23f472b6'/%3E%3Cpath d='M12 14.5 20.5 9M12 17.5 20.5 23' stroke='%238b93ab' stroke-width='1.6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/home/css/style.css">
 </head>
-<body class="no-scroll">
+<body>
 
-<!-- ============================================================
-     MATRIX OVERLAY
-     ============================================================ -->
-<div id="matrix-overlay">
-  <canvas id="matrix-canvas"></canvas>
-  <div class="matrix-brand">MEKAZEK</div>
-  <div class="matrix-sub">Power Platform &nbsp;·&nbsp; AI Solutions &nbsp;·&nbsp; Enterprise Automation</div>
-</div>
-
-<!-- ============================================================
-     TECH HERO
-     ============================================================ -->
-<section id="hero">
-  <div class="hero-tech-bg">
-    <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <path id="gearShape" fill-rule="evenodd" d="M100.0,0.0 L99.1,13.1 L79.2,21.2 L75.8,31.4 L86.6,50.0 L79.3,60.9 L58.0,58.0 L49.9,65.1 L50.0,86.6 L38.3,92.4 L21.2,79.2 L10.7,81.3 L0.0,100.0 L-13.1,99.1 L-21.2,79.2 L-31.4,75.8 L-50.0,86.6 L-60.9,79.3 L-58.0,58.0 L-65.1,49.9 L-86.6,50.0 L-92.4,38.3 L-79.2,21.2 L-81.3,10.7 L-100.0,0.0 L-99.1,-13.1 L-79.2,-21.2 L-75.8,-31.4 L-86.6,-50.0 L-79.3,-60.9 L-58.0,-58.0 L-65.1,-49.9 L-50.0,-86.6 L-38.3,-92.4 L-21.2,-79.2 L-10.7,-81.3 L-0.0,-100.0 L13.1,-99.1 L21.2,-79.2 L31.4,-75.8 L50.0,-86.6 L60.9,-79.3 L58.0,-58.0 L65.1,-49.9 L86.6,-50.0 L92.4,-38.3 L79.2,-21.2 L81.3,-10.7 Z M34,0 A34,34 0 1,0 -34,0 A34,34 0 1,0 34,0 Z"/>
-        <filter id="techGlow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="7" result="blur"/>
-          <feMerge>
-            <feMergeNode in="blur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
-
-      <!-- circuit traces -->
-      <g stroke="#38bdf8" stroke-width="1.5" fill="none" opacity="0.14">
-        <path id="c1" d="M0,300 C400,250 700,500 1100,420 S1600,300 1920,340"/>
-        <path id="c2" d="M0,720 C300,670 600,820 950,780 S1500,660 1920,710"/>
-        <path id="c3" d="M120,0 C260,150 210,350 390,420 S520,660 470,900"/>
-      </g>
-      <g fill="#7dd3fc" opacity="0.8">
-        <circle r="3.5"><animateMotion dur="6s" repeatCount="indefinite"><mpath href="#c1"/></animateMotion></circle>
-        <circle r="3"><animateMotion dur="8s" begin="1s" repeatCount="indefinite"><mpath href="#c2"/></animateMotion></circle>
-        <circle r="3"><animateMotion dur="7s" begin="2.5s" repeatCount="indefinite"><mpath href="#c3"/></animateMotion></circle>
-      </g>
-
-      <!-- gear cluster, top-right -->
-      <g filter="url(#techGlow)" opacity="0.45">
-        <g class="gear-cw-slow">
-          <use href="#gearShape" transform="translate(1700,200) scale(1.5)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
-        </g>
-        <g class="gear-ccw-fast">
-          <use href="#gearShape" transform="translate(1850,380) scale(0.9)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
-        </g>
-      </g>
-
-      <!-- small gear, bottom-right -->
-      <g filter="url(#techGlow)" opacity="0.35">
-        <g class="gear-cw-small">
-          <use href="#gearShape" transform="translate(1830,880) scale(0.75)" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4"/>
-        </g>
-      </g>
-
-      <!-- robotic arm, bottom-left -->
-      <g filter="url(#techGlow)" opacity="0.5" fill="#16233a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.45">
-        <rect x="170" y="980" width="120" height="60" rx="10"/>
-        <circle cx="230" cy="980" r="26"/>
-        <g class="arm-lower">
-          <rect x="207" y="740" width="46" height="240" rx="20"/>
-          <circle cx="230" cy="740" r="22"/>
-          <g class="arm-upper">
-            <rect x="210" y="520" width="40" height="220" rx="18"/>
-            <circle cx="230" cy="520" r="18"/>
-            <g class="claw-l"><path d="M230,520 L212,468" fill="none" stroke-width="14" stroke-linecap="round"/></g>
-            <g class="claw-r"><path d="M230,520 L248,468" fill="none" stroke-width="14" stroke-linecap="round"/></g>
-          </g>
-        </g>
-      </g>
-    </svg>
-  </div>
-  <div class="hero-overlay"></div>
-
-  <nav class="photo-nav">
-    <div class="nav-brand-group">
-      <a href="#landing" class="photo-nav-brand">mekazek</a>
-      <span class="nav-copyright">All rights reserved</span>
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-inner">
+      <svg class="preloader-logo" viewBox="0 0 64 64" fill="none">
+        <circle cx="18" cy="32" r="8" class="pl-node pl-n1"/>
+        <circle cx="46" cy="16" r="6" class="pl-node pl-n2"/>
+        <circle cx="46" cy="48" r="6" class="pl-node pl-n3"/>
+        <path d="M25 28.5 40 18.5" class="pl-line"/>
+        <path d="M25 35.5 40 45.5" class="pl-line"/>
+      </svg>
+      <span class="preloader-word">SINAPS</span>
     </div>
-    <ul class="photo-nav-links">
-      <li><a href="/projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#demos">Demos</a></li>
-      <li><a href="/portfolio" class="photo-nav-cta">Portfolio →</a></li>
-    </ul>
-  </nav>
+  </div>
 
-  <div class="hero-top" id="hero-content">
-    <div class="hero-eyebrow">Power Platform · AI Solutions</div>
-    <h1 class="hero-h1">
-      Building <span class="accent">intelligent</span><br>
-      enterprise systems &amp; solutions
-    </h1>
-    <p class="hero-tagline">
-      End-to-end automation and AI-powered workflows on the Microsoft
-      Power Platform — from concept to production.
-    </p>
-    <div class="hero-brand-wrap">
-      <a href="/projects" class="hero-brand-btn">
-        <span class="hero-brand-btn-text">See My Projects</span>
+  <!-- Page transition curtain -->
+  <div class="page-transition" id="page-transition" aria-hidden="true">
+    <div class="pt-panel"></div>
+    <div class="pt-panel"></div>
+    <div class="pt-panel"></div>
+  </div>
+
+  <!-- Custom cursor -->
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <a href="/home" class="logo" aria-label="Sinaps home">
+        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <circle cx="9" cy="16" r="4.2" fill="#22d3ee"/>
+          <circle cx="23" cy="8" r="3.2" fill="#818cf8"/>
+          <circle cx="23" cy="24" r="3.2" fill="#f472b6"/>
+          <path d="M12.2 14.4 20.2 9.4M12.2 17.6 20.2 22.6" stroke="#8b93ab" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <span>SINAPS</span>
       </a>
+      <nav class="main-nav" aria-label="Main menu">
+        <a href="/home" data-nav="home">Home</a>
+        <a href="/home/services" data-nav="services">Services</a>
+        <a href="/home/projects" data-nav="projects">Projects</a>
+        <a href="/home/about" data-nav="about">About</a>
+        <a href="/home/contact" data-nav="contact">Contact</a>
+      </nav>
+      <a href="/home/contact" class="btn btn-sm btn-primary nav-cta" data-magnetic>Book a Call</a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-  </div>
-</section>
+  </header>
 
-<!-- ============================================================
-     LANDING CONTENT
-     ============================================================ -->
-<div id="landing">
-
-  <nav class="sticky-nav">
-    <div class="nav-brand-group">
-      <a href="#hero" class="sticky-brand">mekazek</a>
-      <span class="nav-copyright">All rights reserved</span>
-    </div>
-    <ul class="sticky-links">
-      <li><a href="/projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#demos">Demos</a></li>
-      <li><a href="/portfolio" class="sticky-cta">Portfolio →</a></li>
-    </ul>
-  </nav>
-
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stats-inner">
-      <div><div class="stat-value">80%</div><div class="stat-label">Reduction in manual triage</div></div>
-      <div><div class="stat-value">95%+</div><div class="stat-label">Document extraction accuracy</div></div>
-      <div><div class="stat-value">&lt;&nbsp;2 min</div><div class="stat-label">Average request routing time</div></div>
-    </div>
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <nav aria-label="Mobile menu">
+      <a href="/home" data-nav="home">Home</a>
+      <a href="/home/services" data-nav="services">Services</a>
+      <a href="/home/projects" data-nav="projects">Projects</a>
+      <a href="/home/about" data-nav="about">About</a>
+      <a href="/home/contact" data-nav="contact">Contact</a>
+    </nav>
+    <div class="mm-footer">hello@sinaps.co</div>
   </div>
 
+  <main id="app">
 
-  <div class="divider"></div>
+    <!-- ============ HOME ============ -->
+    <section class="page" data-page="home">
 
-  <!-- Skills -->
-  <section class="section" id="skills">
-    <div class="section-eyebrow">Technical Skills</div>
-    <div class="section-title">Tools &amp; Platforms</div>
-    <div class="section-sub">Full-stack Power Platform development with enterprise AI integration.</div>
-    <div class="skills-grid">
-      <div class="skill-card"><span class="sk-icon">⚡</span><span class="sk-name">Power Automate</span></div>
-      <div class="skill-card"><span class="sk-icon">📱</span><span class="sk-name">Power Apps</span></div>
-      <div class="skill-card"><span class="sk-icon">🧠</span><span class="sk-name">AI Builder</span></div>
-      <div class="skill-card"><span class="sk-icon">🗄️</span><span class="sk-name">Dataverse</span></div>
-      <div class="skill-card"><span class="sk-icon">🤖</span><span class="sk-name">Copilot Studio</span></div>
-      <div class="skill-card"><span class="sk-icon">☁️</span><span class="sk-name">Azure OpenAI</span></div>
-      <div class="skill-card"><span class="sk-icon">📂</span><span class="sk-name">SharePoint</span></div>
-      <div class="skill-card"><span class="sk-icon">🔐</span><span class="sk-name">Entra ID</span></div>
-      <div class="skill-card"><span class="sk-icon">🐍</span><span class="sk-name">Python</span></div>
-      <div class="skill-card"><span class="sk-icon">🌐</span><span class="sk-name">Next.js</span></div>
-      <div class="skill-card"><span class="sk-icon">📊</span><span class="sk-name">Power BI</span></div>
-      <div class="skill-card"><span class="sk-icon">🔗</span><span class="sk-name">REST / Graph API</span></div>
+      <div class="hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <div class="hero-orbs" aria-hidden="true"><i class="orb orb-1"></i><i class="orb orb-2"></i><i class="orb orb-3"></i></div>
+        <div class="container hero-content">
+          <div class="hero-badge" data-reveal><span class="pulse-dot"></span> Automation &amp; Agentic AI Consulting</div>
+          <h1 data-split data-reveal="none">We turn your internal processes into intelligent automation</h1>
+          <p class="hero-sub" data-reveal style="--rd:.5s">Hand the repetitive work to robots and let AI back your decisions. Process automation, agentic AI solutions, and Copilot Studio agents that give your team its time back for real work.</p>
+          <div class="hero-cta" data-reveal style="--rd:.65s">
+            <a href="/home/projects" class="btn btn-primary" data-magnetic>Explore Our Projects</a>
+            <a href="/home/contact" class="btn btn-ghost" data-magnetic>Free Discovery Call</a>
+          </div>
+          <div class="hero-stats" data-stagger="0.12">
+            <div class="stat" data-reveal><span class="stat-value" data-count="100" data-suffix="+">0</span><span class="stat-label">Workflows in Production</span></div>
+            <div class="stat" data-reveal><span class="stat-value" data-count="200" data-suffix="+">0</span><span class="stat-label">Active Users</span></div>
+            <div class="stat" data-reveal><span class="stat-value" data-count="19" data-suffix="+">0</span><span class="stat-label">Years in IT</span></div>
+            <div class="stat" data-reveal><span class="stat-value" data-count="60" data-prefix="%">0</span><span class="stat-label">Faster Processes</span></div>
+          </div>
+        </div>
+        <div class="scroll-hint" aria-hidden="true"><span></span></div>
+      </div>
+
+      <!-- Tech marquee -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>Power Automate</span><i>•</i><span>Copilot Studio</span><i>•</i><span>Azure OpenAI</span><i>•</i><span>Microsoft 365</span><i>•</i><span>Power Apps</span><i>•</i><span>Dynamics 365</span><i>•</i><span>n8n</span><i>•</i><span>Python</span><i>•</i><span>UiPath</span><i>•</i><span>SharePoint</span><i>•</i><span>Teams</span><i>•</i><span>SAP Integration</span><i>•</i>
+          <span>Power Automate</span><i>•</i><span>Copilot Studio</span><i>•</i><span>Azure OpenAI</span><i>•</i><span>Microsoft 365</span><i>•</i><span>Power Apps</span><i>•</i><span>Dynamics 365</span><i>•</i><span>n8n</span><i>•</i><span>Python</span><i>•</i><span>UiPath</span><i>•</i><span>SharePoint</span><i>•</i><span>Teams</span><i>•</i><span>SAP Integration</span><i>•</i>
+        </div>
+      </div>
+
+      <!-- Service cards -->
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-label" data-reveal>What We Do</span>
+            <h2 data-reveal>From process to agent — <em>intelligent transformation</em>, end to end</h2>
+          </div>
+          <div class="cards-grid" data-stagger="0.1">
+            <a class="service-card" href="/home/services" data-tilt data-reveal>
+              <div class="sc-icon" style="--sc:#0891b2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></div>
+              <h3>Process Automation</h3>
+              <p>From approval flows to invoice processing — we automate your manual processes end to end.</p>
+              <span class="card-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="service-card" href="/home/services" data-tilt data-reveal>
+              <div class="sc-icon" style="--sc:#6366f1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"/></svg></div>
+              <h3>Agentic AI Solutions</h3>
+              <p>We design AI agents that think, plan, and complete tasks on their own.</p>
+              <span class="card-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="service-card" href="/home/services" data-tilt data-reveal>
+              <div class="sc-icon" style="--sc:#db2777"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg></div>
+              <h3>Copilot Studio Agents</h3>
+              <p>We build company-specific assistants with Microsoft Copilot Studio and roll them out in Teams.</p>
+              <span class="card-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="service-card" href="/home/services" data-tilt data-reveal>
+              <div class="sc-icon" style="--sc:#059669"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+              <h3>Integration &amp; Consulting</h3>
+              <p>We connect your existing systems (ERP, CRM, M365) and train your team to run them.</p>
+              <span class="card-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live flow example -->
+      <section class="section section-alt">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-label" data-reveal>Live Example</span>
+            <h2 data-reveal>How do your processes <em>transform?</em></h2>
+            <p class="section-sub" data-reveal>Example: an incoming invoice posted to the ERP without a human touching it — the flow below represents an automation running in real time.</p>
+          </div>
+          <div class="flow-wrap glass" data-reveal="zoom">
+            <svg class="flow-svg" viewBox="0 0 900 200" aria-hidden="true">
+              <path class="flow-base" d="M 90 84 L 810 84"/>
+              <path class="flow-dash" d="M 90 84 L 810 84"/>
+              <g class="flow-node" style="--fd:0s">
+                <circle cx="90" cy="84" r="30" class="fn-c"/>
+                <text x="90" y="90" class="fn-num" text-anchor="middle">1</text>
+                <text x="90" y="142" class="fn-label" text-anchor="middle">Trigger</text>
+                <text x="90" y="162" class="fn-sub" text-anchor="middle">Email arrives</text>
+              </g>
+              <g class="flow-node" style="--fd:.15s">
+                <circle cx="330" cy="84" r="30" class="fn-c"/>
+                <text x="330" y="90" class="fn-num" text-anchor="middle">2</text>
+                <text x="330" y="142" class="fn-label" text-anchor="middle">AI Processing</text>
+                <text x="330" y="162" class="fn-sub" text-anchor="middle">Data extraction</text>
+              </g>
+              <g class="flow-node" style="--fd:.3s">
+                <circle cx="570" cy="84" r="30" class="fn-c"/>
+                <text x="570" y="90" class="fn-num" text-anchor="middle">3</text>
+                <text x="570" y="142" class="fn-label" text-anchor="middle">Approval Flow</text>
+                <text x="570" y="162" class="fn-sub" text-anchor="middle">Rule checks</text>
+              </g>
+              <g class="flow-node" style="--fd:.45s">
+                <circle cx="810" cy="84" r="30" class="fn-c"/>
+                <text x="810" y="90" class="fn-num" text-anchor="middle">4</text>
+                <text x="810" y="142" class="fn-label" text-anchor="middle">Posting</text>
+                <text x="810" y="162" class="fn-sub" text-anchor="middle">ERP + notify</text>
+              </g>
+              <circle r="6" class="flow-pulse">
+                <animateMotion dur="5.5s" repeatCount="indefinite" path="M 90 84 L 810 84"/>
+              </circle>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- How we work -->
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-label" data-reveal>Our Method</span>
+            <h2 data-reveal>Live in <em>4 steps</em></h2>
+          </div>
+          <div class="steps-row" data-stagger="0.15">
+            <div class="steps-line" aria-hidden="true"><i data-draw-line></i></div>
+            <div class="step" data-reveal><div class="step-num">01</div><h3>Discovery</h3><p>We map your processes together and pin down the automation opportunities and their payoff.</p></div>
+            <div class="step" data-reveal><div class="step-num">02</div><h3>Design</h3><p>We design the flows, the agent architecture, and every integration point end to end.</p></div>
+            <div class="step" data-reveal><div class="step-num">03</div><h3>Build</h3><p>We build the solution, test it against real data, and validate it side by side with your team.</p></div>
+            <div class="step" data-reveal><div class="step-num">04</div><h3>Launch &amp; Support</h3><p>We go live, train your team, and stay with you through continuous improvement.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured projects -->
+      <section class="section section-alt">
+        <div class="container">
+          <div class="section-head row-between">
+            <div>
+              <span class="section-label" data-reveal>Case Studies</span>
+              <h2 data-reveal>What have we <em>delivered?</em></h2>
+            </div>
+            <a href="/home/projects" class="btn btn-ghost btn-sm" data-magnetic data-reveal>All Projects</a>
+          </div>
+          <div class="projects-grid" id="featured-projects" data-stagger="0.12"></div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="section">
+        <div class="container">
+          <div class="cta-band" data-reveal="zoom">
+            <div class="cta-glow" aria-hidden="true"></div>
+            <h2>Ready to hand your processes over to automation?</h2>
+            <p>In a free 30-minute discovery call, we will pinpoint together which of your processes can be automated.</p>
+            <a href="/home/contact" class="btn btn-light" data-magnetic>Let's Talk</a>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ============ SERVICES ============ -->
+    <section class="page" data-page="services">
+      <div class="page-hero">
+        <div class="container">
+          <span class="section-label" data-reveal>Services</span>
+          <h1 data-split data-reveal="none">Solutions shaped around your needs</h1>
+          <p class="lead" data-reveal style="--rd:.4s">From a single approval flow to company-wide multi-agent systems — we design, build, and maintain automation at every scale.</p>
+        </div>
+      </div>
+
+      <!-- 1: Process Automation -->
+      <section class="section">
+        <div class="container split">
+          <div class="split-text" data-reveal="left">
+            <span class="chip" style="--sc:#0891b2">01 — Process Automation</span>
+            <h2>Make manual work <em>invisible</em></h2>
+            <p>Moving data between spreadsheets, chasing approvals over email, copy-pasting across systems… We automate every repetitive task that eats your team's day using Power Automate, n8n, and RPA tools.</p>
+            <ul class="feature-list">
+              <li>Approval and request flows (procurement, leave, expenses)</li>
+              <li>Document processing: invoices, contracts, forms (AI-powered OCR)</li>
+              <li>Cross-system data synchronization (ERP ↔ CRM ↔ M365)</li>
+              <li>Scheduled reporting and notification flows</li>
+            </ul>
+          </div>
+          <div class="split-visual" data-reveal="right">
+            <div class="glass visual-box">
+              <svg class="auto-svg" viewBox="0 0 420 300" aria-hidden="true">
+                <g class="as-doc as-doc1"><rect x="20" y="60" width="52" height="64" rx="8"/><path d="M32 80h28M32 92h28M32 104h18"/></g>
+                <g class="as-doc as-doc2"><rect x="20" y="150" width="52" height="64" rx="8"/><path d="M32 170h28M32 182h28M32 194h18"/></g>
+                <path class="as-line" d="M84 92 C 130 92, 130 137, 168 137"/>
+                <path class="as-line" d="M84 182 C 130 182, 130 137, 168 137"/>
+                <g class="as-machine">
+                  <rect x="168" y="92" width="110" height="96" rx="16"/>
+                  <circle cx="205" cy="140" r="20" class="as-gear as-gear1"/>
+                  <circle cx="243" cy="140" r="14" class="as-gear as-gear2"/>
+                </g>
+                <path class="as-line" d="M290 140 L 340 140"/>
+                <g class="as-out as-out1"><circle cx="368" cy="94" r="16"/><path d="m361 94 5 5 9-9"/></g>
+                <g class="as-out as-out2"><circle cx="368" cy="140" r="16"/><path d="m361 140 5 5 9-9"/></g>
+                <g class="as-out as-out3"><circle cx="368" cy="186" r="16"/><path d="m361 186 5 5 9-9"/></g>
+                <circle r="4" class="flow-pulse"><animateMotion dur="2.6s" repeatCount="indefinite" path="M84 92 C 130 92, 130 137, 168 137"/></circle>
+                <circle r="4" class="flow-pulse"><animateMotion dur="2.6s" begin="1.3s" repeatCount="indefinite" path="M84 182 C 130 182, 130 137, 168 137"/></circle>
+                <circle r="4" class="flow-pulse"><animateMotion dur="1.8s" begin="0.6s" repeatCount="indefinite" path="M290 140 L 340 140"/></circle>
+              </svg>
+              <div class="visual-caption">Documents come in, automation does the work, verified records come out</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2: Agentic AI -->
+      <section class="section section-alt">
+        <div class="container split split-rev">
+          <div class="split-text" data-reveal="right">
+            <span class="chip" style="--sc:#6366f1">02 — Agentic AI</span>
+            <h2>Set the goal, <em>let the agents handle it</em></h2>
+            <p>Classic automation runs on rules; agentic AI runs on goals. We design systems of AI agents that gather data, analyze it, make decisions, and hand work to each other — with the human-approval checkpoints defined together with you.</p>
+            <ul class="feature-list">
+              <li>Multi-agent architecture design and orchestration</li>
+              <li>Assistants grounded on your company data (RAG)</li>
+              <li>Autonomous reporting, analysis, and research agents</li>
+              <li>Safe human-in-the-loop flows</li>
+            </ul>
+          </div>
+          <div class="split-visual" data-reveal="left">
+            <div class="glass visual-box">
+              <svg class="orch-svg" viewBox="0 0 460 340" aria-hidden="true">
+                <path class="orch-line" d="M230 170 L 90 66"/>
+                <path class="orch-line" d="M230 170 L 370 66"/>
+                <path class="orch-line" d="M230 170 L 90 274"/>
+                <path class="orch-line" d="M230 170 L 370 274"/>
+                <g class="orch-center">
+                  <circle cx="230" cy="170" r="46" class="oc-ring"/>
+                  <circle cx="230" cy="170" r="34" class="oc-core"/>
+                  <text x="230" y="166" text-anchor="middle" class="oc-text">Orchestrator</text>
+                  <text x="230" y="182" text-anchor="middle" class="oc-text">Agent</text>
+                </g>
+                <g class="orch-node"><rect x="30" y="42" width="120" height="48" rx="12"/><text x="90" y="70" text-anchor="middle">Data Agent</text></g>
+                <g class="orch-node"><rect x="310" y="42" width="120" height="48" rx="12"/><text x="370" y="70" text-anchor="middle">Email Agent</text></g>
+                <g class="orch-node"><rect x="30" y="250" width="120" height="48" rx="12"/><text x="90" y="278" text-anchor="middle">Report Agent</text></g>
+                <g class="orch-node"><rect x="310" y="250" width="120" height="48" rx="12"/><text x="370" y="278" text-anchor="middle">CRM Agent</text></g>
+                <circle r="5" class="orch-pulse"><animateMotion dur="2.2s" repeatCount="indefinite" path="M230 170 L 90 66"/></circle>
+                <circle r="5" class="orch-pulse"><animateMotion dur="2.6s" begin=".5s" repeatCount="indefinite" path="M370 66 L 230 170"/></circle>
+                <circle r="5" class="orch-pulse"><animateMotion dur="2.4s" begin="1s" repeatCount="indefinite" path="M230 170 L 90 274"/></circle>
+                <circle r="5" class="orch-pulse"><animateMotion dur="2.8s" begin="1.5s" repeatCount="indefinite" path="M370 274 L 230 170"/></circle>
+              </svg>
+              <div class="visual-caption">The orchestrator distributes tasks to specialist agents and merges the results</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3: Copilot Studio -->
+      <section class="section">
+        <div class="container split">
+          <div class="split-text" data-reveal="left">
+            <span class="chip" style="--sc:#db2777">03 — Copilot Studio Agents</span>
+            <h2>Your company's <em>24/7</em> assistant</h2>
+            <p>With Microsoft Copilot Studio we build assistants that are grounded on your knowledge base and can actually take action. Your people ask questions, open tickets, and find information without leaving Teams — while HR and IT focus only on the work that truly needs a human.</p>
+            <ul class="feature-list">
+              <li>HR assistant: leave, payroll, policy questions</li>
+              <li>IT help desk: ticket creation, passwords, setup guides</li>
+              <li>Sales assistant: quotes, product and stock info</li>
+              <li>Rollout to Teams, web, and mobile channels</li>
+            </ul>
+          </div>
+          <div class="split-visual" data-reveal="right">
+            <div class="chat-demo glass" data-chat>
+              <div class="chat-head">
+                <div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="3"/><path d="M12 9V5"/><circle cx="12" cy="4" r="1"/><circle cx="9" cy="14.5" r="1"/><circle cx="15" cy="14.5" r="1"/></svg></div>
+                <div><strong>Support Agent</strong><span class="chat-status"><i></i> Online</span></div>
+              </div>
+              <div class="chat-body"></div>
+              <div class="chat-input" aria-hidden="true"><span>Type your message…</span><button tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4: Integration -->
+      <section class="section section-alt">
+        <div class="container">
+          <div class="section-head">
+            <span class="chip" style="--sc:#059669" data-reveal>04 — Integration &amp; Consulting</span>
+            <h2 data-reveal>Make your systems <em>talk to each other</em></h2>
+            <p class="section-sub" data-reveal>Automation gets its power from integration. We connect the tools you already use and bring your team up to the level where they can run them.</p>
+          </div>
+          <div class="mini-grid" data-stagger="0.08">
+            <div class="mini-card glass" data-reveal><div class="mc-icon">⚙️</div><h4>API &amp; Webhook Integrations</h4><p>Data bridges between your ERP, CRM, e-commerce, and custom software.</p></div>
+            <div class="mini-card glass" data-reveal><div class="mc-icon">🎓</div><h4>Team Training</h4><p>So your own team can manage Power Platform and Copilot Studio.</p></div>
+            <div class="mini-card glass" data-reveal><div class="mc-icon">🛡️</div><h4>Governance &amp; Security</h4><p>Access, data security, and automation governance standards.</p></div>
+            <div class="mini-card glass" data-reveal><div class="mc-icon">📈</div><h4>Continuous Improvement</h4><p>Monitoring, maintenance, and evolution of everything we ship.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="cta-band" data-reveal="zoom">
+            <div class="cta-glow" aria-hidden="true"></div>
+            <h2>Not sure which service fits you?</h2>
+            <p>Let's look at your processes together on a discovery call and draw the roadmap side by side.</p>
+            <a href="/home/contact" class="btn btn-light" data-magnetic>Book a Discovery Call</a>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <section class="page" data-page="projects">
+      <div class="page-hero">
+        <div class="container">
+          <span class="section-label" data-reveal>Case Studies</span>
+          <h1 data-split data-reveal="none">Projects that transform processes</h1>
+          <p class="lead" data-reveal style="--rd:.4s">Every project page walks you through how the automation works with live animations, step by step. Pick a project and watch the process.</p>
+        </div>
+      </div>
+      <section class="section">
+        <div class="container">
+          <div class="projects-grid projects-grid-full" id="projects-grid" data-stagger="0.1"></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ============ PROJECT DETAIL ============ -->
+    <section class="page" data-page="project-detail">
+      <div id="project-detail"></div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="page" data-page="about">
+      <div class="page-hero">
+        <div class="container">
+          <span class="section-label" data-reveal>About</span>
+          <h1 data-split data-reveal="none">We translate technology into your business</h1>
+          <p class="lead" data-reveal style="--rd:.4s">Sinaps is a boutique consulting studio that moves internal processes into automation. Our goal is not to sell software — it is to build systems that give teams their time back and produce measurable results.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container split">
+          <div class="split-text" data-reveal="left">
+            <h2>Why <em>Sinaps?</em></h2>
+            <p>Synapses connect the neurons in your brain; we connect the systems, teams, and data in your company. On every project we focus on understanding the process first — and choose the technology second.</p>
+            <p>Sinaps was founded by <strong>Gursel Olca</strong> — a US-based Senior Power Platform Developer with a computer science degree and a master's in machine learning. Across a 19+ year career in IT, data analytics, and automation, he has shipped 200+ production applications and workflows for organizations ranging from government institutions to multi-department enterprises.</p>
+            <p>Deep expertise in the Microsoft Power Platform, Dataverse, and Copilot Studio ecosystem; broad experience with Python, LangChain, and modern web technologies (React, TypeScript, SPFx) — working at every scale.</p>
+          </div>
+          <div class="about-stats" data-stagger="0.12" data-reveal="right">
+            <div class="glass about-photo"><img src="/home/img/about-team.jpg" alt="Team working together" loading="lazy"></div>
+            <div class="glass metric"><div class="metric-value" data-count="19" data-suffix="+">0</div><div class="metric-label">years in IT, data &amp; automation</div></div>
+            <div class="glass metric"><div class="metric-value" data-count="200" data-suffix="+">0</div><div class="metric-label">apps &amp; workflows in production</div></div>
+            <div class="glass metric"><div class="metric-value" data-count="200" data-suffix="+">0</div><div class="metric-label">active users supported live</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-label" data-reveal>Our Values</span>
+            <h2 data-reveal>How do we <em>work?</em></h2>
+          </div>
+          <div class="mini-grid mini-grid-3" data-stagger="0.1">
+            <div class="mini-card glass" data-reveal><div class="mc-icon">🔍</div><h4>Process First, Technology Second</h4><p>Automating a broken process just breaks it faster. We fix the process first.</p></div>
+            <div class="mini-card glass" data-reveal><div class="mc-icon">📏</div><h4>Measurable Impact</h4><p>Every project starts with a target metric: hours recovered, errors reduced, cycles accelerated.</p></div>
+            <div class="mini-card glass" data-reveal><div class="mc-icon">🤝</div><h4>Built to Hand Over</h4><p>We document every system we build and teach it to your team. You never depend on us.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="cta-band" data-reveal="zoom">
+            <div class="cta-glow" aria-hidden="true"></div>
+            <h2>Let's work together</h2>
+            <p>Talking through your processes takes about as long as a cup of coffee.</p>
+            <a href="/home/contact" class="btn btn-light" data-magnetic>Get in Touch</a>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="page" data-page="contact">
+      <div class="page-hero">
+        <div class="container">
+          <span class="section-label" data-reveal>Contact</span>
+          <h1 data-split data-reveal="none">Let's talk about your processes</h1>
+          <p class="lead" data-reveal style="--rd:.4s">Fill in the form and we'll get back to you within 24 hours. Or just send an email — the discovery call is always free.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container contact-grid">
+          <form class="contact-form glass" id="contact-form" data-reveal="left" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <input type="text" id="cf-name" placeholder=" " required>
+                <label for="cf-name">Your Name</label>
+              </div>
+              <div class="form-group">
+                <input type="email" id="cf-email" placeholder=" " required>
+                <label for="cf-email">Your Email</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" id="cf-company" placeholder=" ">
+              <label for="cf-company">Company</label>
+            </div>
+            <div class="form-group">
+              <textarea id="cf-message" rows="5" placeholder=" " required></textarea>
+              <label for="cf-message">Which process would you like to automate?</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" data-magnetic>Send Message</button>
+            <div class="form-note">This form is in demo mode — it will connect to an email service before going live.</div>
+          </form>
+
+          <div class="contact-info" data-stagger="0.12">
+            <div class="glass info-card" data-reveal="right">
+              <div class="mc-icon">📧</div>
+              <h4>Email</h4>
+              <p>hello@sinaps.co</p>
+            </div>
+            <div class="glass info-card" data-reveal="right">
+              <div class="mc-icon">📍</div>
+              <h4>Location</h4>
+              <p>Tempe, Arizona, USA<br>Remote &amp; on-site work</p>
+            </div>
+            <div class="glass info-card" data-reveal="right">
+              <div class="mc-icon">⚡</div>
+              <h4>Response Time</h4>
+              <p>We reply to every inquiry within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="/home" class="logo"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="9" cy="16" r="4.2" fill="#22d3ee"/><circle cx="23" cy="8" r="3.2" fill="#818cf8"/><circle cx="23" cy="24" r="3.2" fill="#f472b6"/><path d="M12.2 14.4 20.2 9.4M12.2 17.6 20.2 22.6" stroke="#8b93ab" stroke-width="1.6" stroke-linecap="round"/></svg><span>SINAPS</span></a>
+        <p>Solutions that turn internal processes into automation, agentic AI design, and Copilot Studio agents.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Pages</h5>
+        <a href="/home">Home</a>
+        <a href="/home/services">Services</a>
+        <a href="/home/projects">Projects</a>
+        <a href="/home/about">About</a>
+        <a href="/home/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <a href="/home/services">Process Automation</a>
+        <a href="/home/services">Agentic AI Solutions</a>
+        <a href="/home/services">Copilot Studio Agents</a>
+        <a href="/home/services">Integration &amp; Training</a>
+      </div>
+      <div class="footer-col">
+        <h5>More</h5>
+        <a href="/myportfolio">Developer Portfolio</a>
+        <a href="mailto:hello@sinaps.co">hello@sinaps.co</a>
+        <span>Tempe, Arizona, USA</span>
+      </div>
     </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- Demo Apps -->
-  <section class="section" id="demos">
-    <div class="section-eyebrow">Live Demos</div>
-    <div class="section-title">Interactive Apps</div>
-    <div class="section-sub">Functional prototypes you can explore right now.</div>
-    <div class="demos-row">
-      <a class="demo-chip" href="/english">📚 English Learning App</a>
-      <a class="demo-chip" href="/helpdesk">🎫 IT Help Desk</a>
-      <a class="demo-chip" href="/powerplatform">⚡ Power Platform Explorer</a>
-      <a class="demo-chip" href="/pp-rehber">🗺️ PP Mülakat Rehberi</a>
+    <div class="container footer-bottom">
+      <span>© 2026 Sinaps — All rights reserved.</span>
+      <span>Your processes keep working while you sleep. 🌙</span>
     </div>
-  </section>
-
-  <footer>
-    <div class="footer-links">
-      <a href="/projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="/portfolio">Portfolio</a>
-      <a href="/ai-automation">AI Case Study</a>
-      <a href="/portfolio/showcase/scan-to-dataverse">Scan to Dataverse</a>
-    </div>
-    <p>mekazek.com &nbsp;·&nbsp; Power Platform &amp; AI Portfolio</p>
   </footer>
 
-</div><!-- /landing -->
-
-<script>
-(function () {
-  /* ===== MATRIX RAIN ===== */
-  const canvas = document.getElementById('matrix-canvas');
-  const ctx    = canvas.getContext('2d');
-  const CHARS  = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ{}[]<>|/\\@#$%';
-  const FS     = 14;
-  let cols, drops, raf;
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    cols  = Math.floor(canvas.width / FS);
-    drops = new Array(cols).fill(1);
-  }
-  function draw() {
-    ctx.fillStyle = 'rgba(0,0,0,0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = FS + 'px monospace';
-    for (let i = 0; i < cols; i++) {
-      ctx.fillStyle = Math.random() > 0.95 ? '#bfe6ff' : '#38bdf8';
-      ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], i * FS, drops[i] * FS);
-      if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
-    }
-    raf = requestAnimationFrame(draw);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-  draw();
-
-  /* ===== TRANSITION: Matrix → Tech Background ===== */
-  var overlay      = document.getElementById('matrix-overlay');
-  var heroContent  = document.getElementById('hero-content');
-
-  setTimeout(function () {
-    overlay.classList.add('fade-out');
-    cancelAnimationFrame(raf);
-
-    setTimeout(function () {
-      overlay.style.display = 'none';
-      document.body.classList.remove('no-scroll');
-      heroContent.classList.add('visible');
-    }, 550);
-
-  }, 1100);
-
-})();
-</script>
+  <script src="/home/js/data.js"></script>
+  <script src="/home/js/main.js"></script>
 </body>
 </html>
