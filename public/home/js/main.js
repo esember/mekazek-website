@@ -1,5 +1,5 @@
 /* ============================================================
-   SINAPS — Interaction & animation engine
+   MEKA SOLUTIONS — Interaction & animation engine
    Path-based router (History API), page transitions, scroll
    animations, hero canvas, counters, chat demo, and the
    project page generator. Base path: /home
@@ -44,15 +44,15 @@
 
   function pageTitle(route) {
     const map = {
-      home: 'Sinaps — Automation & Agentic AI Consulting',
-      services: 'Services — Sinaps',
-      projects: 'Projects — Sinaps',
-      about: 'About — Sinaps',
-      contact: 'Contact — Sinaps'
+      home: 'Meka Solutions — Automation & Agentic AI Consulting',
+      services: 'Services — Meka Solutions',
+      projects: 'Projects — Meka Solutions',
+      about: 'About — Meka Solutions',
+      contact: 'Contact — Meka Solutions'
     };
     if (route.page === 'project-detail') {
       const p = PROJECTS.find(x => x.slug === route.slug);
-      return (p ? p.title : 'Project') + ' — Sinaps';
+      return (p ? p.title : 'Project') + ' — Meka Solutions';
     }
     return map[route.page];
   }

@@ -1,5 +1,5 @@
 /* ============================================================
-   SINAPS — Site data (icons + projects)
+   MEKA SOLUTIONS — Site data (icons + projects)
    The first 13 projects are real work from Gursel Olca's
    portfolio; the last 4 are sample solution scenarios
    (labeled "Concept Demo"). Edit this file to change content —

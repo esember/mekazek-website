@@ -1,5 +1,5 @@
 /* ============================================================
-   SINAPS — Stil ve animasyonlar (Açık Tema)
+   MEKA SOLUTIONS — Styles & animations (Light Theme)
    ============================================================ */
 
 :root {
@@ -129,7 +129,7 @@ body.cursor-hot .cursor-ring { width: 58px; height: 58px; margin: -29px 0 0 -29p
   box-shadow: 0 1px 0 var(--stroke), 0 8px 30px rgba(23, 32, 64, 0.05);
 }
 .header-inner { display: flex; align-items: center; gap: 28px; }
-.logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.18em; font-size: 1.02rem; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.12em; font-size: 1rem; white-space: nowrap; }
 .logo svg { width: 30px; height: 30px; }
 .main-nav { display: flex; gap: 26px; margin-left: auto; }
 .main-nav a {
